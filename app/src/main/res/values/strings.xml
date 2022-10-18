@@ -1,3 +1,12 @@
 <resources>
     <string name="app_name">Love Letter</string>
+    <string name="new_game">New Game</string>
+    <string name="join_game">Join Game</string>
+    <string name="my_games">My Games</string>
+    <string name="confirm_ready">Confirm Ready</string>
+    <string name="cancel_ready">cancel ready</string>
+    <string name="open_chat">open chat</string>
+    <string name="go_back">go back</string>
+    <string name="test_name">Test User</string>
+    <string name="sign_out_delete">Sign Out</string>
 </resources>
