@@ -28,17 +28,8 @@ import com.example.loveletter.util.user.HandleUser
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun JoinGameScreen(navController: NavHostController) {
+fun JoinGameScreen(navController: NavHostController, gameLobbyViewModel: GameLobbyViewModel) {
 
-    var roomCode by remember {
-        mutableStateOf("")
-    }
-    var playerNickname by remember {
-        mutableStateOf("")
-    }
-    var playerChar by remember {
-        mutableStateOf(0)
-    }
     val roomFound = remember {
         mutableStateOf(false)
     }
@@ -52,9 +43,9 @@ fun JoinGameScreen(navController: NavHostController) {
             OutlinedTextField(modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp),
-                value = roomCode,
+                value = gameLobbyViewModel.roomCode.value,
                 onValueChange = { newValue ->
-                    roomCode = newValue
+                    gameLobbyViewModel.roomCode.value = newValue
                 },
                 keyboardOptions = KeyboardOptions(
                     capitalization = KeyboardCapitalization.Words
@@ -65,9 +56,10 @@ fun JoinGameScreen(navController: NavHostController) {
                 },
                 trailingIcon = {
                     IconButton(onClick = {
-                        roomFound.value = JoinGame.checkGame(roomCode = roomCode,
-                            roomFound = roomFound,
-                            context = context)
+                        roomFound.value =
+                            JoinGame.checkGame(roomCode = gameLobbyViewModel.roomCode.value,
+                                roomFound = roomFound,
+                                context = context)
                     }) {
                         Icon(
                             Icons.Sharp.Search,
@@ -79,9 +71,9 @@ fun JoinGameScreen(navController: NavHostController) {
             OutlinedTextField(modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp),
-                value = playerNickname,
+                value = gameLobbyViewModel.playerNickname.value,
                 onValueChange = { newValue ->
-                    playerNickname = newValue
+                    gameLobbyViewModel.playerNickname.value = newValue
                 },
                 keyboardOptions = KeyboardOptions(
                     capitalization = KeyboardCapitalization.Words
@@ -113,8 +105,8 @@ fun JoinGameScreen(navController: NavHostController) {
                             onClick = {
                                 selectedIndex = index
                                 println("selectedIndex: $selectedIndex")
-                                playerChar = index
-                                Log.d(TAG, "playerChar: $playerChar")
+                                gameLobbyViewModel.playerChar.value = index
+                                Log.d(TAG, "playerChar: ${gameLobbyViewModel.playerChar.value}")
                             }
                         ),
                         icon = icon,
@@ -123,7 +115,11 @@ fun JoinGameScreen(navController: NavHostController) {
                 }
             }
             OutlinedButton(onClick = {
-                JoinGame.joinGame(roomCode, HandleUser.createPlayer(playerChar, playerNickname))
+                JoinGame.joinGame(
+                    gameLobbyViewModel.roomCode.value,
+                    HandleUser.createPlayer(gameLobbyViewModel.playerChar.value,
+                        gameLobbyViewModel.playerNickname.value))
+                navController.navigate(Screen.GameLobby.route)
             }) {
                 Text(stringResource(R.string.join_game))
             }

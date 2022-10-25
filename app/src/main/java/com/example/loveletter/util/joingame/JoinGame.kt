@@ -39,5 +39,16 @@ class JoinGame {
                     Log.d(TAG, "Failed to add player! ${it.localizedMessage}")
                 }
         }
+
+        fun leaveGame(roomCode: String, player: Player) {
+            db.collection("game").document(roomCode).update("players", FieldValue.arrayRemove(player))
+                .addOnSuccessListener {
+                    Log.d(TAG, "Successfully added player!")
+                }
+                .addOnFailureListener {
+                    Log.d(TAG, "Failed to add player! ${it.localizedMessage}")
+                }
+        }
     }
-}
+
+    }
