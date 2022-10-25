@@ -1,58 +1,103 @@
-package com.example.loveletter.presentation
+package com.example.loveletter.presentation.createroom
 
+import android.util.Log
 import androidx.activity.compose.BackHandler
-import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.GridCells
 import androidx.compose.foundation.lazy.LazyVerticalGrid
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.loveletter.R
+import com.example.loveletter.TAG
+import com.example.loveletter.domain.Avatar
+import com.example.loveletter.domain.GameRoom
+import com.example.loveletter.domain.Player
 import com.example.loveletter.util.startgame.StartGame
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun CreateRoom(navController: NavHostController) {
-    val players = listOf(
-        "Rick",
-        "Bob",
-        "Alice",
-        "Tom"
-    )
-    val icons = listOf(
-        R.drawable.bluechar,
-        R.drawable.greenchar,
-        R.drawable.goldchar,
-        R.drawable.pinkchar,
-        R.drawable.purplechar,
-        R.drawable.redchar
-    )
+fun CreateRoom(navController: NavHostController, createRoomViewModel: CreateRoomViewModel) {
 
-    var ready by remember {
-        mutableStateOf(false)
+    val state by createRoomViewModel.state.collectAsState()
+
+    createRoomViewModel.roomCode.value = StartGame.getRandomString()
+    val players = listOf(
+        Player(
+            avatar = 1,
+            nickName = "Bitches",
+            uid = "xx11"
+        ),
+        Player(
+            avatar = 2,
+            nickName = "Carol",
+            uid = "xx12"
+        ),
+        Player(
+            avatar = 3,
+            nickName = "Murphy",
+            uid = "xx11"
+        )
+    )
+    when (state) {
+        CreateRoomState.Loading -> {
+            Text("Hi~!@")
+            LaunchedEffect(key1 = Unit) {
+                createRoomViewModel.observeRoom()
+            }
+        }
+        is CreateRoomState.Loaded -> {
+            val loaded = state as CreateRoomState.Loaded
+
+            CreateRoomContent(
+                navController = navController,
+                createRoomViewModel = createRoomViewModel,
+                players = players,
+                gameRoom = loaded.gameRoom)
+            BackHandler() {
+                StartGame.deleteRoom(loaded.gameRoom.roomCode)
+                navController.popBackStack()
+            }
+        }
+
     }
-    var roomCode by remember {
-        mutableStateOf("")
-    }
-    LaunchedEffect(key1 = Unit) {
-        roomCode = StartGame.getRandomString()
-        StartGame.createCodedRoom(roomCode = roomCode)
-    }
+
+
+}
+
+@Composable
+private fun CreateRoomContent(
+    navController: NavHostController,
+    createRoomViewModel: CreateRoomViewModel,
+    players: List<Player>,
+    gameRoom: GameRoom,
+) {
+    var ready by remember { mutableStateOf(false)}
+
     Surface(Modifier.fillMaxSize()) {
         Box() {
             IconButton(modifier = Modifier
@@ -60,7 +105,7 @@ fun CreateRoom(navController: NavHostController) {
                 .padding(4.dp),
                 onClick = {
                     navController.popBackStack()
-                    StartGame.deleteRoom(roomCode)
+                    StartGame.deleteRoom(createRoomViewModel.roomCode.value)
                 }) {
                 Icon(
                     Icons.Rounded.ArrowBack,
@@ -72,16 +117,23 @@ fun CreateRoom(navController: NavHostController) {
                 .padding(vertical = 48.dp, horizontal = 16.dp),
                 verticalArrangement = Arrangement.SpaceBetween,
                 horizontalAlignment = Alignment.CenterHorizontally) {
+
                 Row(horizontalArrangement = Arrangement.Center,
                     verticalAlignment = Alignment.CenterVertically) {
-                    Text(roomCode, style = MaterialTheme.typography.h2)
-                    IconButton(onClick = { /*TODO*/ }) {
+                    Text(gameRoom.roomCode, style = MaterialTheme.typography.h6)
+                    IconButton(onClick = { Log.d(TAG, "Value for roomcode: ${gameRoom.roomCode}") }) {
                         Icon(
                             Icons.Rounded.Share,
                             null
                         )
                     }
                 }
+
+                Text(
+                    text = gameRoom.roomNickname,
+                    style = MaterialTheme.typography.h2
+                )
+
                 Column(Modifier
                     .clip(RoundedCornerShape(10.dp))
                     .padding(16.dp)
@@ -89,31 +141,43 @@ fun CreateRoom(navController: NavHostController) {
                     .background(Color.Blue)
                     .alpha(0.5f)) {
 
-                    players.forEach {
+                    gameRoom.players.forEach { player ->
+
+                        val avatar = Avatar.setAvatar(player.avatar)
                         Row(Modifier
                             .fillMaxWidth()
-                            .padding(8.dp)) {
-                            Text(it, style = MaterialTheme.typography.h6)
+                            .padding(8.dp),
+                            horizontalArrangement = Arrangement.Start,
+                            verticalAlignment = Alignment.CenterVertically) {
+
+                            Image(modifier = Modifier
+                                .scale(0.7f)
+                                .padding(4.dp)
+                                .clip(CircleShape),
+                                painter = painterResource(id = avatar.avatar),
+                                contentDescription = avatar.description)
+
+                            Text(player.nickName, style = MaterialTheme.typography.h6)
                         }
                     }
                 }
-                LazyVerticalGrid(cells = GridCells.Adaptive(minSize = 100.dp)) {
-                    items(icons) { icon ->
-                        Image(painterResource(id = icon), null)
-                    }
-                }
+
+
+
                 if (!ready) {
                     OutlinedButton(onClick = { ready = true }) {
                         Text("Ready?")
                     }
                 } else {
                     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
-                        Button(onClick = { StartGame.createRoom(
-                            roomNickname = "suck it",
-                            5,
-                            players = players,
-                            roomCode = roomCode
-                        ) }) {
+                        Button(onClick = {
+                            StartGame.createRoom(
+                                roomNickname = "suck it",
+                                5,
+                                players = players,
+                                roomCode = createRoomViewModel.roomCode.value
+                            )
+                        }) {
                             Icon(Icons.Rounded.Check, stringResource(R.string.confirm_ready))
                         }
                         Button(onClick = { ready = false }) {
@@ -132,10 +196,6 @@ fun CreateRoom(navController: NavHostController) {
                 )
             }
         }
-
-    }
-    BackHandler() {
-        StartGame.deleteRoom(roomCode)
-        navController.popBackStack()
     }
 }
+

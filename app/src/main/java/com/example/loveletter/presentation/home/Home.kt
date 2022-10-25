@@ -29,10 +29,10 @@ fun HomeScreen(navHostController: NavHostController) {
         Column(Modifier.padding(vertical = 48.dp, horizontal = 16.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceEvenly) {
-            OutlinedButton(onClick = { navHostController.navigate(Screen.CreateRoom.route) }) {
+            OutlinedButton(onClick = { navHostController.navigate(Screen.HostPlayer.route) }) {
                 Text(stringResource(R.string.new_game))
             }
-            OutlinedButton(onClick = { /*TODO*/ }) {
+            OutlinedButton(onClick = { navHostController.navigate(Screen.JoinGame.route) }) {
                 Text(stringResource(R.string.join_game))
             }
             OutlinedButton(onClick = { /*TODO*/ }) {
