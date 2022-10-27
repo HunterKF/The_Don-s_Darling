@@ -1,19 +1,95 @@
 package com.example.loveletter.util.user
 
+import android.util.Log
+import com.example.loveletter.TAG
+import com.example.loveletter.dbPlayers
+import com.example.loveletter.domain.FirestoreUser
+import com.example.loveletter.domain.GameRoom
+import com.example.loveletter.domain.JoinedGame
 import com.example.loveletter.domain.Player
+import com.example.loveletter.util.startgame.StartGame
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.firestore.FieldValue
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.firestore.ktx.toObject
 import com.google.firebase.ktx.Firebase
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
 
 class HandleUser {
     companion object {
         private val currentUser = Firebase.auth.currentUser
-
-        fun createPlayer(avatar: Int, nickname: String): Player {
+        fun createGamePlayer(avatar: Int, nickname: String): Player {
             return Player(
                 avatar = avatar,
                 nickName = nickname,
-                uid = currentUser.uid
+                uid = currentUser.uid,
+                ready = false,
+                isTurn = false,
+                turnOrder = 0
             )
+        }
+
+        fun createUserPlayer() {
+            dbPlayers.document(currentUser.uid).get()
+                .addOnSuccessListener { result ->
+                    if (result.data == null || result.data.isNullOrEmpty()) {
+                        dbPlayers.document(currentUser.uid).set(
+                            FirestoreUser(
+                                uid = currentUser.uid,
+                                joinedGames = listOf()
+                            )
+                        )
+                    } else {
+                        println("Firebase user already exists.")
+                    }
+
+                }
+        }
+
+        fun addGameToUser(roomCode: String, roomNickname: String) {
+            val joinedGame = JoinedGame(roomCode = roomCode, roomNickname = roomNickname, false)
+            dbPlayers.document(currentUser.uid).update("joinedGames", FieldValue.arrayUnion(joinedGame))
+                .addOnSuccessListener {
+                    println("Successfully added game to user's joined game list.")
+                }
+                .addOnFailureListener {
+                    println("Failed to add game to user list. ${it.localizedMessage}")
+                }
+        }
+
+        fun observeMyGames(): Flow<FirestoreUser> {
+            return callbackFlow {
+                var joinedGameList = FirestoreUser(
+                    "",
+                    listOf(),
+                    )
+                val listener = dbPlayers.document(currentUser.uid)
+                    .addSnapshotListener { documentSnapshot, exception ->
+                        exception?.let {
+                            Log.d(TAG,
+                                "An error has occurred trying to observe my games: $exception")
+                            return@addSnapshotListener
+                        }
+                        Log.d(TAG, "Attempting to get the document")
+                        documentSnapshot?.let {
+                            val firestoreUser = it.toObject(FirestoreUser::class.java)
+                            Log.d(TAG, "Document grabbed... $firestoreUser")
+
+                            firestoreUser?.let {
+                                joinedGameList = firestoreUser
+                                Log.d(TAG, "Changing it out $joinedGameList")
+
+                            }
+                        }
+                        trySend(joinedGameList)
+                    }
+                awaitClose {
+                    listener.remove()
+                }
+            }
+
         }
     }
 }

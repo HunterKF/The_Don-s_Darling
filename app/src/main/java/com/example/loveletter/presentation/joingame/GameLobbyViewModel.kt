@@ -1,16 +1,18 @@
 package com.example.loveletter.presentation.joingame
 
+import android.content.Context
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.loveletter.domain.Player
 import com.example.loveletter.util.startgame.StartGame
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
-class GameLobbyViewModel: ViewModel() {
+class GameLobbyViewModel : ViewModel() {
     private val loadingState = MutableStateFlow<GameLobbyState>(GameLobbyState.Loading)
 
     val state = loadingState.asStateFlow()
@@ -22,7 +24,6 @@ class GameLobbyViewModel: ViewModel() {
 
     fun observeRoom() {
         viewModelScope.launch {
-
             StartGame.subscribeToRealtimeUpdates(roomCode.value).map { gameRoom ->
                 GameLobbyState.Loaded(
                     gameRoom = gameRoom

@@ -1,5 +1,10 @@
 package com.example.loveletter.util.startgame
 
+import android.content.Context
+import android.util.Log
+import android.widget.Toast
+import com.example.loveletter.TAG
+import com.example.loveletter.dbGame
 import com.example.loveletter.domain.Deck
 import com.example.loveletter.domain.GameRoom
 import com.example.loveletter.domain.Player
@@ -14,26 +19,6 @@ import kotlinx.coroutines.tasks.await
 class StartGame() {
 
     companion object {
-        private val db = Firebase.firestore
-        fun createCodedRoom(roomCode: String) {
-            val deck = Deck()
-            val gameRoom = GameRoom(
-                deck = deck,
-                turn = 0,
-                roomNickname = "",
-                playLimit = 5,
-                players = listOf(Player(0, "", "")),
-                roomCode = roomCode
-            )
-            db.collection("game").document(roomCode)
-                .set(gameRoom)
-                .addOnSuccessListener {
-                    println("Success!")
-                }
-                .addOnFailureListener {
-                    println("Failure...")
-                }
-        }
 
         fun createRoom(
             roomNickname: String,
@@ -48,10 +33,11 @@ class StartGame() {
                 roomNickname = roomNickname,
                 playLimit = playLimit,
                 players = players,
-                roomCode = roomCode
+                roomCode = roomCode,
+                start = false
             )
             try {
-                db.collection("game").document(roomCode)
+                dbGame.document(roomCode)
                     .set(gameRoom).await()
             } catch (e: Exception) {
                 println(e.localizedMessage)
@@ -59,10 +45,29 @@ class StartGame() {
 
         }
 
+        fun startGame(
+            gameRoom: GameRoom,
+            context: Context
+        ) {
+            dbGame.document(gameRoom.roomCode).update("start", true)
+                .addOnSuccessListener {
+                    Log.d(TAG, "The game has started")
+                    Toast.makeText(context, "Game started!", Toast.LENGTH_SHORT).show()
+                }
+                .addOnFailureListener {
+                    Log.d(TAG, "Failed to make game: ${it.localizedMessage}")
+                }
+
+        }
+
+        fun startGame(roomCode: String) {
+            dbGame.document(roomCode).update("start", true)
+        }
+
         suspend fun subscribeToRealtimeUpdates(roomCode: String): Flow<GameRoom> {
             return callbackFlow {
                 var room = GameRoom()
-                val listener = db.collection("game").document(roomCode)
+                val listener = dbGame.document(roomCode)
                     .addSnapshotListener { querySnapshot, exception ->
                         exception?.let {
                             println(exception.localizedMessage)
@@ -81,11 +86,10 @@ class StartGame() {
                     listener.remove()
                 }
             }
-
         }
 
         fun deleteRoom(roomCode: String) {
-            db.collection("game").document(roomCode)
+            dbGame.document(roomCode)
                 .get()
                 .addOnSuccessListener { result ->
                     result.reference.delete()
@@ -102,13 +106,6 @@ class StartGame() {
                 .joinToString("")
         }
 
-        suspend fun updateRoom(roomCode: String, roomNickname: String) = coroutineScope {
-            db.collection("game").document(roomCode).update("roomNickname", roomNickname)
-        }
-
-        fun createPlayers(players: List<Player>) {
-
-        }
     }
 
 

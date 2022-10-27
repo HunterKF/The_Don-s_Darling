@@ -24,6 +24,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
@@ -37,6 +38,7 @@ import com.example.loveletter.domain.Avatar
 import com.example.loveletter.domain.GameRoom
 import com.example.loveletter.domain.Player
 import com.example.loveletter.util.startgame.StartGame
+import com.example.loveletter.util.user.HandleUser
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -46,23 +48,7 @@ fun CreateRoom(navController: NavHostController, createRoomViewModel: CreateRoom
     val state by createRoomViewModel.state.collectAsState()
 
     createRoomViewModel.roomCode.value = StartGame.getRandomString()
-    val players = listOf(
-        Player(
-            avatar = 1,
-            nickName = "Bitches",
-            uid = "xx11"
-        ),
-        Player(
-            avatar = 2,
-            nickName = "Carol",
-            uid = "xx12"
-        ),
-        Player(
-            avatar = 3,
-            nickName = "Murphy",
-            uid = "xx11"
-        )
-    )
+
     when (state) {
         CreateRoomState.Loading -> {
             Text("Hi~!@")
@@ -72,11 +58,12 @@ fun CreateRoom(navController: NavHostController, createRoomViewModel: CreateRoom
         }
         is CreateRoomState.Loaded -> {
             val loaded = state as CreateRoomState.Loaded
-
+            LaunchedEffect(key1 = Unit, block = {
+                HandleUser.addGameToUser(loaded.gameRoom.roomCode, loaded.gameRoom.roomNickname)
+            })
             CreateRoomContent(
                 navController = navController,
                 createRoomViewModel = createRoomViewModel,
-                players = players,
                 gameRoom = loaded.gameRoom)
             BackHandler() {
                 StartGame.deleteRoom(loaded.gameRoom.roomCode)
@@ -93,10 +80,10 @@ fun CreateRoom(navController: NavHostController, createRoomViewModel: CreateRoom
 private fun CreateRoomContent(
     navController: NavHostController,
     createRoomViewModel: CreateRoomViewModel,
-    players: List<Player>,
     gameRoom: GameRoom,
 ) {
-    var ready by remember { mutableStateOf(false)}
+    var ready by remember { mutableStateOf(false) }
+    val context = LocalContext.current
 
     Surface(Modifier.fillMaxSize()) {
         Box() {
@@ -121,7 +108,10 @@ private fun CreateRoomContent(
                 Row(horizontalArrangement = Arrangement.Center,
                     verticalAlignment = Alignment.CenterVertically) {
                     Text(gameRoom.roomCode, style = MaterialTheme.typography.h6)
-                    IconButton(onClick = { Log.d(TAG, "Value for roomcode: ${gameRoom.roomCode}") }) {
+                    IconButton(onClick = {
+                        Log.d(TAG,
+                            "Value for roomcode: ${gameRoom.roomCode}")
+                    }) {
                         Icon(
                             Icons.Rounded.Share,
                             null
@@ -171,11 +161,9 @@ private fun CreateRoomContent(
                 } else {
                     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
                         Button(onClick = {
-                            StartGame.createRoom(
-                                roomNickname = "suck it",
-                                5,
-                                players = players,
-                                roomCode = createRoomViewModel.roomCode.value
+                            StartGame.startGame(
+                                gameRoom = gameRoom,
+                                context = context
                             )
                         }) {
                             Icon(Icons.Rounded.Check, stringResource(R.string.confirm_ready))

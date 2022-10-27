@@ -28,7 +28,6 @@ import com.example.loveletter.domain.GameRoom
 import com.example.loveletter.presentation.joingame.GameLobbyState
 import com.example.loveletter.presentation.joingame.GameLobbyViewModel
 import com.example.loveletter.util.joingame.JoinGame
-import com.example.loveletter.util.startgame.StartGame
 import com.example.loveletter.util.user.HandleUser
 
 @Composable
@@ -46,14 +45,16 @@ fun GameLobby(navController: NavHostController, gameLobbyViewModel: GameLobbyVie
         }
         is GameLobbyState.Loaded -> {
             val loaded = state as GameLobbyState.Loaded
-
+            LaunchedEffect(key1 = Unit, block = {
+                HandleUser.addGameToUser(loaded.gameRoom.roomCode, loaded.gameRoom.roomNickname)
+            })
             GameLobbyContent(
                 navController = navController,
                 gameLobbyViewModel = gameLobbyViewModel,
                 gameRoom = loaded.gameRoom)
             BackHandler() {
                 JoinGame.leaveGame(gameLobbyViewModel.roomCode.value,
-                    HandleUser.createPlayer(gameLobbyViewModel.playerChar.value,
+                    HandleUser.createGamePlayer(gameLobbyViewModel.playerChar.value,
                         gameLobbyViewModel.playerNickname.value))
                 navController.navigate(Screen.Home.route)
             }
@@ -77,7 +78,7 @@ private fun GameLobbyContent(
                 .align(Alignment.TopStart)
                 .padding(4.dp),
                 onClick = {
-                    JoinGame.leaveGame(gameRoom.roomCode, HandleUser.createPlayer(0, ""))
+                    JoinGame.leaveGame(gameRoom.roomCode, HandleUser.createGamePlayer(0, ""))
                     navController.navigate(Screen.Home.route)
                 }) {
                 Icon(

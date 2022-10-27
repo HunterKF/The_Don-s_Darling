@@ -3,7 +3,6 @@ package com.example.loveletter.presentation.createroom
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.loveletter.domain.GameRoom
 import com.example.loveletter.util.user.HandleUser
 import com.example.loveletter.util.startgame.StartGame
 import com.google.firebase.auth.ktx.auth
@@ -31,7 +30,7 @@ class CreateRoomViewModel : ViewModel() {
         viewModelScope.launch {
             StartGame.createRoom(roomNickname = roomNickname.value,
                 0,
-                listOf(HandleUser.createPlayer(playerChar.value, playerNickname.value)),
+                listOf(HandleUser.createGamePlayer(playerChar.value, playerNickname.value)),
                 roomCode.value)
             StartGame.subscribeToRealtimeUpdates(roomCode.value).map { gameRoom ->
 

@@ -116,10 +116,13 @@ fun JoinGameScreen(navController: NavHostController, gameLobbyViewModel: GameLob
             }
             OutlinedButton(onClick = {
                 JoinGame.joinGame(
-                    gameLobbyViewModel.roomCode.value,
-                    HandleUser.createPlayer(gameLobbyViewModel.playerChar.value,
-                        gameLobbyViewModel.playerNickname.value))
-                navController.navigate(Screen.GameLobby.route)
+                    roomCode = gameLobbyViewModel.roomCode.value,
+                    player = HandleUser.createGamePlayer(gameLobbyViewModel.playerChar.value,
+                        gameLobbyViewModel.playerNickname.value),
+                    context = context
+                ) {
+                    navController.navigate(Screen.GameLobby.route)
+                }
             }) {
                 Text(stringResource(R.string.join_game))
             }
