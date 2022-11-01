@@ -13,22 +13,24 @@ import com.example.loveletter.presentation.game.Game
 import com.example.loveletter.presentation.game.GameViewModel
 import com.example.loveletter.presentation.joingame.GameLobbyViewModel
 import com.example.loveletter.presentation.joingame.JoinGameScreen
-import com.example.loveletter.presentation.mygames.JoinedGameCard
 import com.example.loveletter.presentation.mygames.MyGames
 import com.example.loveletter.presentation.mygames.MyGamesViewModel
 
 @Composable
-fun Navigation(navController: NavHostController) {
-    val createRoomViewModel = CreateRoomViewModel()
-    val gameLobbyViewModel = GameLobbyViewModel()
-    val myGamesViewModel = MyGamesViewModel()
-    val gameViewModel = GameViewModel()
+fun Navigation(
+    navController: NavHostController,
+    gameViewModel: GameViewModel,
+    createRoomViewModel: CreateRoomViewModel,
+    gameLobbyViewModel: GameLobbyViewModel,
+    myGamesViewModel: MyGamesViewModel
+) {
+
     NavHost(navController = navController, startDestination = Screen.Home.route) {
         composable(Screen.Home.route) {
             HomeScreen(navController)
         }
         composable(Screen.CreateRoom.route) {
-            CreateRoom(navController, createRoomViewModel)
+            CreateRoom(navController, createRoomViewModel, gameViewModel)
         }
         composable(Screen.HostPlayer.route) {
             HostPlayer(navController, createRoomViewModel)
@@ -37,12 +39,12 @@ fun Navigation(navController: NavHostController) {
             JoinGameScreen(navController, gameLobbyViewModel)
         }
         composable(Screen.GameLobby.route) {
-            GameLobby(navController, gameLobbyViewModel)
+            GameLobby(navController, gameLobbyViewModel, gameViewModel)
         }
         composable(Screen.MyGames.route) {
-            MyGames(navController, myGamesViewModel, gameLobbyViewModel)
+            MyGames(navController, myGamesViewModel, gameViewModel)
         }
-        composable(Screen.MyGames.route) {
+        composable(Screen.Game.route) {
             Game(navController, gameViewModel)
         }
     }

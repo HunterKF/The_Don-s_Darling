@@ -25,13 +25,18 @@ import com.example.loveletter.Screen
 import com.example.loveletter.TAG
 import com.example.loveletter.domain.Avatar
 import com.example.loveletter.domain.GameRoom
+import com.example.loveletter.presentation.game.GameViewModel
 import com.example.loveletter.presentation.joingame.GameLobbyState
 import com.example.loveletter.presentation.joingame.GameLobbyViewModel
 import com.example.loveletter.util.joingame.JoinGame
 import com.example.loveletter.util.user.HandleUser
 
 @Composable
-fun GameLobby(navController: NavHostController, gameLobbyViewModel: GameLobbyViewModel) {
+fun GameLobby(
+    navController: NavHostController,
+    gameLobbyViewModel: GameLobbyViewModel,
+    gameViewModel: GameViewModel,
+) {
 
     val state by gameLobbyViewModel.state.collectAsState()
 
@@ -39,12 +44,17 @@ fun GameLobby(navController: NavHostController, gameLobbyViewModel: GameLobbyVie
     when (state) {
         GameLobbyState.Loading -> {
             CircularProgressIndicator()
+
             LaunchedEffect(key1 = Unit) {
                 gameLobbyViewModel.observeRoom()
             }
         }
         is GameLobbyState.Loaded -> {
             val loaded = state as GameLobbyState.Loaded
+            if (loaded.gameRoom.start) {
+                gameViewModel.roomCode.value = loaded.gameRoom.roomCode
+                navController.navigate(Screen.Game.route)
+            }
             LaunchedEffect(key1 = Unit, block = {
                 HandleUser.addGameToUser(loaded.gameRoom.roomCode, loaded.gameRoom.roomNickname)
             })
@@ -56,6 +66,11 @@ fun GameLobby(navController: NavHostController, gameLobbyViewModel: GameLobbyVie
                 JoinGame.leaveGame(gameLobbyViewModel.roomCode.value,
                     HandleUser.createGamePlayer(gameLobbyViewModel.playerChar.value,
                         gameLobbyViewModel.playerNickname.value))
+                HandleUser.deleteUserGameRoom(
+                    loaded.gameRoom.roomCode,
+                    loaded.gameRoom.roomNickname,
+                    loaded.gameRoom.players
+                )
                 navController.navigate(Screen.Home.route)
             }
         }
@@ -79,6 +94,11 @@ private fun GameLobbyContent(
                 .padding(4.dp),
                 onClick = {
                     JoinGame.leaveGame(gameRoom.roomCode, HandleUser.createGamePlayer(0, ""))
+                    HandleUser.deleteUserGameRoom(
+                        gameRoom.roomCode,
+                        gameRoom.roomNickname,
+                        gameRoom.players
+                    )
                     navController.navigate(Screen.Home.route)
                 }) {
                 Icon(

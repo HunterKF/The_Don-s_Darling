@@ -1,5 +1,6 @@
 package com.example.loveletter.presentation.mygames
 
+import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -13,15 +14,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.loveletter.Screen
+import com.example.loveletter.TAG
 import com.example.loveletter.domain.FirestoreUser
 import com.example.loveletter.domain.JoinedGame
-import com.example.loveletter.presentation.joingame.GameLobbyViewModel
+import com.example.loveletter.presentation.game.GameViewModel
 
 @Composable
 fun MyGames(
     navController: NavHostController,
     myGamesViewModel: MyGamesViewModel,
-    gameLobbyViewModel: GameLobbyViewModel,
+    gameViewModel: GameViewModel,
 ) {
 
     val state by myGamesViewModel.state.collectAsState()
@@ -36,7 +38,7 @@ fun MyGames(
         is MyGamesState.Loaded -> {
             val loaded = state as MyGamesState.Loaded
 
-            MyGamesContent(loaded.firestoreUser, gameLobbyViewModel, navController)
+            MyGamesContent(loaded.firestoreUser, navController, gameViewModel)
         }
     }
 }
@@ -44,8 +46,8 @@ fun MyGames(
 @Composable
 fun MyGamesContent(
     firestoreUser: FirestoreUser,
-    gameLobbyViewModel: GameLobbyViewModel,
     navController: NavHostController,
+    gameViewModel: GameViewModel,
 ) {
     Surface() {
         Column(
@@ -58,8 +60,9 @@ fun MyGamesContent(
             LazyColumn() {
                 items(firestoreUser.joinedGames) { game ->
                     JoinedGameCard(game) {
-                        gameLobbyViewModel.roomCode.value = game.roomCode
-                        navController.navigate(Screen.GameLobby.route) {
+                        gameViewModel.roomCode.value = game.roomCode
+                        Log.d(TAG, game.roomCode)
+                        navController.navigate(Screen.Game.route) {
                             this.popUpToId
                         }
                     }

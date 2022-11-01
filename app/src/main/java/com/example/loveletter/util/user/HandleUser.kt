@@ -50,7 +50,8 @@ class HandleUser {
 
         fun addGameToUser(roomCode: String, roomNickname: String) {
             val joinedGame = JoinedGame(roomCode = roomCode, roomNickname = roomNickname, false)
-            dbPlayers.document(currentUser.uid).update("joinedGames", FieldValue.arrayUnion(joinedGame))
+            dbPlayers.document(currentUser.uid)
+                .update("joinedGames", FieldValue.arrayUnion(joinedGame))
                 .addOnSuccessListener {
                     println("Successfully added game to user's joined game list.")
                 }
@@ -59,12 +60,27 @@ class HandleUser {
                 }
         }
 
+        fun deleteUserGameRoom(roomCode: String, roomNickname: String, players: List<Player>) {
+            val joinedGame = JoinedGame(roomCode = roomCode, roomNickname = roomNickname, false)
+
+            players.forEach {
+                dbPlayers.document(it.uid).update("joinedGames", FieldValue.arrayRemove(joinedGame))
+                    .addOnSuccessListener {
+                        println("Successfully added game to user's joined game list.")
+                    }
+                    .addOnFailureListener {
+                        println("Failed to add game to user list. ${it.localizedMessage}")
+                    }
+            }
+
+        }
+
         fun observeMyGames(): Flow<FirestoreUser> {
             return callbackFlow {
                 var joinedGameList = FirestoreUser(
                     "",
                     listOf(),
-                    )
+                )
                 val listener = dbPlayers.document(currentUser.uid)
                     .addSnapshotListener { documentSnapshot, exception ->
                         exception?.let {

@@ -17,7 +17,6 @@ class CreateRoomViewModel : ViewModel() {
     private val loadingState = MutableStateFlow<CreateRoomState>(CreateRoomState.Loading)
 
     val state = loadingState.asStateFlow()
-    val currentUser = Firebase.auth.currentUser
 
     val roomCode = mutableStateOf("1234")
 

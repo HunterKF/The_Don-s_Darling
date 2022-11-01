@@ -47,12 +47,14 @@ class StartGame() {
 
         fun startGame(
             gameRoom: GameRoom,
-            context: Context
+            context: Context,
+            onSuccess: () -> Unit
         ) {
             dbGame.document(gameRoom.roomCode).update("start", true)
                 .addOnSuccessListener {
                     Log.d(TAG, "The game has started")
                     Toast.makeText(context, "Game started!", Toast.LENGTH_SHORT).show()
+                    onSuccess()
                 }
                 .addOnFailureListener {
                     Log.d(TAG, "Failed to make game: ${it.localizedMessage}")

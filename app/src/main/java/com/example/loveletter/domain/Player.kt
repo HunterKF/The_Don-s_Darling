@@ -8,5 +8,5 @@ data class Player(
     val isTurn: Boolean,
     val turnOrder: Int,
 ) {
-    constructor() : this(0, "", "", false, isTurn = false, turnOrder = 0)
+    constructor() : this(0, "Hunter", "", false, isTurn = false, turnOrder = 0)
 }

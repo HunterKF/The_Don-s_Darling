@@ -1,5 +1,7 @@
 package com.example.loveletter.util.game
 
+import android.util.Log
+import com.example.loveletter.TAG
 import com.example.loveletter.dbGame
 import com.example.loveletter.domain.GameRoom
 import com.example.loveletter.util.startgame.StartGame
@@ -15,6 +17,7 @@ class GameServer {
         suspend fun subscribeToRealtimeUpdates(roomCode: String): Flow<GameRoom> {
             return callbackFlow {
                 var room = GameRoom()
+                Log.d(TAG, "RoomCode is: $roomCode")
                 val listener = dbGame.document(roomCode)
                     .addSnapshotListener { querySnapshot, exception ->
                         exception?.let {

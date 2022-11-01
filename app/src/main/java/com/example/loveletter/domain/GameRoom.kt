@@ -9,5 +9,5 @@ data class GameRoom(
     val players: List<Player>,
     val start: Boolean
 ) {
-    constructor() : this(Deck(), 0, "1234", "", 0, listOf(), false)
+    constructor() : this(Deck(), 0, "ABCD", "Testing", 5, listOf(Player(), Player()), false)
 }
