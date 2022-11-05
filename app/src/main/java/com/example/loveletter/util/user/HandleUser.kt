@@ -4,14 +4,10 @@ import android.util.Log
 import com.example.loveletter.TAG
 import com.example.loveletter.dbPlayers
 import com.example.loveletter.domain.FirestoreUser
-import com.example.loveletter.domain.GameRoom
 import com.example.loveletter.domain.JoinedGame
 import com.example.loveletter.domain.Player
-import com.example.loveletter.util.startgame.StartGame
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FieldValue
-import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.firestore.ktx.toObject
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
@@ -26,8 +22,9 @@ class HandleUser {
                 nickName = nickname,
                 uid = currentUser.uid,
                 ready = false,
-                isTurn = false,
-                turnOrder = 0
+                turn = false,
+                turnOrder = 0,
+                hand = null
             )
         }
 
@@ -49,7 +46,7 @@ class HandleUser {
         }
 
         fun addGameToUser(roomCode: String, roomNickname: String) {
-            val joinedGame = JoinedGame(roomCode = roomCode, roomNickname = roomNickname, false)
+            val joinedGame = JoinedGame(roomCode = roomCode, roomNickname = roomNickname, false, false)
             dbPlayers.document(currentUser.uid)
                 .update("joinedGames", FieldValue.arrayUnion(joinedGame))
                 .addOnSuccessListener {
@@ -61,7 +58,7 @@ class HandleUser {
         }
 
         fun deleteUserGameRoom(roomCode: String, roomNickname: String, players: List<Player>) {
-            val joinedGame = JoinedGame(roomCode = roomCode, roomNickname = roomNickname, false)
+            val joinedGame = JoinedGame(roomCode = roomCode, roomNickname = roomNickname, false, false)
 
             players.forEach {
                 dbPlayers.document(it.uid).update("joinedGames", FieldValue.arrayRemove(joinedGame))
@@ -106,6 +103,15 @@ class HandleUser {
                 }
             }
 
+        }
+        fun getCurrentUser(list: List<Player>, currentUser: String): Player {
+            var currentPlayer = Player()
+            list.forEach {
+                if (it.uid == currentUser) {
+                    currentPlayer = it
+                }
+            }
+            return currentPlayer
         }
     }
 }

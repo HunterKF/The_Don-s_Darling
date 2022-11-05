@@ -59,11 +59,13 @@ fun MyGamesContent(
                 style = MaterialTheme.typography.h1)
             LazyColumn() {
                 items(firestoreUser.joinedGames) { game ->
-                    JoinedGameCard(game) {
-                        gameViewModel.roomCode.value = game.roomCode
-                        Log.d(TAG, game.roomCode)
-                        navController.navigate(Screen.Game.route) {
-                            this.popUpToId
+                    if (game.ready) {
+                        JoinedGameCard(game) {
+                            gameViewModel.roomCode.value = game.roomCode
+                            Log.d(TAG, game.roomCode)
+                            navController.navigate(Screen.Game.route) {
+                                this.popUpToId
+                            }
                         }
                     }
                 }

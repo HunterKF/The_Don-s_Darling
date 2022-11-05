@@ -9,7 +9,7 @@ android {
 
     defaultConfig {
         applicationId "com.example.loveletter"
-        minSdk 21
+        minSdk 23
         targetSdk 32
         versionCode 1
         versionName "1.0"
@@ -76,4 +76,6 @@ dependencies {
     implementation("androidx.navigation:navigation-compose:$nav_version")
 
     implementation "androidx.fragment:fragment-ktx:1.4.1"
+    implementation "com.microsoft.device.dualscreen:draganddrop:1.0.0-alpha01"
+
 }

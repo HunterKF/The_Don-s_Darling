@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import androidx.core.view.WindowCompat
 import androidx.navigation.compose.rememberNavController
 import com.example.loveletter.presentation.createroom.CreateRoomViewModel
 import com.example.loveletter.presentation.game.GameViewModel
@@ -20,6 +21,7 @@ class MainActivity : ComponentActivity() {
         val createRoomViewModel by viewModels<CreateRoomViewModel>()
         val gameLobbyViewModel by viewModels<GameLobbyViewModel>()
         val myGamesViewModel by viewModels<MyGamesViewModel>()
+//        WindowCompat.setDecorFitsSystemWindows(window, false)
         setContent {
             val auth = Firebase.auth
             val currentUser = auth.currentUser

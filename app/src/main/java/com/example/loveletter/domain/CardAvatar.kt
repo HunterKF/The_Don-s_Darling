@@ -4,26 +4,97 @@ import androidx.annotation.DrawableRes
 import com.example.loveletter.R
 
 sealed class CardAvatar(
-    val description: String,
-    val number: String,
+    val cardName: String,
+    val number: Int,
+    val ruleDescription: Int,
     @DrawableRes val avatar: Int,
+    val ruleShortDescription: Int,
+    val numberInGame: Int,
 ) {
-    object PinkChar : CardAvatar(
-        description = "Pink Avatar",
-        number = "1",
-        avatar = R.drawable.pinkchar
+    object Guard : CardAvatar(
+        cardName = "Guard",
+        number = 1,
+        avatar = R.drawable.card_avatar_guard,
+        ruleDescription = R.string.rule_guard,
+        ruleShortDescription = R.string.short_rule_guard,
+        numberInGame = 6
+    )
+
+    object Priest : CardAvatar(
+        cardName = "Priest",
+        number = 2,
+        ruleDescription = R.string.rule_priest,
+        avatar = R.drawable.card_avatar_priest,
+        R.string.short_rule_priest,
+        2
+    )
+
+    object Baron : CardAvatar(
+        cardName = "Baron",
+        number = 3,
+        ruleDescription = R.string.rule_baron,
+        avatar = R.drawable.card_avatar_baron,
+        R.string.short_rule_baron,
+        2
+    )
+
+    object Handmaid : CardAvatar(
+        cardName = "Handmaid",
+        number = 4,
+        ruleDescription = R.string.rule_handmaid,
+        avatar = R.drawable.card_avatar_handmaid,
+        R.string.short_rule_handmaid,
+        2
+    )
+
+    object Prince : CardAvatar(
+        cardName = "Prince",
+        number = 5,
+        ruleDescription = R.string.rule_prince,
+        avatar = R.drawable.card_avatar_prince,
+        R.string.short_rule_prince,
+        2
+    )
+
+    object King : CardAvatar(
+        cardName = "King",
+        number = 6,
+        ruleDescription = R.string.rule_king,
+        avatar = R.drawable.card_avatar_king,
+        R.string.short_rule_king,
+        1
+    )
+
+    object Countess : CardAvatar(
+        cardName = "Countess",
+        number = 7,
+        ruleDescription =  R.string.rule_countess,
+        avatar = R.drawable.card_avatar_countess,
+        R.string.short_rule_countess,
+        1
+    )
+
+    object Princess : CardAvatar(
+        cardName = "Princess",
+        number = 8,
+        ruleDescription = R.string.rule_princess,
+        avatar = R.drawable.card_avatar_princess,
+        R.string.short_rule_princess,
+        1
     )
 
     companion object {
-        fun setCardAvatar(code: Int?): Avatar {
+        fun setCardAvatar(code: Int?): CardAvatar {
             return when (code) {
-                0 -> Avatar.PurpleChar
-                1 -> Avatar.BlueChar
-                2 -> Avatar.GoldChar
-                3 -> Avatar.GreenChar
-                4 -> Avatar.RedChar
-                5 -> Avatar.PinkChar
-                else -> Avatar.PurpleChar
+                1 -> Guard
+                2 -> Priest
+                3 -> Baron
+                4 -> Handmaid
+                5 -> Prince
+                6 -> King
+                7 -> Countess
+                8 -> Princess
+                else -> Guard
             }
         }
     }

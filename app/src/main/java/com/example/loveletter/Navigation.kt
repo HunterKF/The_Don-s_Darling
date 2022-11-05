@@ -25,7 +25,7 @@ fun Navigation(
     myGamesViewModel: MyGamesViewModel
 ) {
 
-    NavHost(navController = navController, startDestination = Screen.Home.route) {
+    NavHost(navController = navController, startDestination = Screen.Game.route) {
         composable(Screen.Home.route) {
             HomeScreen(navController)
         }

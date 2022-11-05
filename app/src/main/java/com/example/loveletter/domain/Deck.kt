@@ -19,22 +19,27 @@ class Deck(
         7,
         8
     ),
+    val discardDeck: List<Int>?,
 ) {
-    constructor() : this(listOf(1,
-        1,
-        1,
-        1,
-        1,
-        2,
-        2,
-        3,
-        3,
-        4,
-        4,
-        5,
-        5,
-        6,
-        7,
-        8))
+    constructor() : this(
+        listOf(
+            1,
+            1,
+            1,
+            1,
+            1,
+            2,
+            2,
+            3,
+            3,
+            4,
+            4,
+            5,
+            5,
+            6,
+            7,
+            8),
+        listOf()
+    )
 }
 

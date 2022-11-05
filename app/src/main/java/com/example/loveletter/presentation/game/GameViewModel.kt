@@ -5,6 +5,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.loveletter.TAG
+import com.example.loveletter.currentUser
+import com.example.loveletter.domain.Player
 import com.example.loveletter.util.game.GameServer
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -32,5 +34,19 @@ class GameViewModel : ViewModel() {
                 loadingState.emit(it)
             }
         }
+    }
+
+    fun randomFloat(): Float {
+        return (-5..5).random().toFloat()
+    }
+
+    fun removeCurrentPlayer(list: List<Player>): List<Player> {
+        list.forEach {
+            if (it.uid == currentUser.uid) {
+                list.minus(it)
+            }
+        }
+        return list
+
     }
 }
