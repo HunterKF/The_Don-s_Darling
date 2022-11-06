@@ -28,7 +28,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.navigation.NavController
 import com.example.loveletter.Screen
-import com.example.loveletter.currentUser
 import com.example.loveletter.domain.*
 import com.example.loveletter.presentation.game.util.Card
 import com.example.loveletter.presentation.game.util.MenuItem
@@ -70,7 +69,7 @@ fun GameContent(game: GameRoom, gameViewModel: GameViewModel, navController: Nav
     var offsetX by remember { mutableStateOf(0f) }
     var offsetY by remember { mutableStateOf(0f) }
     val currentPlayer by remember {
-        mutableStateOf(HandleUser.getCurrentUser(game.players, currentUser = currentUser.uid))
+        mutableStateOf(HandleUser.getCurrentUser(game.players, currentUser = HandleUser.returnUser()!!.uid))
     }
 
 
@@ -124,7 +123,7 @@ fun GameContent(game: GameRoom, gameViewModel: GameViewModel, navController: Nav
 
                     playerList.forEach {
                         println("${it.nickName}'s turn is: ${it.turn}")
-                        if (it.uid != currentUser.uid) {
+                        if (it.uid != HandleUser.returnUser()?.uid) {
                             val color by animateColorAsState(targetValue = if (it.turn) {
                                 Color.Red
                             } else {
@@ -223,8 +222,8 @@ fun GameContent(game: GameRoom, gameViewModel: GameViewModel, navController: Nav
                     Modifier.weight(0.4f),
                 ) {
                     game.players.forEach { player ->
-                        if (player.uid == currentUser.uid) {
-                            player.hand?.let {
+                        if (player.uid == HandleUser.returnUser()!!.uid) {
+                            player.hand.let {
                                 LazyRow(
                                     Modifier.fillMaxWidth(),
                                     horizontalArrangement = Arrangement.Center

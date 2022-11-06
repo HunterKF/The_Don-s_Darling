@@ -28,7 +28,9 @@ fun HomeScreen(navHostController: NavHostController) {
     val currentUser = auth.currentUser
     val context = LocalContext.current
     LaunchedEffect(key1 = Unit, block = {
-        HandleUser.createUserPlayer()
+        if (currentUser != null) {
+            HandleUser.createUserPlayer()
+        }
     })
 
     Surface(Modifier.fillMaxSize()) {

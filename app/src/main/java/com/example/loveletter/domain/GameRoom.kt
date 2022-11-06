@@ -6,8 +6,8 @@ data class GameRoom(
     val roomCode: String,
     val roomNickname: String,
     val playLimit: Int,
-    val players: List<Player>,
-    val start: Boolean
+    var players: List<Player>,
+    var start: Boolean
 ) {
     constructor() : this(Deck(), 0, "ABCD", "Testing", 5, listOf(Player(), Player()), false)
 }

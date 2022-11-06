@@ -50,6 +50,14 @@ class StartGame() {
             context: Context,
             onSuccess: () -> Unit
         ) {
+            gameRoom.players = assignTurns(gameRoom.players)
+            gameRoom.players.forEach {
+                val randomCard = randomNumber(gameRoom.deck.deck.size)
+                it.hand.plus(gameRoom.deck.deck[randomCard])
+                gameRoom.deck.deck.drop(randomCard)
+            }
+            gameRoom.start = true
+
             dbGame.document(gameRoom.roomCode).update("start", true)
                 .addOnSuccessListener {
                     Log.d(TAG, "The game has started")
@@ -62,9 +70,22 @@ class StartGame() {
 
         }
 
-        fun startGame(roomCode: String) {
-            dbGame.document(roomCode).update("start", true)
+        private fun assignTurns(list: List<Player>): List<Player> {
+            val turn = 1
+            list.forEach {
+                it.turnOrder = turn
+                if (it.turnOrder == 1) {
+                    it.turn = true
+                }
+                turn +1
+            }
+            return list
         }
+
+        private fun randomNumber(int: Int): Int {
+            return (0..int).shuffled().random()
+        }
+
 
         suspend fun subscribeToRealtimeUpdates(roomCode: String): Flow<GameRoom> {
             return callbackFlow {

@@ -44,7 +44,6 @@ fun CreateRoom(
 
     when (state) {
         CreateRoomState.Loading -> {
-            Text("Hi~!@")
             createRoomViewModel.roomCode.value = StartGame.getRandomString()
             LaunchedEffect(key1 = Unit) {
                 createRoomViewModel.observeRoom()

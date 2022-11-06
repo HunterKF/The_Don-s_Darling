@@ -5,10 +5,10 @@ data class Player(
     var nickName: String,
     val uid: String,
     val ready: Boolean,
-    val turn: Boolean,
-    val turnOrder: Int,
-    val hand: List<Int>?,
+    var turn: Boolean,
+    var turnOrder: Int,
+    val hand: ArrayList<Int>,
 ) {
     constructor() : this(0, "Hunter",
-        "NPc8lG4p91VoCTC8GgMdxpcvUdx2", false, turn = false, turnOrder = 0, hand = listOf())
+        "", false, turn = false, turnOrder = 0, hand = arrayListOf())
 }

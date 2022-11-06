@@ -6,6 +6,7 @@ import com.example.loveletter.dbPlayers
 import com.example.loveletter.domain.FirestoreUser
 import com.example.loveletter.domain.JoinedGame
 import com.example.loveletter.domain.Player
+import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.ktx.Firebase
@@ -24,7 +25,7 @@ class HandleUser {
                 ready = false,
                 turn = false,
                 turnOrder = 0,
-                hand = null
+                hand = arrayListOf()
             )
         }
 
@@ -55,6 +56,14 @@ class HandleUser {
                 .addOnFailureListener {
                     println("Failed to add game to user list. ${it.localizedMessage}")
                 }
+        }
+
+        fun updateJoinedGame() {
+            dbPlayers.document(currentUser.uid)
+        }
+
+        fun returnUser(): FirebaseUser? {
+            return currentUser
         }
 
         fun deleteUserGameRoom(roomCode: String, roomNickname: String, players: List<Player>) {

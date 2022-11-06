@@ -1,7 +1,7 @@
 package com.example.loveletter.domain
 
 class Deck(
-    val deck: List<Int> = listOf(
+    val deck: ArrayList<Int> = arrayListOf(
         1,
         1,
         1,
@@ -19,10 +19,10 @@ class Deck(
         7,
         8
     ),
-    val discardDeck: List<Int>?,
+    val discardDeck: ArrayList<Int>?,
 ) {
     constructor() : this(
-        listOf(
+        arrayListOf<Int>(
             1,
             1,
             1,
@@ -39,7 +39,7 @@ class Deck(
             6,
             7,
             8),
-        listOf()
+        arrayListOf()
     )
 }
 
