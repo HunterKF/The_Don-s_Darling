@@ -3,11 +3,13 @@ package com.example.loveletter.util.startgame
 import android.content.Context
 import android.util.Log
 import android.widget.Toast
+import androidx.compose.runtime.mutableStateOf
 import com.example.loveletter.TAG
 import com.example.loveletter.dbGame
 import com.example.loveletter.domain.Deck
 import com.example.loveletter.domain.GameRoom
 import com.example.loveletter.domain.Player
+import com.example.loveletter.util.user.HandleUser
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.*
@@ -50,15 +52,21 @@ class StartGame() {
             context: Context,
             onSuccess: () -> Unit
         ) {
+            var updatedGameRoom = gameRoom
             gameRoom.players = assignTurns(gameRoom.players)
-            gameRoom.players.forEach {
-                val randomCard = randomNumber(gameRoom.deck.deck.size)
-                it.hand.plus(gameRoom.deck.deck[randomCard])
-                gameRoom.deck.deck.drop(randomCard)
-            }
+            /*OPTIONS: Make a random list, and pass it to 2 different functions to adjust the deck and the players.
+            * or...
+            * Make one function that returns a game room...*/
+
             gameRoom.start = true
 
-            dbGame.document(gameRoom.roomCode).update("start", true)
+            updatedGameRoom = dealCards(gameRoom)
+
+            updatedGameRoom.players.forEach {
+                HandleUser.updateJoinedGame(it.uid, gameRoom = updatedGameRoom)
+            }
+
+            dbGame.document(gameRoom.roomCode).set(updatedGameRoom)
                 .addOnSuccessListener {
                     Log.d(TAG, "The game has started")
                     Toast.makeText(context, "Game started!", Toast.LENGTH_SHORT).show()
@@ -71,19 +79,39 @@ class StartGame() {
         }
 
         private fun assignTurns(list: List<Player>): List<Player> {
-            val turn = 1
+            val turn = mutableStateOf(1)
             list.forEach {
-                it.turnOrder = turn
+                it.turnOrder = turn.value
                 if (it.turnOrder == 1) {
                     it.turn = true
                 }
-                turn +1
+                turn.value = turn.value +1
             }
             return list
         }
 
-        private fun randomNumber(int: Int): Int {
-            return (0..int).shuffled().random()
+        private fun dealCards(gameRoom: GameRoom): GameRoom {
+
+            gameRoom.players.forEach { player->
+                val size = gameRoom.deck.deck.size
+                if (player.turn) { player
+                    val randomCard = listOf(randomNumber(size), randomNumber(size))
+                    randomCard.forEach {
+                        player.hand.add(gameRoom.deck.deck[it])
+                        gameRoom.deck.deck.remove(it)
+                    }
+                } else {
+                    val randomCard = randomNumber(size)
+                    player.hand.add(gameRoom.deck.deck[randomCard])
+                    gameRoom.deck.deck.remove(randomCard)
+                }
+
+            }
+            return gameRoom
+        }
+
+        fun randomNumber(size: Int): Int {
+            return (1..size).shuffled().random()
         }
 
 

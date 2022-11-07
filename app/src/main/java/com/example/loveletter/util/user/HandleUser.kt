@@ -4,6 +4,7 @@ import android.util.Log
 import com.example.loveletter.TAG
 import com.example.loveletter.dbPlayers
 import com.example.loveletter.domain.FirestoreUser
+import com.example.loveletter.domain.GameRoom
 import com.example.loveletter.domain.JoinedGame
 import com.example.loveletter.domain.Player
 import com.google.firebase.auth.FirebaseUser
@@ -47,7 +48,8 @@ class HandleUser {
         }
 
         fun addGameToUser(roomCode: String, roomNickname: String) {
-            val joinedGame = JoinedGame(roomCode = roomCode, roomNickname = roomNickname, false, false)
+            val joinedGame =
+                JoinedGame(roomCode = roomCode, roomNickname = roomNickname, false, false)
             dbPlayers.document(currentUser.uid)
                 .update("joinedGames", FieldValue.arrayUnion(joinedGame))
                 .addOnSuccessListener {
@@ -58,16 +60,33 @@ class HandleUser {
                 }
         }
 
-        fun updateJoinedGame() {
-            dbPlayers.document(currentUser.uid)
+        fun updateJoinedGame(userId: String, gameRoom: GameRoom) {
+            val joinedGame =
+                JoinedGame(roomCode = gameRoom.roomCode,
+                    roomNickname = gameRoom.roomNickname,
+                    false,
+                    ready = false)
+            dbPlayers.document(userId)
+                .update("joinedGames", FieldValue.arrayRemove(joinedGame))
+            joinedGame.ready = true
+            dbPlayers.document(userId)
+                .update("joinedGames", FieldValue.arrayUnion(joinedGame))
+                .addOnSuccessListener {
+                    Log.d(TAG, "Updated the game list.")
+                }
+                .addOnFailureListener {
+                    Log.d(TAG, "Failed to update game list. ${it.localizedMessage}")
+                }
         }
+
 
         fun returnUser(): FirebaseUser? {
             return currentUser
         }
 
         fun deleteUserGameRoom(roomCode: String, roomNickname: String, players: List<Player>) {
-            val joinedGame = JoinedGame(roomCode = roomCode, roomNickname = roomNickname, false, false)
+            val joinedGame =
+                JoinedGame(roomCode = roomCode, roomNickname = roomNickname, false, false)
 
             players.forEach {
                 dbPlayers.document(it.uid).update("joinedGames", FieldValue.arrayRemove(joinedGame))
@@ -111,8 +130,8 @@ class HandleUser {
                     listener.remove()
                 }
             }
-
         }
+
         fun getCurrentUser(list: List<Player>, currentUser: String): Player {
             var currentPlayer = Player()
             list.forEach {

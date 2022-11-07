@@ -4,7 +4,7 @@ data class JoinedGame(
     val roomCode: String,
     val roomNickname: String,
     val myTurn: Boolean,
-    val ready: Boolean
+    var ready: Boolean
 ) {
     constructor() : this ("", "", false, false)
 }
