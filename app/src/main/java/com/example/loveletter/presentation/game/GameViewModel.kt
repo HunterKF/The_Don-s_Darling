@@ -24,6 +24,7 @@ class GameViewModel : ViewModel() {
     val roomCode = mutableStateOf("1234")
 
     fun observeRoom() {
+        Log.d(TAG, "Observe room is being called again and again.")
         viewModelScope.launch {
             Log.d(TAG, "roomCode in viewModel: ${roomCode.value}")
             GameServer.subscribeToRealtimeUpdates(roomCode.value).map { gameRoom ->
@@ -48,5 +49,9 @@ class GameViewModel : ViewModel() {
         }
         return list
 
+    }
+
+    fun assignRoomCode(roomCode2: String) {
+        roomCode.value = roomCode2
     }
 }

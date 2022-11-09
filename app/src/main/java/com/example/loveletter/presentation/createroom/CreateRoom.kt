@@ -40,7 +40,6 @@ fun CreateRoom(
 
     val state by createRoomViewModel.state.collectAsState()
 
-    createRoomViewModel.roomCode.value = StartGame.getRandomString()
 
     when (state) {
         CreateRoomState.Loading -> {
@@ -52,7 +51,7 @@ fun CreateRoom(
         is CreateRoomState.Loaded -> {
             val loaded = state as CreateRoomState.Loaded
             LaunchedEffect(key1 = Unit, block = {
-                HandleUser.addGameToUser(loaded.gameRoom.roomCode, loaded.gameRoom.roomNickname)
+//                HandleUser.addGameToUser(loaded.gameRoom.roomCode, loaded.gameRoom.roomNickname)
             })
             CreateRoomContent(
                 navController = navController,
@@ -168,7 +167,7 @@ private fun CreateRoomContent(
                 } else {
                     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
                         Button(onClick = {
-                            gameViewModel.roomCode.value = createRoomViewModel.roomCode.value
+                            gameViewModel.assignRoomCode(createRoomViewModel.roomCode.value)
                             StartGame.startGame(
                                 gameRoom = gameRoom,
                                 context = context

@@ -10,8 +10,6 @@ import com.example.loveletter.domain.Deck
 import com.example.loveletter.domain.GameRoom
 import com.example.loveletter.domain.Player
 import com.example.loveletter.util.user.HandleUser
-import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
@@ -63,7 +61,7 @@ class StartGame() {
             updatedGameRoom = dealCards(gameRoom)
 
             updatedGameRoom.players.forEach {
-                HandleUser.updateJoinedGame(it.uid, gameRoom = updatedGameRoom)
+                HandleUser.addGameToPlayer(it.uid, gameRoom = updatedGameRoom)
             }
 
             dbGame.document(gameRoom.roomCode).set(updatedGameRoom)
@@ -110,7 +108,7 @@ class StartGame() {
             return gameRoom
         }
 
-        fun randomNumber(size: Int): Int {
+        private fun randomNumber(size: Int): Int {
             return (1..size).shuffled().random()
         }
 

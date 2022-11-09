@@ -26,7 +26,8 @@ class HandleUser {
                 ready = false,
                 turn = false,
                 turnOrder = 0,
-                hand = arrayListOf()
+                hand = arrayListOf(),
+                isHost = false
             )
         }
 
@@ -60,14 +61,13 @@ class HandleUser {
                 }
         }
 
-        fun updateJoinedGame(userId: String, gameRoom: GameRoom) {
+        fun addGameToPlayer(userId: String, gameRoom: GameRoom) {
             val joinedGame =
                 JoinedGame(roomCode = gameRoom.roomCode,
                     roomNickname = gameRoom.roomNickname,
                     false,
                     ready = false)
-            dbPlayers.document(userId)
-                .update("joinedGames", FieldValue.arrayRemove(joinedGame))
+
             joinedGame.ready = true
             dbPlayers.document(userId)
                 .update("joinedGames", FieldValue.arrayUnion(joinedGame))

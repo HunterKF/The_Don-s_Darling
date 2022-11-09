@@ -48,7 +48,7 @@ fun JoinGameScreen(navController: NavHostController, gameLobbyViewModel: GameLob
                     gameLobbyViewModel.roomCode.value = newValue
                 },
                 keyboardOptions = KeyboardOptions(
-                    capitalization = KeyboardCapitalization.Words
+                    capitalization = KeyboardCapitalization.Characters
                 ),
                 singleLine = true,
                 label = {
@@ -104,7 +104,7 @@ fun JoinGameScreen(navController: NavHostController, gameLobbyViewModel: GameLob
                             selected = selectedIndex == index,
                             onClick = {
                                 selectedIndex = index
-                                println("selectedIndex: $selectedIndex")
+                                Log.d(TAG, "selectedIndex: $selectedIndex")
                                 gameLobbyViewModel.playerChar.value = index
                                 Log.d(TAG, "playerChar: ${gameLobbyViewModel.playerChar.value}")
                             }

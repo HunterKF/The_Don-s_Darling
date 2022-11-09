@@ -43,7 +43,7 @@ class JoinGame {
             dbGame.document(roomCode).get()
                 .addOnSuccessListener { result ->
                     if (result.data!!.size == 4) {
-                        println(result.data!!.size)
+                        Log.d(TAG, "${result.data!!.size}")
                         Log.d(TAG, "Room code found, but too many players.")
                         Toast.makeText(context, "Game is full!", Toast.LENGTH_SHORT).show()
                     } else {

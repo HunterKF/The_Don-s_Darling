@@ -8,7 +8,8 @@ data class Player(
     var turn: Boolean,
     var turnOrder: Int,
     val hand: ArrayList<Int>,
+    var isHost: Boolean,
 ) {
-    constructor() : this(0, "Hunter",
-        "", false, turn = false, turnOrder = 0, hand = arrayListOf())
+    constructor() : this(0, "",
+        "", false, turn = false, turnOrder = 0, hand = arrayListOf(), isHost = false)
 }

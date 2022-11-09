@@ -1,5 +1,7 @@
 package com.example.loveletter.presentation.game
 
+import android.util.Log
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
@@ -28,6 +30,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.navigation.NavController
 import com.example.loveletter.Screen
+import com.example.loveletter.TAG
 import com.example.loveletter.domain.*
 import com.example.loveletter.presentation.game.util.Card
 import com.example.loveletter.presentation.game.util.MenuItem
@@ -39,20 +42,24 @@ fun Game(navController: NavController, gameViewModel: GameViewModel) {
 
     val state by gameViewModel.state.collectAsState()
     LaunchedEffect(key1 = Unit, block = {
+        Log.d(TAG, "Launched effect in game is being called.")
         gameViewModel.observeRoom()
     })
 
     when (state) {
         GameState.Loading -> {
             CircularProgressIndicator()
-            gameViewModel.observeRoom()
+            Log.d(TAG, "Loading state is being called.")
+
         }
         is GameState.Loaded -> {
             val loaded = state as GameState.Loaded
             Text("Hey")
+            Log.d(TAG, "GameState is now set to Loaded.")
             GameContent(loaded.gameRoom, gameViewModel, navController)
         }
     }
+
 }
 
 
@@ -69,9 +76,13 @@ fun GameContent(game: GameRoom, gameViewModel: GameViewModel, navController: Nav
     var offsetX by remember { mutableStateOf(0f) }
     var offsetY by remember { mutableStateOf(0f) }
     val currentPlayer by remember {
-        mutableStateOf(HandleUser.getCurrentUser(game.players, currentUser = HandleUser.returnUser()!!.uid))
+        mutableStateOf(HandleUser.getCurrentUser(game.players,
+            currentUser = HandleUser.returnUser()!!.uid))
     }
 
+    BackHandler(true) {
+        Log.d(TAG,"HEYYYY YOU GUYYYYYSSSSS")
+    }
 
     Scaffold(
 
@@ -122,7 +133,7 @@ fun GameContent(game: GameRoom, gameViewModel: GameViewModel, navController: Nav
                     val playerList = gameViewModel.removeCurrentPlayer(game.players)
 
                     playerList.forEach {
-                        println("${it.nickName}'s turn is: ${it.turn}")
+                        Log.d(TAG, "${it.nickName}'s turn is: ${it.turn}")
                         if (it.uid != HandleUser.returnUser()?.uid) {
                             val color by animateColorAsState(targetValue = if (it.turn) {
                                 Color.Red
@@ -152,13 +163,16 @@ fun GameContent(game: GameRoom, gameViewModel: GameViewModel, navController: Nav
                         }
                     }
                 }
+                Text("game roomcode: ${game.roomCode}")
+                Text("viewmodel roomcode: ${gameViewModel.roomCode.value}")
 
 
                 //Center card
                 Box(Modifier
                     .fillMaxWidth()
                     .weight(0.6f)) {
-
+                    Text(modifier = Modifier.align(Alignment.CenterEnd),
+                        text = game.deck.deck.size.toString())
                     //Deck
                     Box(Modifier
                         .padding(start = 8.dp)
@@ -234,7 +248,8 @@ fun GameContent(game: GameRoom, gameViewModel: GameViewModel, navController: Nav
                                             val scale by animateFloatAsState(targetValue = if (selectedIndex == index) 0.8f else 0.6f)
                                             val offset by animateDpAsState(targetValue = if (selectedIndex == index) (-50).dp else 0.dp)
                                             Box(contentAlignment = Alignment.Center) {
-                                                Card(cardAvatar = CardAvatar.setCardAvatar(cardNumber),
+                                                Card(cardAvatar = CardAvatar.setCardAvatar(
+                                                    cardNumber),
                                                     modifier = Modifier
                                                         .scale(scale)
                                                         .offset(y = offset)
@@ -251,7 +266,8 @@ fun GameContent(game: GameRoom, gameViewModel: GameViewModel, navController: Nav
                                                         )
                                                 )
                                                 if (selectedIndex == index) {
-                                                    OutlinedButton(modifier = Modifier.align(Alignment.BottomCenter),
+                                                    OutlinedButton(modifier = Modifier.align(
+                                                        Alignment.BottomCenter),
                                                         onClick = { /*TODO*/ }) {
                                                         Text("Play")
                                                     }
@@ -264,7 +280,8 @@ fun GameContent(game: GameRoom, gameViewModel: GameViewModel, navController: Nav
                                             }
                                             val scale by animateFloatAsState(targetValue = if (selected) 0.8f else 0.6f)
                                             Box(contentAlignment = Alignment.Center) {
-                                                Card(cardAvatar = CardAvatar.setCardAvatar(cardNumber),
+                                                Card(cardAvatar = CardAvatar.setCardAvatar(
+                                                    cardNumber),
                                                     modifier = Modifier
                                                         .scale(scale)
                                                         .clickable {

@@ -52,26 +52,30 @@ fun GameLobby(
         is GameLobbyState.Loaded -> {
             val loaded = state as GameLobbyState.Loaded
             if (loaded.gameRoom.start) {
-                gameViewModel.roomCode.value = loaded.gameRoom.roomCode
-                navController.navigate(Screen.Game.route)
-            }
-            LaunchedEffect(key1 = Unit, block = {
-                HandleUser.addGameToUser(loaded.gameRoom.roomCode, loaded.gameRoom.roomNickname)
-            })
-            GameLobbyContent(
-                navController = navController,
-                gameLobbyViewModel = gameLobbyViewModel,
-                gameRoom = loaded.gameRoom)
-            BackHandler() {
-                JoinGame.leaveGame(gameLobbyViewModel.roomCode.value,
-                    HandleUser.createGamePlayer(gameLobbyViewModel.playerChar.value,
-                        gameLobbyViewModel.playerNickname.value))
-                HandleUser.deleteUserGameRoom(
-                    loaded.gameRoom.roomCode,
-                    loaded.gameRoom.roomNickname,
-                    loaded.gameRoom.players
-                )
-                navController.navigate(Screen.Home.route)
+                LaunchedEffect(key1 = Unit) {
+                    gameViewModel.assignRoomCode(roomCode2 = loaded.gameRoom.roomCode)
+                    navController.navigate(Screen.Game.route)
+                }
+            } else {
+                Log.d(TAG, "Game lobby is refreshing...")
+                LaunchedEffect(key1 = Unit, block = {
+//                    HandleUser.addGameToUser(loaded.gameRoom.roomCode, loaded.gameRoom.roomNickname)
+                })
+                GameLobbyContent(
+                    navController = navController,
+                    gameLobbyViewModel = gameLobbyViewModel,
+                    gameRoom = loaded.gameRoom)
+                BackHandler() {
+                    JoinGame.leaveGame(gameLobbyViewModel.roomCode.value,
+                        HandleUser.createGamePlayer(gameLobbyViewModel.playerChar.value,
+                            gameLobbyViewModel.playerNickname.value))
+                    HandleUser.deleteUserGameRoom(
+                        loaded.gameRoom.roomCode,
+                        loaded.gameRoom.roomNickname,
+                        loaded.gameRoom.players
+                    )
+                    navController.navigate(Screen.Home.route)
+                }
             }
         }
 

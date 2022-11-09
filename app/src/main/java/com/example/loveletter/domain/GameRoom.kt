@@ -9,5 +9,5 @@ data class GameRoom(
     var players: List<Player>,
     var start: Boolean
 ) {
-    constructor() : this(Deck(), 0, "ABCD", "Testing", 5, listOf(Player(), Player()), false)
+    constructor() : this(Deck(), 0, "", "", 5, listOf(Player(), Player()), false)
 }
