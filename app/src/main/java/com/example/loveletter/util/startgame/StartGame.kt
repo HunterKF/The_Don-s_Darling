@@ -10,6 +10,8 @@ import com.example.loveletter.domain.Deck
 import com.example.loveletter.domain.GameRoom
 import com.example.loveletter.domain.Player
 import com.example.loveletter.util.user.HandleUser
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
@@ -19,7 +21,7 @@ import kotlinx.coroutines.tasks.await
 class StartGame() {
 
     companion object {
-
+        val currentUser = Firebase.auth.currentUser
         fun createRoom(
             roomNickname: String,
             playLimit: Int,
@@ -34,7 +36,8 @@ class StartGame() {
                 playLimit = playLimit,
                 players = players,
                 roomCode = roomCode,
-                start = false
+                start = false,
+                host = currentUser.uid
             )
             try {
                 dbGame.document(roomCode)

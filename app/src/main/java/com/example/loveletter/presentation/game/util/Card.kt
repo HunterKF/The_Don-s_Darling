@@ -30,7 +30,7 @@ import com.example.loveletter.R
 import com.example.loveletter.domain.CardAvatar
 
 @Composable
-fun Card(
+fun PlayingCard(
     modifier: Modifier = Modifier,
     cardAvatar: CardAvatar) {
     var infoWindow by remember {

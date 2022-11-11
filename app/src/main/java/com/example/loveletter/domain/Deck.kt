@@ -1,7 +1,7 @@
 package com.example.loveletter.domain
 
 class Deck(
-    val deck: ArrayList<Int> = arrayListOf(
+    var deck: ArrayList<Int> = arrayListOf(
         1,
         1,
         1,
@@ -19,7 +19,7 @@ class Deck(
         7,
         8
     ),
-    val discardDeck: ArrayList<Int>?,
+    var discardDeck: ArrayList<Int>,
 ) {
     constructor() : this(
         arrayListOf<Int>(

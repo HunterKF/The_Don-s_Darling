@@ -27,13 +27,17 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Popup
 import androidx.compose.ui.zIndex
 import androidx.navigation.NavController
 import com.example.loveletter.Screen
 import com.example.loveletter.TAG
 import com.example.loveletter.domain.*
-import com.example.loveletter.presentation.game.util.Card
+import com.example.loveletter.presentation.game.util.PlayingCard
 import com.example.loveletter.presentation.game.util.MenuItem
+import com.example.loveletter.presentation.game.util.SelectPlayer
+import com.example.loveletter.presentation.game.util.WindowCenterOffsetPositionProvider
+import com.example.loveletter.util.game.gamerules.GameRules
 import com.example.loveletter.util.user.HandleUser
 import kotlinx.coroutines.launch
 
@@ -80,8 +84,15 @@ fun GameContent(game: GameRoom, gameViewModel: GameViewModel, navController: Nav
             currentUser = HandleUser.returnUser()!!.uid))
     }
 
+    var selectPlayer = remember {
+        mutableStateOf(false)
+    }
+    val guessCard by remember {
+        mutableStateOf(false)
+    }
+
     BackHandler(true) {
-        Log.d(TAG,"HEYYYY YOU GUYYYYYSSSSS")
+        Log.d(TAG, "HEYYYY YOU GUYYYYYSSSSS")
     }
 
     Scaffold(
@@ -119,6 +130,7 @@ fun GameContent(game: GameRoom, gameViewModel: GameViewModel, navController: Nav
                 }
             }
         }) {
+
             Column(Modifier
                 .fillMaxSize()
             ) {
@@ -165,8 +177,16 @@ fun GameContent(game: GameRoom, gameViewModel: GameViewModel, navController: Nav
                 }
                 Text("game roomcode: ${game.roomCode}")
                 Text("viewmodel roomcode: ${gameViewModel.roomCode.value}")
+                Button(onClick = { selectPlayer.value = true }) {
+                    Text("Select player")
+                }
+                if (selectPlayer.value) {
+                    Popup(popupPositionProvider = WindowCenterOffsetPositionProvider(),
 
-
+                        onDismissRequest = { selectPlayer.value = false }) {
+                        SelectPlayer(gameRoom = game, selectPlayer = selectPlayer)
+                    }
+                }
                 //Center card
                 Box(Modifier
                     .fillMaxWidth()
@@ -218,7 +238,7 @@ fun GameContent(game: GameRoom, gameViewModel: GameViewModel, navController: Nav
                                 Box(
                                     modifier = Modifier.rotate(gameViewModel.randomFloat())
                                 ) {
-                                    Card(cardAvatar = CardAvatar.setCardAvatar(it))
+                                    PlayingCard(cardAvatar = CardAvatar.setCardAvatar(it))
                                 }
                             }
 
@@ -248,7 +268,7 @@ fun GameContent(game: GameRoom, gameViewModel: GameViewModel, navController: Nav
                                             val scale by animateFloatAsState(targetValue = if (selectedIndex == index) 0.8f else 0.6f)
                                             val offset by animateDpAsState(targetValue = if (selectedIndex == index) (-50).dp else 0.dp)
                                             Box(contentAlignment = Alignment.Center) {
-                                                Card(cardAvatar = CardAvatar.setCardAvatar(
+                                                PlayingCard(cardAvatar = CardAvatar.setCardAvatar(
                                                     cardNumber),
                                                     modifier = Modifier
                                                         .scale(scale)
@@ -268,7 +288,11 @@ fun GameContent(game: GameRoom, gameViewModel: GameViewModel, navController: Nav
                                                 if (selectedIndex == index) {
                                                     OutlinedButton(modifier = Modifier.align(
                                                         Alignment.BottomCenter),
-                                                        onClick = { /*TODO*/ }) {
+                                                        onClick = {
+                                                            GameRules.onPlay(card = cardNumber,
+                                                                player = player,
+                                                                gameRoom = game)
+                                                        }) {
                                                         Text("Play")
                                                     }
                                                 }
@@ -280,7 +304,7 @@ fun GameContent(game: GameRoom, gameViewModel: GameViewModel, navController: Nav
                                             }
                                             val scale by animateFloatAsState(targetValue = if (selected) 0.8f else 0.6f)
                                             Box(contentAlignment = Alignment.Center) {
-                                                Card(cardAvatar = CardAvatar.setCardAvatar(
+                                                PlayingCard(cardAvatar = CardAvatar.setCardAvatar(
                                                     cardNumber),
                                                     modifier = Modifier
                                                         .scale(scale)
