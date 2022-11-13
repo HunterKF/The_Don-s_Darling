@@ -1,7 +1,9 @@
 package com.example.loveletter.presentation.game.util
 
 import android.text.Layout
+import android.util.Log
 import android.widget.Toast
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.animateOffsetAsState
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -10,14 +12,13 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.*
+import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material.icons.rounded.Close
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -29,12 +30,14 @@ import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
+import com.example.loveletter.TAG
 import com.example.loveletter.domain.CardAvatar
 import com.example.loveletter.domain.GameRoom
+import com.example.loveletter.presentation.game.GameViewModel
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun GuessCard(gameRoom: GameRoom, guessCard: MutableState<Boolean>) {
+fun GuessCard(gameRoom: GameRoom, guessCard: MutableState<Boolean>, gameViewModel: GameViewModel) {
 
     Box(
         modifier = Modifier
@@ -101,26 +104,24 @@ fun GuessCard(gameRoom: GameRoom, guessCard: MutableState<Boolean>) {
                 }
             }*/
 
+            var selectedIndex by remember {
+                mutableStateOf(-1)
+            }
             BoxWithConstraints {
                 LazyRow(
                     state = state
                 ) {
-                    if(!state.isScrollInProgress) {
+                    if (!state.isScrollInProgress) {
 
                     }
                     itemsIndexed(cards) { index, item ->
                         println("first visible item: ${state.firstVisibleItemIndex}")
                         println("visible items info ${state.layoutInfo.visibleItemsInfo}")
                         println("total items count: ${state.layoutInfo.totalItemsCount}")
-                        val scale by animateFloatAsState(targetValue = if (index == 3) 1f else 0.5f)
-                        val offset by animateOffsetAsState(targetValue = when {
-                            (state.firstVisibleItemIndex > index) -> Offset(20f, 20f)
-                            (state.firstVisibleItemIndex < index) -> Offset(-50f, 0f)
-                            (state.firstVisibleItemIndex == index) -> Offset(0f, 0f)
-                            else -> {
-                                Offset(0f, 0f)
-                            }
-                        })
+                        val scale by animateFloatAsState(targetValue = if (selectedIndex == index) 1.2f else 1f)
+
+
+                        val color by animateColorAsState(targetValue = if (selectedIndex == index) Color.Red else Color.Gray)
                         Layout(
                             content = {
                                 // Here's the content of each list item.
@@ -130,7 +131,20 @@ fun GuessCard(gameRoom: GameRoom, guessCard: MutableState<Boolean>) {
                                         .background(Color.Gray)
                                 ) {
                                     val card = CardAvatar.setCardAvatar(item)
-                                    PlayingCard(cardAvatar = card, modifier = Modifier.scale(scale))
+                                    PlayingCard(cardAvatar = card, modifier = Modifier
+                                        .selectable(
+                                            selected = selectedIndex == index,
+                                            onClick = {
+                                                selectedIndex = index
+                                                Log.d(TAG, "selectedIndex: $selectedIndex")
+                                                gameViewModel.guessCard.value = index
+                                                Log.d(TAG,
+                                                    "Player guessed: ${gameViewModel.guessCard.value}")
+                                            }
+                                        )
+
+                                        .scale(scale)
+                                        .border(2.dp, color))
                                 }
                             },
                             measurePolicy = { measurables, constraints ->

@@ -24,10 +24,18 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.loveletter.domain.Avatar
 import com.example.loveletter.domain.GameRoom
+import com.example.loveletter.presentation.game.GameViewModel
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 
 @Composable
-fun SelectPlayer(gameRoom: GameRoom, selectPlayer: MutableState<Boolean>) {
+fun SelectPlayer(
+    gameRoom: GameRoom,
+    selectPlayer: MutableState<Boolean>,
+    gameViewModel: GameViewModel
+) {
 
+    val currentUser = Firebase.auth.currentUser
     Box(
         modifier = Modifier
             .fillMaxWidth(1f)
@@ -52,23 +60,25 @@ fun SelectPlayer(gameRoom: GameRoom, selectPlayer: MutableState<Boolean>) {
                 modifier = Modifier.fillMaxWidth()
             ) {
                 gameRoom.players.forEach {
-                    val avatar = Avatar.setAvatar(it.avatar)
-                    Card(
-                        modifier = Modifier.weight(1f),
-                    ) {
-                        Column(
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.Center
+                    if (it.uid != currentUser.uid) {
+                        val avatar = Avatar.setAvatar(it.avatar)
+                        Card(
+                            modifier = Modifier.weight(1f),
                         ) {
-                            Image(
-                                painter = painterResource(id = avatar.avatar),
-                                contentDescription = avatar.description,
-                                modifier = Modifier
-                                    .clip(CircleShape)
-                                    .border(2.dp, Color.Green, CircleShape)
-                            )
-                            Spacer(Modifier.padding(12.dp))
-                            Text(text = it.nickName)
+                            Column(
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                verticalArrangement = Arrangement.Center
+                            ) {
+                                Image(
+                                    painter = painterResource(id = avatar.avatar),
+                                    contentDescription = avatar.description,
+                                    modifier = Modifier
+                                        .clip(CircleShape)
+                                        .border(2.dp, Color.Green, CircleShape)
+                                )
+                                Spacer(Modifier.padding(12.dp))
+                                Text(text = it.nickName)
+                            }
                         }
                     }
                 }
@@ -110,7 +120,8 @@ fun SelectPlayer(gameRoom: GameRoom, selectPlayer: MutableState<Boolean>) {
 fun Preview1() {
     val gameRoom = GameRoom()
     val selectPlayer = remember { mutableStateOf(true) }
+    val gameViewModel = GameViewModel()
     Surface {
-        SelectPlayer(gameRoom, selectPlayer)
+        SelectPlayer(gameRoom, selectPlayer, gameViewModel)
     }
 }

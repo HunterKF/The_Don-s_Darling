@@ -184,14 +184,14 @@ fun GameContent(game: GameRoom, gameViewModel: GameViewModel, navController: Nav
                     Popup(popupPositionProvider = WindowCenterOffsetPositionProvider(),
 
                         onDismissRequest = { selectPlayer.value = false }) {
-                        SelectPlayer(gameRoom = game, selectPlayer = selectPlayer)
+                        SelectPlayer(gameRoom = game, selectPlayer = selectPlayer, gameViewModel = gameViewModel)
                     }
                 }
                 if (guessCard.value) {
                     Popup(popupPositionProvider = WindowCenterOffsetPositionProvider(),
                         onDismissRequest = { selectPlayer.value = false }) {
 
-                        GuessCard(gameRoom = game, guessCard = guessCard)
+                        GuessCard(gameRoom = game, guessCard = guessCard, gameViewModel = gameViewModel)
                     }
 
                 }

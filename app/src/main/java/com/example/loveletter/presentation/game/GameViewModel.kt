@@ -16,6 +16,7 @@ import kotlinx.coroutines.launch
 
 class GameViewModel : ViewModel() {
 
+    val guessCard = mutableStateOf(0)
     private val loadingState = MutableStateFlow<GameState>(GameState.Loading)
 
     val state = loadingState.asStateFlow()
