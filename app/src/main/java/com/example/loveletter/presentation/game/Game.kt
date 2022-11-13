@@ -33,10 +33,7 @@ import androidx.navigation.NavController
 import com.example.loveletter.Screen
 import com.example.loveletter.TAG
 import com.example.loveletter.domain.*
-import com.example.loveletter.presentation.game.util.PlayingCard
-import com.example.loveletter.presentation.game.util.MenuItem
-import com.example.loveletter.presentation.game.util.SelectPlayer
-import com.example.loveletter.presentation.game.util.WindowCenterOffsetPositionProvider
+import com.example.loveletter.presentation.game.util.*
 import com.example.loveletter.util.game.gamerules.GameRules
 import com.example.loveletter.util.user.HandleUser
 import kotlinx.coroutines.launch
@@ -87,7 +84,7 @@ fun GameContent(game: GameRoom, gameViewModel: GameViewModel, navController: Nav
     var selectPlayer = remember {
         mutableStateOf(false)
     }
-    val guessCard by remember {
+    val guessCard = remember {
         mutableStateOf(false)
     }
 
@@ -180,12 +177,23 @@ fun GameContent(game: GameRoom, gameViewModel: GameViewModel, navController: Nav
                 Button(onClick = { selectPlayer.value = true }) {
                     Text("Select player")
                 }
+                Button(onClick = { guessCard.value = true }) {
+                    Text("Guess card")
+                }
                 if (selectPlayer.value) {
                     Popup(popupPositionProvider = WindowCenterOffsetPositionProvider(),
 
                         onDismissRequest = { selectPlayer.value = false }) {
                         SelectPlayer(gameRoom = game, selectPlayer = selectPlayer)
                     }
+                }
+                if (guessCard.value) {
+                    Popup(popupPositionProvider = WindowCenterOffsetPositionProvider(),
+                        onDismissRequest = { selectPlayer.value = false }) {
+
+                        GuessCard(gameRoom = game, guessCard = guessCard)
+                    }
+
                 }
                 //Center card
                 Box(Modifier

@@ -24,6 +24,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import com.example.loveletter.R
@@ -32,13 +33,15 @@ import com.example.loveletter.domain.CardAvatar
 @Composable
 fun PlayingCard(
     modifier: Modifier = Modifier,
+    width: Dp = 160.dp,
+    height: Dp = 230.dp,
     cardAvatar: CardAvatar) {
     var infoWindow by remember {
         mutableStateOf(false)
     }
     Box(modifier = modifier
-        .width(160.dp)
-        .height(230.dp)
+        .width(width)
+        .height(height)
         .clip(RoundedCornerShape(5.dp))
         .border(1.dp, Color.Gray, RoundedCornerShape(5.dp))
         .border(2.dp, Color.LightGray, RoundedCornerShape(5.dp))
