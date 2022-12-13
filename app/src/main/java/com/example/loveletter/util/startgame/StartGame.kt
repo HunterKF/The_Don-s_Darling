@@ -9,6 +9,7 @@ import com.example.loveletter.dbGame
 import com.example.loveletter.domain.Deck
 import com.example.loveletter.domain.GameRoom
 import com.example.loveletter.domain.Player
+import com.example.loveletter.util.Tools
 import com.example.loveletter.util.user.HandleUser
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
@@ -54,7 +55,9 @@ class StartGame() {
             onSuccess: () -> Unit
         ) {
             var updatedGameRoom = gameRoom
+            val turn = (1..gameRoom.players.size).shuffled().random()
             gameRoom.players = assignTurns(gameRoom.players)
+            gameRoom.turn = turn
             /*OPTIONS: Make a random list, and pass it to 2 different functions to adjust the deck and the players.
             * or...
             * Make one function that returns a game room...*/
@@ -96,13 +99,13 @@ class StartGame() {
             gameRoom.players.forEach { player->
                 val size = gameRoom.deck.deck.size
                 if (player.turn) { player
-                    val randomCard = listOf(randomNumber(size), randomNumber(size))
+                    val randomCard = listOf(Tools.randomNumber(size), Tools.randomNumber(size))
                     randomCard.forEach {
                         player.hand.add(gameRoom.deck.deck[it])
                         gameRoom.deck.deck.remove(it)
                     }
                 } else {
-                    val randomCard = randomNumber(size)
+                    val randomCard = Tools.randomNumber(size)
                     player.hand.add(gameRoom.deck.deck[randomCard])
                     gameRoom.deck.deck.remove(randomCard)
                 }
@@ -111,9 +114,7 @@ class StartGame() {
             return gameRoom
         }
 
-        private fun randomNumber(size: Int): Int {
-            return (1..size).shuffled().random()
-        }
+
 
 
         suspend fun subscribeToRealtimeUpdates(roomCode: String): Flow<GameRoom> {

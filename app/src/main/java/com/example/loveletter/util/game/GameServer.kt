@@ -29,7 +29,6 @@ class GameServer {
                             updatedRoom?.let {
                                 room = updatedRoom
                             }
-
                         }
                         trySend(room)
                     }

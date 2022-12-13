@@ -2,7 +2,7 @@ package com.example.loveletter.domain
 
 data class GameRoom(
     val deck: Deck,
-    val turn: Int,
+    var turn: Int,
     val roomCode: String,
     val roomNickname: String,
     val playLimit: Int,

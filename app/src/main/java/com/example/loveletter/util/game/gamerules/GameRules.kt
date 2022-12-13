@@ -1,9 +1,11 @@
 package com.example.loveletter.util.game.gamerules
 
 import android.util.Log
+import com.example.loveletter.TAG
 import com.example.loveletter.dbGame
 import com.example.loveletter.domain.GameRoom
 import com.example.loveletter.domain.Player
+import com.example.loveletter.util.Tools
 
 val GAMERULES_TAG = "GameRules"
 
@@ -15,7 +17,9 @@ class GameRules {
                     player.hand.remove(card)
                     gameRoom.deck.discardDeck = addToDiscardPile(card, gameRoom = gameRoom)
                     gameRoom.deck.deck = removeFromDeck(card, gameRoom = gameRoom)
-                    gameRoom.players = changeTurn(gameRoom = gameRoom)
+                    gameRoom.players = endPlayerTurn(gameRoom = gameRoom)
+                    gameRoom.turn = changeGameTurn(turn = gameRoom.turn, size = gameRoom.players.size)
+                    gameRoom.players = changePlayerTurn(gameRoom = gameRoom)
                     dbGame.document(gameRoom.roomCode).set(gameRoom)
                         .addOnSuccessListener {
                             Log.d(GAMERULES_TAG, "Successfully updated game room")
@@ -26,6 +30,16 @@ class GameRules {
                 }
             }
 
+        }
+
+        private fun changeGameTurn(turn: Int, size: Int): Int {
+            var currentTurn = turn
+            currentTurn += 1
+            if (currentTurn > size) {
+                currentTurn = 1
+            }
+            Log.d(TAG, "Returning new turn: $currentTurn")
+            return currentTurn
         }
 
         private fun addToDiscardPile(card: Int, gameRoom: GameRoom): ArrayList<Int> {
@@ -44,8 +58,19 @@ class GameRules {
             /*This can be done in the UI.*/
         }
 
-        fun drawCard() {
+        private fun drawCard(gameRoom: GameRoom): Int {
+            val card = Tools.randomNumber(
+                size = 8
+            )
+            if (gameRoom.deck.deck.contains(card)) {
+                removeFromDeck(
+                    card = card,
+                    gameRoom = gameRoom
+                )
+            } else {
 
+            }
+            return card
         }
 
         fun endGame() {
@@ -64,7 +89,8 @@ class GameRules {
 
         }
 
-        fun changeTurn(gameRoom: GameRoom): List<Player> {
+
+        private fun endPlayerTurn(gameRoom: GameRoom): List<Player> {
             var currentTurn = 0
             gameRoom.players.forEach {
                 if (it.turn) {
@@ -75,9 +101,15 @@ class GameRules {
                     it.turn = false
                 }
             }
+            return gameRoom.players
+        }
+
+        private fun changePlayerTurn(gameRoom: GameRoom): List<Player> {
+            val card = drawCard(gameRoom = gameRoom)
             gameRoom.players.forEach {
-                if (it.turnOrder == currentTurn) {
+                if (it.turnOrder == gameRoom.turn) {
                     it.turn = true
+                    it.hand.add(card)
                 }
             }
             return gameRoom.players

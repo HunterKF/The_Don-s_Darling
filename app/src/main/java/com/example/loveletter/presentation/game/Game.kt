@@ -145,9 +145,9 @@ fun GameContent(game: GameRoom, gameViewModel: GameViewModel, navController: Nav
                         Log.d(TAG, "${it.nickName}'s turn is: ${it.turn}")
                         if (it.uid != HandleUser.returnUser()?.uid) {
                             val color by animateColorAsState(targetValue = if (it.turn) {
-                                Color.Red
+                                Color.Green
                             } else {
-                                Color.Blue
+                                Color.Yellow
                             })
                             val avatar = Avatar.setAvatar(it.avatar)
                             Box() {
@@ -158,7 +158,7 @@ fun GameContent(game: GameRoom, gameViewModel: GameViewModel, navController: Nav
                                         .scale(0.7f)
                                         .padding(8.dp)
                                         .clip(CircleShape)
-                                        .border(2.dp, color, CircleShape)
+                                        .border(4.dp, color, CircleShape)
                                         .align(Alignment.Center)
                                 )
                                 Spacer(Modifier.size(4.dp))
@@ -172,14 +172,15 @@ fun GameContent(game: GameRoom, gameViewModel: GameViewModel, navController: Nav
                         }
                     }
                 }
-                Text("game roomcode: ${game.roomCode}")
-                Text("viewmodel roomcode: ${gameViewModel.roomCode.value}")
                 Button(onClick = { selectPlayer.value = true }) {
                     Text("Select player")
                 }
                 Button(onClick = { guessCard.value = true }) {
                     Text("Guess card")
                 }
+                Text(
+                    text = "Current turn: ${game.turn}"
+                )
                 if (selectPlayer.value) {
                     Popup(popupPositionProvider = WindowCenterOffsetPositionProvider(),
 
