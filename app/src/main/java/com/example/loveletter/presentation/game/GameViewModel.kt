@@ -8,6 +8,8 @@ import com.example.loveletter.TAG
 import com.example.loveletter.domain.Player
 import com.example.loveletter.util.game.GameServer
 import com.example.loveletter.util.user.HandleUser
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
@@ -23,6 +25,8 @@ class GameViewModel : ViewModel() {
 
 
     val roomCode = mutableStateOf("1234")
+    val currentUser = Firebase.auth.currentUser
+
 
     fun observeRoom() {
         Log.d(TAG, "Observe room is being called again and again.")

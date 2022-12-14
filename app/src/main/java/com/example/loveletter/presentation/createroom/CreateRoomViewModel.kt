@@ -29,7 +29,10 @@ class CreateRoomViewModel : ViewModel() {
         viewModelScope.launch {
             StartGame.createRoom(roomNickname = roomNickname.value,
                 0,
-                listOf(HandleUser.createGamePlayer(playerChar.value, playerNickname.value)),
+                listOf(HandleUser.createGamePlayer(
+                    avatar = playerChar.value,
+                    nickname = playerNickname.value,
+                    isHost = true)),
                 roomCode.value)
             StartGame.subscribeToRealtimeUpdates(roomCode.value).map { gameRoom ->
 

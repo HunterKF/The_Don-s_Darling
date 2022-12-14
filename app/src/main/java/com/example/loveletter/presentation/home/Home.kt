@@ -1,15 +1,12 @@
 package com.example.loveletter.presentation
 
+import android.util.Log
 import android.widget.Toast
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material.OutlinedButton
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
+import androidx.compose.foundation.layout.*
+import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -18,6 +15,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.loveletter.R
 import com.example.loveletter.Screen
+import com.example.loveletter.TAG
 import com.example.loveletter.util.user.HandleUser
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
@@ -32,6 +30,7 @@ fun HomeScreen(navHostController: NavHostController) {
             HandleUser.createUserPlayer()
         }
     })
+    val array = arrayListOf(1, 1, 1, 2, 2, 4, 5)
 
     Surface(Modifier.fillMaxSize()) {
         Column(Modifier.padding(vertical = 48.dp, horizontal = 16.dp),
@@ -52,6 +51,31 @@ fun HomeScreen(navHostController: NavHostController) {
                     Toast.LENGTH_SHORT).show()
             }) {
                 Text(stringResource(R.string.test_name))
+            }
+            Row(
+                Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceEvenly
+            ) {
+                array.forEach {
+                    Text(
+                        it.toString()
+                    )
+                }
+            }
+            fun removeTarget(array: ArrayList<Int>, target: Int): ArrayList<Int> {
+                val index = array.indexOf(target)
+                array.removeAt(index)
+                return array
+            }
+            Button(onClick = {
+                val newArray = removeTarget(array = array, target = 2)
+                newArray.forEach {
+                    Log.d(TAG, "Remaining item: $it")
+                }
+            }) {
+                Text(
+                    "Remove"
+                )
             }
         }
     }

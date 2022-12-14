@@ -18,7 +18,7 @@ import kotlinx.coroutines.flow.callbackFlow
 class HandleUser {
     companion object {
         private val currentUser = Firebase.auth.currentUser
-        fun createGamePlayer(avatar: Int, nickname: String): Player {
+        fun createGamePlayer(avatar: Int, nickname: String, isHost: Boolean): Player {
             return Player(
                 avatar = avatar,
                 nickName = nickname,
@@ -27,7 +27,10 @@ class HandleUser {
                 turn = false,
                 turnOrder = 0,
                 hand = arrayListOf(),
-                isHost = false
+                isHost = isHost,
+                isAlive = true,
+                isWinner = false,
+                wins = 0
             )
         }
 

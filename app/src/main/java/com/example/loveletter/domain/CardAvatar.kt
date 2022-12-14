@@ -1,7 +1,9 @@
 package com.example.loveletter.domain
 
+import android.util.Log
 import androidx.annotation.DrawableRes
 import com.example.loveletter.R
+import com.example.loveletter.TAG
 
 sealed class CardAvatar(
     val cardName: String,
@@ -85,6 +87,7 @@ sealed class CardAvatar(
 
     companion object {
         fun setCardAvatar(code: Int?): CardAvatar {
+            Log.d(TAG, "The given code is: $code")
             return when (code) {
                 1 -> Guard
                 2 -> Priest

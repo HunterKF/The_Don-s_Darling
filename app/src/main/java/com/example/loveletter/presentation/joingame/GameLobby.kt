@@ -68,7 +68,7 @@ fun GameLobby(
                 BackHandler() {
                     JoinGame.leaveGame(gameLobbyViewModel.roomCode.value,
                         HandleUser.createGamePlayer(gameLobbyViewModel.playerChar.value,
-                            gameLobbyViewModel.playerNickname.value))
+                            gameLobbyViewModel.playerNickname.value, isHost = false))
                     HandleUser.deleteUserGameRoom(
                         loaded.gameRoom.roomCode,
                         loaded.gameRoom.roomNickname,
@@ -97,7 +97,8 @@ private fun GameLobbyContent(
                 .align(Alignment.TopStart)
                 .padding(4.dp),
                 onClick = {
-                    JoinGame.leaveGame(gameRoom.roomCode, HandleUser.createGamePlayer(0, ""))
+                    JoinGame.leaveGame(gameRoom.roomCode,
+                        HandleUser.createGamePlayer(avatar = 0, nickname = "", isHost = false))
                     HandleUser.deleteUserGameRoom(
                         gameRoom.roomCode,
                         gameRoom.roomNickname,

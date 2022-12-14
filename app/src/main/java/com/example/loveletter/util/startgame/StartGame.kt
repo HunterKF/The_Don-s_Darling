@@ -10,6 +10,7 @@ import com.example.loveletter.domain.Deck
 import com.example.loveletter.domain.GameRoom
 import com.example.loveletter.domain.Player
 import com.example.loveletter.util.Tools
+import com.example.loveletter.util.game.gamerules.GameRules
 import com.example.loveletter.util.user.HandleUser
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
@@ -38,7 +39,9 @@ class StartGame() {
                 players = players,
                 roomCode = roomCode,
                 start = false,
-                host = currentUser.uid
+                host = currentUser.uid,
+                roundOver = false,
+                gameOver = false
             )
             try {
                 dbGame.document(roomCode)
@@ -52,11 +55,11 @@ class StartGame() {
         fun startGame(
             gameRoom: GameRoom,
             context: Context,
-            onSuccess: () -> Unit
+            onSuccess: () -> Unit,
         ) {
             var updatedGameRoom = gameRoom
             val turn = (1..gameRoom.players.size).shuffled().random()
-            gameRoom.players = assignTurns(gameRoom.players)
+            gameRoom.players = GameRules.assignTurns(gameRoom.players)
             gameRoom.turn = turn
             /*OPTIONS: Make a random list, and pass it to 2 different functions to adjust the deck and the players.
             * or...
@@ -64,7 +67,7 @@ class StartGame() {
 
             gameRoom.start = true
 
-            updatedGameRoom = dealCards(gameRoom)
+            updatedGameRoom = GameRules.dealCards(gameRoom)
 
             updatedGameRoom.players.forEach {
                 HandleUser.addGameToPlayer(it.uid, gameRoom = updatedGameRoom)
@@ -82,37 +85,7 @@ class StartGame() {
 
         }
 
-        private fun assignTurns(list: List<Player>): List<Player> {
-            val turn = mutableStateOf(1)
-            list.forEach {
-                it.turnOrder = turn.value
-                if (it.turnOrder == 1) {
-                    it.turn = true
-                }
-                turn.value = turn.value +1
-            }
-            return list
-        }
 
-        private fun dealCards(gameRoom: GameRoom): GameRoom {
-
-            gameRoom.players.forEach { player->
-                val size = gameRoom.deck.deck.size
-                if (player.turn) { player
-                    val randomCard = listOf(Tools.randomNumber(size), Tools.randomNumber(size))
-                    randomCard.forEach {
-                        player.hand.add(gameRoom.deck.deck[it])
-                        gameRoom.deck.deck.remove(it)
-                    }
-                } else {
-                    val randomCard = Tools.randomNumber(size)
-                    player.hand.add(gameRoom.deck.deck[randomCard])
-                    gameRoom.deck.deck.remove(randomCard)
-                }
-
-            }
-            return gameRoom
-        }
 
 
 

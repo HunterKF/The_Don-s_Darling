@@ -1,6 +1,7 @@
 package com.example.loveletter.presentation.game
 
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateDpAsState
@@ -25,6 +26,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Popup
@@ -34,6 +36,7 @@ import com.example.loveletter.Screen
 import com.example.loveletter.TAG
 import com.example.loveletter.domain.*
 import com.example.loveletter.presentation.game.util.*
+import com.example.loveletter.util.Tools
 import com.example.loveletter.util.game.gamerules.GameRules
 import com.example.loveletter.util.user.HandleUser
 import kotlinx.coroutines.launch
@@ -70,12 +73,51 @@ fun GameContent(game: GameRoom, gameViewModel: GameViewModel, navController: Nav
 
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
+    val context = LocalContext.current
     val bottomSheetScaffoldState = rememberBottomSheetScaffoldState(
         bottomSheetState = BottomSheetState(BottomSheetValue.Collapsed)
     )
 
     var offsetX by remember { mutableStateOf(0f) }
     var offsetY by remember { mutableStateOf(0f) }
+
+    LaunchedEffect(key1 = game.turn) {
+        val isHost = Tools.getHost(game.players, gameViewModel.currentUser)
+        Log.d("LaunchedEffect", "LaunchedEffect has been called. ")
+        game.players.forEach {  player ->
+            Log.d("LaunchedEffect", "Going through players ")
+            Log.d("LaunchedEffect", "Current player: ${player.nickName} ")
+            Log.d("LaunchedEffect", "Current player turn: ${player.turn} ")
+            Log.d("LaunchedEffect", "Current player hand: ${player.hand} ")
+
+            if (player.turn && player.hand.size < 2) {
+                Log.d("LaunchedEffect", "Matching player has been found: ${player.nickName}")
+                GameRules.onTurn(
+                    gameRoom = game,
+                    player = player
+                )
+            }
+            Log.d("LaunchedEffect", "LaunchedEffect is finished.")
+
+        }
+
+
+        val playerIsPlaying = Tools.checkCards(game.players)
+
+        if (game.deck.deck.isEmpty() && !playerIsPlaying) {
+            GameRules.endRound(gameRoom = game)
+            var winner = Player()
+            game.players.forEach {
+                if (it.isWinner) {
+                    winner = it
+                }
+            }
+            Toast.makeText(context, "Game finished! Winner is: ${winner.nickName}", Toast.LENGTH_SHORT).show()
+        }
+        if (game.roundOver && isHost) {
+            GameRules.startNewGame(gameRoom = game)
+        }
+    }
     val currentPlayer by remember {
         mutableStateOf(HandleUser.getCurrentUser(game.players,
             currentUser = HandleUser.returnUser()!!.uid))
@@ -181,6 +223,9 @@ fun GameContent(game: GameRoom, gameViewModel: GameViewModel, navController: Nav
                 Text(
                     text = "Current turn: ${game.turn}"
                 )
+                Text(modifier = Modifier,
+                    text = game.deck.deck.toString()
+                )
                 if (selectPlayer.value) {
                     Popup(popupPositionProvider = WindowCenterOffsetPositionProvider(),
 
@@ -201,7 +246,8 @@ fun GameContent(game: GameRoom, gameViewModel: GameViewModel, navController: Nav
                     .fillMaxWidth()
                     .weight(0.6f)) {
                     Text(modifier = Modifier.align(Alignment.CenterEnd),
-                        text = game.deck.deck.size.toString())
+                        text = game.deck.deck.size.toString()
+                    )
                     //Deck
                     Box(Modifier
                         .padding(start = 8.dp)
@@ -229,7 +275,7 @@ fun GameContent(game: GameRoom, gameViewModel: GameViewModel, navController: Nav
                     }
                     Box(modifier = Modifier.align(Alignment.Center)) {
 
-                        if (game.deck.discardDeck!!.isEmpty()) {
+                        if (game.deck.discardDeck.isEmpty()) {
                             Box(Modifier
                                 .width(160.dp)
                                 .height(230.dp)
