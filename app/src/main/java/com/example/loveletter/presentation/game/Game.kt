@@ -83,8 +83,13 @@ fun GameContent(game: GameRoom, gameViewModel: GameViewModel, navController: Nav
 
     LaunchedEffect(key1 = game.turn) {
         val isHost = Tools.getHost(game.players, gameViewModel.currentUser)
+
+        if (gameViewModel.currentPlayer.value.uid == "") {
+            gameViewModel.currentPlayer.value =
+                Tools.getPlayer(game.players, gameViewModel.currentUser)
+        }
         Log.d("LaunchedEffect", "LaunchedEffect has been called. ")
-        game.players.forEach {  player ->
+        game.players.forEach { player ->
             Log.d("LaunchedEffect", "Going through players ")
             Log.d("LaunchedEffect", "Current player: ${player.nickName} ")
             Log.d("LaunchedEffect", "Current player turn: ${player.turn} ")
@@ -112,23 +117,22 @@ fun GameContent(game: GameRoom, gameViewModel: GameViewModel, navController: Nav
                     winner = it
                 }
             }
-            Toast.makeText(context, "Game finished! Winner is: ${winner.nickName}", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context,
+                "Game finished! Winner is: ${winner.nickName}",
+                Toast.LENGTH_SHORT).show()
         }
         if (game.roundOver && isHost) {
             GameRules.startNewGame(gameRoom = game)
         }
+
     }
     val currentPlayer by remember {
         mutableStateOf(HandleUser.getCurrentUser(game.players,
             currentUser = HandleUser.returnUser()!!.uid))
     }
 
-    var selectPlayer = remember {
-        mutableStateOf(false)
-    }
-    val guessCard = remember {
-        mutableStateOf(false)
-    }
+
+
 
     BackHandler(true) {
         Log.d(TAG, "HEYYYY YOU GUYYYYYSSSSS")
@@ -214,10 +218,10 @@ fun GameContent(game: GameRoom, gameViewModel: GameViewModel, navController: Nav
                         }
                     }
                 }
-                Button(onClick = { selectPlayer.value = true }) {
+                Button(onClick = { gameViewModel.selectPlayerAlert.value = true }) {
                     Text("Select player")
                 }
-                Button(onClick = { guessCard.value = true }) {
+                Button(onClick = { gameViewModel.guessCardAlert.value = true }) {
                     Text("Guess card")
                 }
                 Text(
@@ -226,18 +230,22 @@ fun GameContent(game: GameRoom, gameViewModel: GameViewModel, navController: Nav
                 Text(modifier = Modifier,
                     text = game.deck.deck.toString()
                 )
-                if (selectPlayer.value) {
+                if (gameViewModel.selectPlayerAlert.value) {
                     Popup(popupPositionProvider = WindowCenterOffsetPositionProvider(),
 
-                        onDismissRequest = { selectPlayer.value = false }) {
-                        SelectPlayer(gameRoom = game, selectPlayer = selectPlayer, gameViewModel = gameViewModel)
+                        onDismissRequest = { gameViewModel.selectPlayerAlert.value = false }) {
+                        SelectPlayer(gameRoom = game,
+                            selectPlayer = gameViewModel.selectPlayerAlert,
+                            gameViewModel = gameViewModel)
                     }
                 }
-                if (guessCard.value) {
+                if (gameViewModel.guessCardAlert.value) {
                     Popup(popupPositionProvider = WindowCenterOffsetPositionProvider(),
-                        onDismissRequest = { selectPlayer.value = false }) {
+                        onDismissRequest = { gameViewModel.selectPlayerAlert.value = false }) {
 
-                        GuessCard(gameRoom = game, guessCard = guessCard, gameViewModel = gameViewModel)
+                        GuessCard(gameRoom = game,
+                            guessCard = gameViewModel.guessCardAlert,
+                            gameViewModel = gameViewModel)
                     }
 
                 }
@@ -344,7 +352,7 @@ fun GameContent(game: GameRoom, gameViewModel: GameViewModel, navController: Nav
                                                     OutlinedButton(modifier = Modifier.align(
                                                         Alignment.BottomCenter),
                                                         onClick = {
-                                                            GameRules.onPlay(card = cardNumber,
+                                                            GameRules.handlePlayedCard(card = cardNumber,
                                                                 player = player,
                                                                 gameRoom = game)
                                                         }) {

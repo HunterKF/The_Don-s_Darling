@@ -28,7 +28,7 @@ class CreateRoomViewModel : ViewModel() {
     fun observeRoom() {
         viewModelScope.launch {
             StartGame.createRoom(roomNickname = roomNickname.value,
-                0,
+                5,
                 listOf(HandleUser.createGamePlayer(
                     avatar = playerChar.value,
                     nickname = playerNickname.value,

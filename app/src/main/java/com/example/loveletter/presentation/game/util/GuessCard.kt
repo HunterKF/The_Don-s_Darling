@@ -1,15 +1,11 @@
 package com.example.loveletter.presentation.game.util
 
-import android.text.Layout
 import android.util.Log
-import android.widget.Toast
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.animateOffsetAsState
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.*
 import androidx.compose.foundation.selection.selectable
@@ -24,12 +20,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.zIndex
 import com.example.loveletter.TAG
 import com.example.loveletter.domain.CardAvatar
 import com.example.loveletter.domain.GameRoom
@@ -137,9 +131,9 @@ fun GuessCard(gameRoom: GameRoom, guessCard: MutableState<Boolean>, gameViewMode
                                             onClick = {
                                                 selectedIndex = index
                                                 Log.d(TAG, "selectedIndex: $selectedIndex")
-                                                gameViewModel.guessCard.value = index
+                                                gameViewModel.guessedCard.value = index
                                                 Log.d(TAG,
-                                                    "Player guessed: ${gameViewModel.guessCard.value}")
+                                                    "Player guessed: ${gameViewModel.guessCardAlert.value}")
                                             }
                                         )
 

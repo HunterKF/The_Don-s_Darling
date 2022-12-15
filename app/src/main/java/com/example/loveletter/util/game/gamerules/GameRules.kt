@@ -12,26 +12,16 @@ val GAMERULES_TAG = "GameRules"
 
 class GameRules {
     companion object {
-        fun onPlay(card: Int, player: Player, gameRoom: GameRoom) {
+        fun handlePlayedCard(card: Int, player: Player, gameRoom: GameRoom) {
 
             gameRoom.players.forEach {
                 if (it == player) {
                     player.hand.remove(card)
                     gameRoom.deck.discardDeck = addToDiscardPile(card, gameRoom = gameRoom)
 //                    gameRoom.deck.deck = removeFromDeck(card, gameRoom = gameRoom)
-                    gameRoom.players = endPlayerTurn(gameRoom = gameRoom)
-                    if (!gameRoom.gameOver) {
-                        gameRoom.turn =
-                            changeGameTurn(turn = gameRoom.turn, size = gameRoom.players.size)
-                        gameRoom.players = changePlayerTurn(gameRoom = gameRoom)
-                    }
-                    dbGame.document(gameRoom.roomCode).set(gameRoom)
-                        .addOnSuccessListener {
-                            Log.d(GAMERULES_TAG, "Successfully updated game room")
-                        }
-                        .addOnFailureListener {
-                            Log.d(GAMERULES_TAG, "Failed to update room: ${it.localizedMessage}")
-                        }
+//                    gameRoom.players = endPlayerTurn(gameRoom = gameRoom)
+
+                    updateGame(gameRoom = gameRoom)
                 }
             }
         }
@@ -132,10 +122,11 @@ class GameRules {
             val winner = checkForWinner(gameRoom.players, gameRoom.playLimit)
             winner?.let {
                 gameRoom.gameOver = true
+                if (gameRoom.gameOver && gameRoom.roundOver) {
+                    Log.d(TAG, "The game should be over! The winner is: ${winner.nickName}")
+                }
             }
-            if (gameRoom.gameOver && gameRoom.roundOver) {
-                /*TODO - End the whole game*/
-            }
+
             updateGame(gameRoom)
         }
 
@@ -174,7 +165,7 @@ class GameRules {
 
         private fun checkForWinner(players: List<Player>, playLimit: Int): Player? {
             val filterArray = players.filter {
-                it.wins == playLimit
+                it.wins >= playLimit
             }
             return if (filterArray.isEmpty()) {
                 null
@@ -188,16 +179,28 @@ class GameRules {
 
         }
 
-        fun eliminatePlayer() {
-
+        fun eliminatePlayer(gameRoom: GameRoom, player: Player) {
+            /*TODO - Update isAlive to false*/
+            /*TODO - Add player's hand to discard pile*/
+            /*TODO - Update gameRoom's player list*/
         }
 
         fun selectPlayer() {
 
         }
 
+        fun onEnd(gameRoom: GameRoom) {
+            gameRoom.players = endPlayerTurn(gameRoom = gameRoom)
+            if (!gameRoom.gameOver) {
+                gameRoom.turn =
+                    changeGameTurn(turn = gameRoom.turn, size = gameRoom.players.size)
+                gameRoom.players = changePlayerTurn(gameRoom = gameRoom)
+            }
+            updateGame(gameRoom = gameRoom)
+        }
 
-        private fun endPlayerTurn(gameRoom: GameRoom): List<Player> {
+
+         fun endPlayerTurn(gameRoom: GameRoom): List<Player> {
             var currentTurn = 0
             gameRoom.players.forEach {
                 if (it.turn) {
