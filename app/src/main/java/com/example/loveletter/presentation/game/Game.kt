@@ -80,8 +80,12 @@ fun GameContent(game: GameRoom, gameViewModel: GameViewModel, navController: Nav
 
     var offsetX by remember { mutableStateOf(0f) }
     var offsetY by remember { mutableStateOf(0f) }
+    val currentPlayer by remember {
+        mutableStateOf(HandleUser.getCurrentUser(game.players,
+            currentUser = HandleUser.returnUser()!!.uid))
+    }
 
-    LaunchedEffect(key1 = game.turn) {
+    LaunchedEffect(key1 = game) {
         val isHost = Tools.getHost(game.players, gameViewModel.currentUser)
 
         if (gameViewModel.currentPlayer.value.uid == "") {
@@ -124,12 +128,13 @@ fun GameContent(game: GameRoom, gameViewModel: GameViewModel, navController: Nav
         if (game.roundOver && isHost) {
             GameRules.startNewGame(gameRoom = game)
         }
+        if (!currentPlayer.isAlive) {
+            gameViewModel.eliminate(gameRoom = game, player = currentPlayer)
+        }
+
 
     }
-    val currentPlayer by remember {
-        mutableStateOf(HandleUser.getCurrentUser(game.players,
-            currentUser = HandleUser.returnUser()!!.uid))
-    }
+
 
 
 
@@ -197,6 +202,14 @@ fun GameContent(game: GameRoom, gameViewModel: GameViewModel, navController: Nav
                             })
                             val avatar = Avatar.setAvatar(it.avatar)
                             Box() {
+                                if (!it.isAlive) {
+                                    Icon(
+                                        Icons.Rounded.Close,
+                                        null,
+                                        tint = Color.Red,
+                                        modifier = Modifier.align(Alignment.Center).zIndex(1f)
+                                    )
+                                }
                                 Image(
                                     painter = painterResource(id = avatar.avatar),
                                     contentDescription = avatar.description,
@@ -231,17 +244,20 @@ fun GameContent(game: GameRoom, gameViewModel: GameViewModel, navController: Nav
                     text = game.deck.deck.toString()
                 )
                 if (gameViewModel.selectPlayerAlert.value) {
-                    Popup(popupPositionProvider = WindowCenterOffsetPositionProvider(),
-
-                        onDismissRequest = { gameViewModel.selectPlayerAlert.value = false }) {
+                    Popup(popupPositionProvider = WindowCenterOffsetPositionProvider()) {
                         SelectPlayer(gameRoom = game,
-                            selectPlayer = gameViewModel.selectPlayerAlert,
+                            gameViewModel = gameViewModel)
+                    }
+                }
+                if (gameViewModel.resultAlert.value) {
+                    Popup(popupPositionProvider = WindowCenterOffsetPositionProvider(),
+                        onDismissRequest = { gameViewModel.selectPlayerAlert.value = false }) {
+                        ResultMessage(message = gameViewModel.resultMessage.value,
                             gameViewModel = gameViewModel)
                     }
                 }
                 if (gameViewModel.guessCardAlert.value) {
-                    Popup(popupPositionProvider = WindowCenterOffsetPositionProvider(),
-                        onDismissRequest = { gameViewModel.selectPlayerAlert.value = false }) {
+                    Popup(popupPositionProvider = WindowCenterOffsetPositionProvider()) {
 
                         GuessCard(gameRoom = game,
                             guessCard = gameViewModel.guessCardAlert,
@@ -320,64 +336,77 @@ fun GameContent(game: GameRoom, gameViewModel: GameViewModel, navController: Nav
                 ) {
                     game.players.forEach { player ->
                         if (player.uid == HandleUser.returnUser()!!.uid) {
-                            player.hand.let {
-                                LazyRow(
-                                    Modifier.fillMaxWidth(),
-                                    horizontalArrangement = Arrangement.Center
-                                ) {
-                                    itemsIndexed(it) { index, cardNumber ->
-                                        if (it.size == 2) {
+                            if(player.hand.isEmpty()) {
+                                Column() {
+                                    Text(
+                                        text = "You were eliminated",
+                                        style = MaterialTheme.typography.h6
+                                    )
+                                    Text(
+                                        text = "Please wait till a new round begins.",
+                                        style = MaterialTheme.typography.body1
+                                    )
+                                }
+                            } else {
+                                player.hand.let {
+                                    LazyRow(
+                                        Modifier.fillMaxWidth(),
+                                        horizontalArrangement = Arrangement.Center
+                                    ) {
+                                        itemsIndexed(it) { index, cardNumber ->
+                                            if (it.size == 2) {
 
-                                            val scale by animateFloatAsState(targetValue = if (selectedIndex == index) 0.8f else 0.6f)
-                                            val offset by animateDpAsState(targetValue = if (selectedIndex == index) (-50).dp else 0.dp)
-                                            Box(contentAlignment = Alignment.Center) {
-                                                PlayingCard(cardAvatar = CardAvatar.setCardAvatar(
-                                                    cardNumber),
-                                                    modifier = Modifier
-                                                        .scale(scale)
-                                                        .offset(y = offset)
-                                                        .selectable(
-                                                            selected = selectedIndex == index,
+                                                val scale by animateFloatAsState(targetValue = if (selectedIndex == index) 0.8f else 0.6f)
+                                                val offset by animateDpAsState(targetValue = if (selectedIndex == index) (-50).dp else 0.dp)
+                                                Box(contentAlignment = Alignment.Center) {
+                                                    PlayingCard(cardAvatar = CardAvatar.setCardAvatar(
+                                                        cardNumber),
+                                                        modifier = Modifier
+                                                            .scale(scale)
+                                                            .offset(y = offset)
+                                                            .selectable(
+                                                                selected = selectedIndex == index,
+                                                                onClick = {
+                                                                    selectedIndex =
+                                                                        if (selectedIndex == index) {
+                                                                            -1
+                                                                        } else {
+                                                                            index
+                                                                        }
+                                                                }
+                                                            )
+                                                    )
+                                                    if (selectedIndex == index) {
+                                                        OutlinedButton(modifier = Modifier.align(
+                                                            Alignment.BottomCenter),
                                                             onClick = {
-                                                                selectedIndex =
-                                                                    if (selectedIndex == index) {
-                                                                        -1
-                                                                    } else {
-                                                                        index
-                                                                    }
-                                                            }
-                                                        )
-                                                )
-                                                if (selectedIndex == index) {
-                                                    OutlinedButton(modifier = Modifier.align(
-                                                        Alignment.BottomCenter),
-                                                        onClick = {
-                                                            GameRules.handlePlayedCard(card = cardNumber,
-                                                                player = player,
-                                                                gameRoom = game)
-                                                        }) {
-                                                        Text("Play")
+                                                                gameViewModel.onPlay(card = cardNumber,
+                                                                    player = player,
+                                                                    gameRoom = game)
+                                                            }) {
+                                                            Text("Play")
+                                                        }
                                                     }
+                                                }
+
+                                            } else {
+                                                var selected by remember {
+                                                    mutableStateOf(false)
+                                                }
+                                                val scale by animateFloatAsState(targetValue = if (selected) 0.8f else 0.6f)
+                                                Box(contentAlignment = Alignment.Center) {
+                                                    PlayingCard(cardAvatar = CardAvatar.setCardAvatar(
+                                                        cardNumber),
+                                                        modifier = Modifier
+                                                            .scale(scale)
+                                                            .clickable {
+                                                                selected = !selected
+                                                            }
+                                                    )
                                                 }
                                             }
 
-                                        } else {
-                                            var selected by remember {
-                                                mutableStateOf(false)
-                                            }
-                                            val scale by animateFloatAsState(targetValue = if (selected) 0.8f else 0.6f)
-                                            Box(contentAlignment = Alignment.Center) {
-                                                PlayingCard(cardAvatar = CardAvatar.setCardAvatar(
-                                                    cardNumber),
-                                                    modifier = Modifier
-                                                        .scale(scale)
-                                                        .clickable {
-                                                            selected = !selected
-                                                        }
-                                                )
-                                            }
                                         }
-
                                     }
                                 }
                             }

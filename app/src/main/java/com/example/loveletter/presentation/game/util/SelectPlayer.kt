@@ -37,10 +37,12 @@ import com.google.firebase.ktx.Firebase
 @Composable
 fun SelectPlayer(
     gameRoom: GameRoom,
-    selectPlayer: MutableState<Boolean>,
     gameViewModel: GameViewModel,
 ) {
     val context = LocalContext.current
+    var selectedPlayer = remember { mutableStateOf(Player()) }
+
+    Log.d(TAG, "HELLO")
     Box(
         modifier = Modifier
             .fillMaxWidth(1f)
@@ -67,42 +69,44 @@ fun SelectPlayer(
                 var selectedIndex by remember {
                     mutableStateOf(-1)
                 }
-                var index = mutableStateOf(1)
-                var selectedPlayer = mutableStateOf(Player())
+//                var index = remember { mutableStateOf(2) }
 
                 gameRoom.players.forEach {
-                    val color =
-                        if (it == selectedPlayer.value) Color.Blue.copy(1f)
-                        else Color.Red
+
                     if (it.uid != gameViewModel.currentUser!!.uid) {
                         val avatar = Avatar.setAvatar(it.avatar)
-                        val currentIndex = index.value
+                        val color by animateColorAsState(targetValue = if (it == selectedPlayer.value) Color.Blue.copy(
+                            1f)
+                        else Color.Red)
+
+                        val dp by animateDpAsState(targetValue = if (it == selectedPlayer.value) 130.dp else 120.dp)
+//                        val currentIndex = index.value
 
                         Card(
                             modifier = Modifier
-                                .height(100.dp)
-                                .aspectRatio(1f)
+                                .height(dp)
                                 .weight(1f)
                                 .selectable(
-                                    selected = selectedIndex == index.value,
+                                    selected = it.uid == selectedPlayer.value.uid,
                                     onClick = {
-                                        selectedIndex = index.value
                                         selectedPlayer.value = it
                                         Toast
                                             .makeText(context,
                                                 "It has been selected. Player: ${selectedPlayer.value}",
                                                 Toast.LENGTH_SHORT)
                                             .show()
-                                        Log.d(TAG, "currentIndex: $currentIndex")
-                                        Log.d(TAG, "index: ${index.value}")
-                                        Log.d(TAG, "selectedIndex: $selectedIndex")
-                                        Log.d(TAG, "color2: $color")
+                                        Log.d(TAG, "It has been clicked.")
+//                                        Log.d(TAG, "currentIndex: $currentIndex")
+//                                        Log.d(TAG, "index: ${index.value}")
+//                                        Log.d(TAG, "selectedIndex: $selectedIndex")
+//                                        Log.d(TAG, "color2: $color")
                                     }
                                 ),
                         ) {
                             Column(
                                 horizontalAlignment = Alignment.CenterHorizontally,
-                                verticalArrangement = Arrangement.Center
+                                verticalArrangement = Arrangement.Center,
+                                modifier = Modifier.fillMaxHeight()
                             ) {
                                 Image(
                                     painter = painterResource(id = avatar.avatar),
@@ -115,7 +119,7 @@ fun SelectPlayer(
                                 Text(text = it.nickName)
                             }
                         }
-                        index.value += 1
+
                     }
                 }
 
@@ -135,7 +139,10 @@ fun SelectPlayer(
                         "Cancel"
                     )
                 }*/
-                IconButton(onClick = { /*TODO*/ },
+                IconButton(onClick = {
+                    gameViewModel.onSelectPlayer(selectedPlayer = selectedPlayer.value,
+                        gameRoom = gameRoom)
+                },
                     modifier = Modifier
                         .weight(0.5f)
                         .padding(horizontal = 16.dp)
@@ -151,13 +158,3 @@ fun SelectPlayer(
 }
 
 
-@Preview(showSystemUi = true)
-@Composable
-fun Preview1() {
-    val gameRoom = GameRoom()
-    val selectPlayer = remember { mutableStateOf(true) }
-    val gameViewModel = GameViewModel()
-    Surface {
-        SelectPlayer(gameRoom, selectPlayer, gameViewModel)
-    }
-}

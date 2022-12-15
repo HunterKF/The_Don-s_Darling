@@ -38,37 +38,70 @@ class GameViewModel : ViewModel() {
     val resultAlert = mutableStateOf(false)
     val resultMessage = mutableStateOf("")
 
-    fun onPlay(card: Int, gameRoom: GameRoom) {
+
+
+    fun onPlay(card: Int, gameRoom: GameRoom, player: Player) {
         playedCard.value = card
         when (playedCard.value) {
             1 -> {
-
+                GameRules.handlePlayedCard(
+                    card = playedCard.value,
+                    player = player,
+                    gameRoom = gameRoom
+                )
             }
             2 -> {
                 selectPlayerAlert.value = true
+                GameRules.handlePlayedCard(
+                    card = playedCard.value,
+                    player = player,
+                    gameRoom = gameRoom
+                )
             }
             3 -> {
                 selectPlayerAlert.value = true
                 GameRules.handlePlayedCard(
                     card = playedCard.value,
-                    player = currentPlayer.value,
+                    player = player,
                     gameRoom = gameRoom
                 )
             }
             4 -> {
-
+                GameRules.handlePlayedCard(
+                    card = playedCard.value,
+                    player = player,
+                    gameRoom = gameRoom
+                )
             }
             5 -> {
                 selectPlayerAlert.value = true
+                GameRules.handlePlayedCard(
+                    card = playedCard.value,
+                    player = player,
+                    gameRoom = gameRoom
+                )
             }
             6 -> {
                 selectPlayerAlert.value = true
+                GameRules.handlePlayedCard(
+                    card = playedCard.value,
+                    player = player,
+                    gameRoom = gameRoom
+                )
             }
             7 -> {
-
+                GameRules.handlePlayedCard(
+                    card = playedCard.value,
+                    player = player,
+                    gameRoom = gameRoom
+                )
             }
             8 -> {
-
+                GameRules.handlePlayedCard(
+                    card = playedCard.value,
+                    player = player,
+                    gameRoom = gameRoom
+                )
             }
         }
         /*TODO - Add played card into the discard pile*/
@@ -82,9 +115,11 @@ class GameViewModel : ViewModel() {
         this.selectedPlayer.value = selectedPlayer
         when (playedCard.value) {
             1 -> {
+                GameRules.onEnd(gameRoom = gameRoom)
 
             }
             2 -> {
+                GameRules.onEnd(gameRoom = gameRoom)
 
             }
             3 -> {
@@ -97,15 +132,19 @@ class GameViewModel : ViewModel() {
                     gameRoom.players = result.players!!
                 }
                 resultMessage.value = result.message
+                resultAlert.value = true
                 GameRules.onEnd(gameRoom = gameRoom)
             }
             5 -> {
+                GameRules.onEnd(gameRoom = gameRoom)
 
             }
             6 -> {
+                GameRules.onEnd(gameRoom = gameRoom)
 
             }
         }
+        selectPlayerAlert.value = false
     }
 
 
@@ -139,5 +178,12 @@ class GameViewModel : ViewModel() {
 
     fun assignRoomCode(roomCode2: String) {
         roomCode.value = roomCode2
+    }
+
+    fun eliminate(gameRoom: GameRoom, player: Player) {
+        GameRules.eliminatePlayer(
+            gameRoom = gameRoom,
+            player = player
+        )
     }
 }

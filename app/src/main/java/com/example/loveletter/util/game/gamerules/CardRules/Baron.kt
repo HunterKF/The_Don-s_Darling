@@ -12,16 +12,15 @@ class Baron {
             when {
                 player1Card > player2Card -> {
                     player2.isAlive = false
-                    message = "${player1.nickName} wins! ${player2.nickName} was eliminated."
+                    message = "${player1.nickName} wins! ${player2.nickName} was eliminated. The cards were $player1Card and $player2Card"
                 }
                 player1Card < player2Card -> {
                     player1.isAlive = false
-                    message = "${player2.nickName} wins! ${player1.nickName} was eliminated."
-
+                    message = "${player2.nickName} wins! ${player1.nickName} was eliminated. The cards were $player1Card and $player2Card"
                 }
                 player1Card == player2Card -> {
                     message =
-                        "No one died? ${player1.nickName} and ${player2.nickName} live to tell another tale."
+                        "No one died? ${player1.nickName} and ${player2.nickName} live to tell another tale. The cards were $player1Card and $player2Card"
                 }
             }
             players.forEach {

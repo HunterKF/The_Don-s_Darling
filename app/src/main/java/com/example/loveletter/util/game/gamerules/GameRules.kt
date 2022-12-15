@@ -180,9 +180,8 @@ class GameRules {
         }
 
         fun eliminatePlayer(gameRoom: GameRoom, player: Player) {
-            /*TODO - Update isAlive to false*/
-            /*TODO - Add player's hand to discard pile*/
-            /*TODO - Update gameRoom's player list*/
+            gameRoom.deck.discardDeck = addToDiscardPile(player.hand.first(), gameRoom)
+            updateGame(gameRoom)
         }
 
         fun selectPlayer() {
@@ -200,7 +199,7 @@ class GameRules {
         }
 
 
-         fun endPlayerTurn(gameRoom: GameRoom): List<Player> {
+         private fun endPlayerTurn(gameRoom: GameRoom): List<Player> {
             var currentTurn = 0
             gameRoom.players.forEach {
                 if (it.turn) {
