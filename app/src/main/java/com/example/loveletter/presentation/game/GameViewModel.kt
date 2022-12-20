@@ -132,6 +132,11 @@ class GameViewModel : ViewModel() {
 
             }
             3 -> {
+                gameRoom.players.forEach {
+                    if (currentPlayer.value.uid == it.uid) {
+                        currentPlayer.value = it
+                    }
+                }
                 val result = Baron.compareCards(
                     player1 = currentPlayer.value,
                     player2 = selectedPlayer,
@@ -145,6 +150,11 @@ class GameViewModel : ViewModel() {
                 GameRules.onEnd(gameRoom = gameRoom)
             }
             5 -> {
+                gameRoom.players.forEach {
+                    if (currentPlayer.value.uid == it.uid) {
+                        currentPlayer.value = it
+                    }
+                }
                 val result = Prince.discardAndDraw(
                     player1 = currentPlayer.value,
                     player2 = selectedPlayer,

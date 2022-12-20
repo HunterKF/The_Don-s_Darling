@@ -8,8 +8,13 @@ import com.example.loveletter.domain.Result
 class King {
     companion object {
         fun swapCards(player1: Player, player2: Player, gameRoom: GameRoom): Result {
+            Log.d("King", "swapCards has started...getting cards: ${player1.nickName}'s card: ${player1.hand} and ${player2.nickName}'s card: ${player2.hand}")
+
             val player1Card = player1.hand.first()
             val player2Card = player2.hand.first()
+            Log.d("King", "initiating cards: ${player1.nickName} is ${player1Card}")
+            Log.d("King", "initiating cards: ${player2.nickName} is ${player2Card}")
+
 
             gameRoom.players.forEach {
                 Log.d("King", "forEach is firing")
