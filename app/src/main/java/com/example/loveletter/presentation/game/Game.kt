@@ -37,6 +37,7 @@ import com.example.loveletter.TAG
 import com.example.loveletter.domain.*
 import com.example.loveletter.presentation.game.util.*
 import com.example.loveletter.util.Tools
+import com.example.loveletter.util.game.gamerules.CardRules.Countess
 import com.example.loveletter.util.game.gamerules.GameRules
 import com.example.loveletter.util.user.HandleUser
 import kotlinx.coroutines.launch
@@ -251,9 +252,6 @@ fun GameContent(game: GameRoom, gameViewModel: GameViewModel, navController: Nav
                 Button(onClick = { GameRules.startNewGame(gameRoom = game) }) {
                     Text("Restart game")
                 }
-                Button(onClick = { gameViewModel.guessCardAlert.value = true }) {
-                    Text("Guess card")
-                }
                 Text(
                     text = "Current turn: ${game.turn}"
                 )
@@ -372,19 +370,35 @@ fun GameContent(game: GameRoom, gameViewModel: GameViewModel, navController: Nav
                                     )
                                 }
                             } else {
-                                player.hand.let {
+
+                                player.hand.let { hand ->
+                                    var hasCountess by remember {
+                                        mutableStateOf(false)
+                                    }
+                                    hasCountess = Countess.checkHand(hand)
+
                                     LazyRow(
                                         Modifier.fillMaxWidth(),
                                         horizontalArrangement = Arrangement.Center
                                     ) {
-                                        itemsIndexed(it) { index, cardNumber ->
-                                            if (it.size == 2) {
+                                        itemsIndexed(hand) { index, cardNumber ->
+                                            if (hand.size == 2) {
+
+                                                var notPlayable by remember {
+                                                    mutableStateOf(false)
+                                                }
+                                                if (hasCountess) {
+                                                    notPlayable = Countess.checkCard(cardNumber)
+                                                }
+
 
                                                 val scale by animateFloatAsState(targetValue = if (selectedIndex == index) 0.8f else 0.6f)
                                                 val offset by animateDpAsState(targetValue = if (selectedIndex == index) (-50).dp else 0.dp)
+
                                                 Box(contentAlignment = Alignment.Center) {
                                                     PlayingCard(cardAvatar = CardAvatar.setCardAvatar(
                                                         cardNumber),
+                                                        notPlayable = notPlayable,
                                                         modifier = Modifier
                                                             .scale(scale)
                                                             .offset(y = offset)
@@ -397,19 +411,35 @@ fun GameContent(game: GameRoom, gameViewModel: GameViewModel, navController: Nav
                                                                         } else {
                                                                             index
                                                                         }
+                                                                    if ((cardNumber == 5 || cardNumber == 6) && hasCountess) {
+                                                                        Toast
+                                                                            .makeText(context,
+                                                                                "Please play the Countess.",
+                                                                                Toast.LENGTH_SHORT)
+                                                                            .show()
+                                                                    }
+
                                                                 }
                                                             )
                                                     )
+
                                                     if (selectedIndex == index) {
-                                                        OutlinedButton(modifier = Modifier.align(
-                                                            Alignment.BottomCenter),
-                                                            onClick = {
-                                                                gameViewModel.onPlay(card = cardNumber,
-                                                                    player = player,
-                                                                    gameRoom = game)
-                                                            }) {
-                                                            Text("Play")
+                                                        if ((cardNumber == 5 || cardNumber == 6) && hasCountess) {
+
+                                                        } else {
+                                                            OutlinedButton(modifier = Modifier.align(
+                                                                Alignment.BottomCenter),
+                                                                onClick = {
+                                                                    gameViewModel.onPlay(
+                                                                        card = cardNumber,
+                                                                        player = player,
+                                                                        gameRoom = game
+                                                                    )
+                                                                }) {
+                                                                Text("Play")
+                                                            }
                                                         }
+
                                                     }
                                                 }
 
@@ -419,13 +449,13 @@ fun GameContent(game: GameRoom, gameViewModel: GameViewModel, navController: Nav
                                                 }
                                                 val scale by animateFloatAsState(targetValue = if (selected) 0.8f else 0.6f)
                                                 Box(contentAlignment = Alignment.Center) {
-                                                    PlayingCard(cardAvatar = CardAvatar.setCardAvatar(
-                                                        cardNumber),
-                                                        modifier = Modifier
-                                                            .scale(scale)
-                                                            .clickable {
-                                                                selected = !selected
-                                                            }
+                                                    PlayingCard(modifier = Modifier
+                                                        .scale(scale)
+                                                        .clickable {
+                                                            selected = !selected
+                                                        },
+                                                        cardAvatar = CardAvatar.setCardAvatar(
+                                                            cardNumber)
                                                     )
                                                 }
                                             }

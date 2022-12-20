@@ -103,6 +103,7 @@ class GameViewModel : ViewModel() {
                     player = player,
                     gameRoom = gameRoom
                 )
+                GameRules.onEnd(gameRoom = gameRoom)
             }
             8 -> {
                 GameRules.handlePlayedCard(
@@ -110,6 +111,9 @@ class GameViewModel : ViewModel() {
                     player = player,
                     gameRoom = gameRoom
                 )
+                val result = Princess.eliminatePlayer(gameRoom, player)
+                result.game?.let { GameRules.onEnd(gameRoom = it) }
+
             }
         }
         /*TODO - Add played card into the discard pile*/
@@ -121,69 +125,76 @@ class GameViewModel : ViewModel() {
     fun onSelectPlayer(selectedPlayer: Player, gameRoom: GameRoom) {
         val players = gameRoom.players
         this.selectedPlayer.value = selectedPlayer
-        when (playedCard.value) {
-            1 -> {
-                guessCardAlert.value = true
+        gameRoom.players.forEach {
+            if (currentPlayer.value.uid == it.uid) {
+                currentPlayer.value = it
             }
-            2 -> {
-                revealCardAlert.value = true
-                emptyCard.value = selectedPlayer.hand.first()
-                GameRules.onEnd(gameRoom = gameRoom)
-
-            }
-            3 -> {
-                gameRoom.players.forEach {
-                    if (currentPlayer.value.uid == it.uid) {
-                        currentPlayer.value = it
-                    }
+        }
+        if (!selectedPlayer.protected) {
+            when (playedCard.value) {
+                1 -> {
+                    guessCardAlert.value = true
                 }
-                val result = Baron.compareCards(
-                    player1 = currentPlayer.value,
-                    player2 = selectedPlayer,
-                    players = players
-                )
-                result.players?.let {
+                2 -> {
+                    revealCardAlert.value = true
+                    emptyCard.value = selectedPlayer.hand.first()
+                    GameRules.onEnd(gameRoom = gameRoom)
+
+                }
+                3 -> {
+                    gameRoom.players.forEach {
+                        if (currentPlayer.value.uid == it.uid) {
+                            currentPlayer.value = it
+                        }
+                    }
+                    val result = Baron.compareCards(
+                        player1 = currentPlayer.value,
+                        player2 = selectedPlayer,
+                        players = players
+                    )
+                    result.players?.let {
+                        gameRoom.players = result.players!!
+                    }
+                    updateResult(result)
+
+                    GameRules.onEnd(gameRoom = gameRoom)
+                }
+                5 -> {
+
+                    val result = Prince.discardAndDraw(
+                        player1 = currentPlayer.value,
+                        player2 = selectedPlayer,
+                        gameRoom = gameRoom
+                    )
+
+                    val updatedGame = result.game
+
+                    if (updatedGame != null) {
+                        GameRules.onEnd(gameRoom = updatedGame)
+                    }
+
+                }
+                6 -> {
+                    gameRoom.players.forEach {
+                        Log.d("King", "(before)${it.nickName}'s hand is now ${it.hand}")
+                    }
+                    val result = King.swapCards(
+                        player1 = currentPlayer.value,
+                        player2 = selectedPlayer,
+                        gameRoom = gameRoom
+                    )
+
                     gameRoom.players = result.players!!
-                }
-                updateResult(result)
-
-                GameRules.onEnd(gameRoom = gameRoom)
-            }
-            5 -> {
-                gameRoom.players.forEach {
-                    if (currentPlayer.value.uid == it.uid) {
-                        currentPlayer.value = it
+                    gameRoom.players.forEach {
+                        Log.d("King", "(after)${it.nickName}'s hand is now ${it.hand}")
                     }
-                }
-                val result = Prince.discardAndDraw(
-                    player1 = currentPlayer.value,
-                    player2 = selectedPlayer,
-                    gameRoom = gameRoom
-                )
-                val updatedGame = result.game
+                    GameRules.onEnd(gameRoom = gameRoom)
 
-                if (updatedGame != null) {
-                    GameRules.onEnd(gameRoom = updatedGame)
                 }
-
             }
-            6 -> {
-                gameRoom.players.forEach {
-                    Log.d("King", "(before)${it.nickName}'s hand is now ${it.hand}")
-                }
-                val result = King.swapCards(
-                    player1 = currentPlayer.value,
-                    player2 = selectedPlayer,
-                    gameRoom = gameRoom
-                )
-
-                gameRoom.players = result.players!!
-                gameRoom.players.forEach {
-                    Log.d("King", "(after)${it.nickName}'s hand is now ${it.hand}")
-                }
-                GameRules.onEnd(gameRoom = gameRoom)
-
-            }
+        } else {
+            Log.d("Handmaid", "Selected player was protected.")
+            GameRules.onEnd(gameRoom = gameRoom)
         }
         selectPlayerAlert.value = false
     }

@@ -95,7 +95,7 @@ fun GuessCard(gameRoom: GameRoom, guessCard: MutableState<Boolean>, gameViewMode
                                         .background(Color.Gray)
                                 ) {
                                     val card = CardAvatar.setCardAvatar(item)
-                                    PlayingCard(cardAvatar = card, modifier = Modifier
+                                    PlayingCard(modifier = Modifier
                                         .selectable(
                                             selected = selectedIndex == index,
                                             onClick = {
@@ -108,7 +108,8 @@ fun GuessCard(gameRoom: GameRoom, guessCard: MutableState<Boolean>, gameViewMode
                                         )
 
                                         .scale(scale)
-                                        .border(2.dp, color))
+                                        .border(2.dp, color),
+                                        cardAvatar = card)
                                 }
                             },
                             measurePolicy = { measurables, constraints ->

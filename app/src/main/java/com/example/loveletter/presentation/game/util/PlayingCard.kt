@@ -35,7 +35,10 @@ fun PlayingCard(
     modifier: Modifier = Modifier,
     width: Dp = 160.dp,
     height: Dp = 230.dp,
-    cardAvatar: CardAvatar) {
+    cardAvatar: CardAvatar,
+    color: Color = Color.White,
+    notPlayable: Boolean = false,
+) {
     var infoWindow by remember {
         mutableStateOf(false)
     }
@@ -66,8 +69,16 @@ fun PlayingCard(
         Image(
             painterResource(id = cardAvatar.avatar),
             contentDescription = cardAvatar.cardName,
-            contentScale = ContentScale.FillHeight
+            contentScale = ContentScale.FillHeight,
         )
+        if (notPlayable) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.LightGray.copy(0.4f))
+                    .zIndex(1f)
+            )
+        }
         Box(
             modifier = Modifier
                 .fillMaxWidth(0.7f)
@@ -108,11 +119,11 @@ fun PlayingCard(
                 }
             )
         }
-        IconButton(onClick = { infoWindow = !infoWindow},
+        IconButton(onClick = { infoWindow = !infoWindow },
             modifier = Modifier
                 .align(Alignment.BottomEnd)
                 .offset(x = 10.dp, y = (10).dp)
-                ) {
+        ) {
             Icon(
                 Icons.Rounded.Info,
                 "Check ${cardAvatar.cardName}'s rule.",

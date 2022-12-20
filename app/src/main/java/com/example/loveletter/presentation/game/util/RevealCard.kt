@@ -15,7 +15,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.loveletter.domain.CardAvatar
-import com.example.loveletter.domain.GameRoom
 import com.example.loveletter.presentation.game.GameViewModel
 
 @Composable
