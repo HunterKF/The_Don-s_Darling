@@ -3,13 +3,11 @@ package com.example.loveletter.util.startgame
 import android.content.Context
 import android.util.Log
 import android.widget.Toast
-import androidx.compose.runtime.mutableStateOf
 import com.example.loveletter.TAG
 import com.example.loveletter.dbGame
 import com.example.loveletter.domain.Deck
 import com.example.loveletter.domain.GameRoom
 import com.example.loveletter.domain.Player
-import com.example.loveletter.util.Tools
 import com.example.loveletter.util.game.gamerules.GameRules
 import com.example.loveletter.util.user.HandleUser
 import com.google.firebase.auth.ktx.auth
@@ -59,7 +57,7 @@ class StartGame() {
         ) {
             var updatedGameRoom = gameRoom
             val turn = (1..gameRoom.players.size).shuffled().random()
-            gameRoom.players = GameRules.assignTurns(gameRoom.players)
+            gameRoom.players = GameRules.assignTurns(gameRoom.players, gameTurn = turn)
             gameRoom.turn = turn
             /*OPTIONS: Make a random list, and pass it to 2 different functions to adjust the deck and the players.
             * or...

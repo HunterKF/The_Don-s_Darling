@@ -1,5 +1,6 @@
 package com.example.loveletter.util.game.gamerules.CardRules
 
+import android.util.Log
 import com.example.loveletter.domain.Player
 import com.example.loveletter.domain.Result
 
@@ -12,10 +13,12 @@ class Baron {
             when {
                 player1Card > player2Card -> {
                     player2.isAlive = false
+                    player2.hand.clear()
                     message = "${player1.nickName} wins! ${player2.nickName} was eliminated. The cards were $player1Card and $player2Card"
                 }
                 player1Card < player2Card -> {
                     player1.isAlive = false
+                    player1.hand.clear()
                     message = "${player2.nickName} wins! ${player1.nickName} was eliminated. The cards were $player1Card and $player2Card"
                 }
                 player1Card == player2Card -> {
@@ -33,7 +36,8 @@ class Baron {
                 message = message,
                 player1 = player1,
                 player2 = player2,
-                players = players
+                players = players,
+                game = null
             )
         }
     }

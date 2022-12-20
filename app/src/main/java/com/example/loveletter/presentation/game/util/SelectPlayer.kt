@@ -42,7 +42,6 @@ fun SelectPlayer(
     val context = LocalContext.current
     var selectedPlayer = remember { mutableStateOf(Player()) }
 
-    Log.d(TAG, "HELLO")
     Box(
         modifier = Modifier
             .fillMaxWidth(1f)

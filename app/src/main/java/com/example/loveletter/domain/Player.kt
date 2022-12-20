@@ -5,14 +5,28 @@ data class Player(
     var nickName: String,
     val uid: String,
     var ready: Boolean,
+    var protected: Boolean,
     var turn: Boolean,
+    var turnInProgress: Boolean,
     var turnOrder: Int,
-    val hand: ArrayList<Int>,
+    var hand: ArrayList<Int>,
     var isHost: Boolean,
     var isAlive: Boolean,
     var isWinner: Boolean,
-    var wins: Int
+    var wins: Int,
 ) {
-    constructor() : this(0, "",
-        "", false, turn = false, turnOrder = 0, hand = arrayListOf(), isHost = false, isAlive = false, isWinner = false, 0)
+    constructor() : this(
+        avatar = 0,
+        nickName = "",
+        uid = "",
+        ready = false,
+        protected = false,
+        turn = false,
+        turnInProgress = false,
+        turnOrder = 0, hand = arrayListOf(),
+        isHost = false,
+        isAlive = false,
+        isWinner = false,
+        wins =0
+    )
 }

@@ -7,8 +7,9 @@ import androidx.lifecycle.viewModelScope
 import com.example.loveletter.TAG
 import com.example.loveletter.domain.GameRoom
 import com.example.loveletter.domain.Player
+import com.example.loveletter.domain.Result
 import com.example.loveletter.util.game.GameServer
-import com.example.loveletter.util.game.gamerules.CardRules.Baron
+import com.example.loveletter.util.game.gamerules.CardRules.*
 import com.example.loveletter.util.game.gamerules.GameRules
 import com.example.loveletter.util.user.HandleUser
 import com.google.firebase.auth.FirebaseUser
@@ -34,16 +35,17 @@ class GameViewModel : ViewModel() {
     private val playedCard = mutableStateOf(0)
     var selectPlayerAlert = mutableStateOf(false)
     val guessCardAlert = mutableStateOf(false)
-    val guessedCard = mutableStateOf(0)
+    val revealCardAlert = mutableStateOf(false)
+    val emptyCard = mutableStateOf(0)
     val resultAlert = mutableStateOf(false)
     val resultMessage = mutableStateOf("")
-
 
 
     fun onPlay(card: Int, gameRoom: GameRoom, player: Player) {
         playedCard.value = card
         when (playedCard.value) {
             1 -> {
+                selectPlayerAlert.value = true
                 GameRules.handlePlayedCard(
                     card = playedCard.value,
                     player = player,
@@ -72,6 +74,12 @@ class GameViewModel : ViewModel() {
                     player = player,
                     gameRoom = gameRoom
                 )
+                gameRoom.players.forEach {
+                    if (it.uid == currentPlayer.value.uid) {
+                        it.protected = Handmaid.toggleProtection(it)
+                    }
+                }
+                GameRules.onEnd(gameRoom = gameRoom)
             }
             5 -> {
                 selectPlayerAlert.value = true
@@ -115,10 +123,11 @@ class GameViewModel : ViewModel() {
         this.selectedPlayer.value = selectedPlayer
         when (playedCard.value) {
             1 -> {
-                GameRules.onEnd(gameRoom = gameRoom)
-
+                guessCardAlert.value = true
             }
             2 -> {
+                revealCardAlert.value = true
+                emptyCard.value = selectedPlayer.hand.first()
                 GameRules.onEnd(gameRoom = gameRoom)
 
             }
@@ -131,15 +140,37 @@ class GameViewModel : ViewModel() {
                 result.players?.let {
                     gameRoom.players = result.players!!
                 }
-                resultMessage.value = result.message
-                resultAlert.value = true
+                updateResult(result)
+
                 GameRules.onEnd(gameRoom = gameRoom)
             }
             5 -> {
-                GameRules.onEnd(gameRoom = gameRoom)
+                val result = Prince.discardAndDraw(
+                    player1 = currentPlayer.value,
+                    player2 = selectedPlayer,
+                    gameRoom = gameRoom
+                )
+                val updatedGame = result.game
+
+                if (updatedGame != null) {
+                    GameRules.onEnd(gameRoom = updatedGame)
+                }
 
             }
             6 -> {
+                gameRoom.players.forEach {
+                    Log.d("King", "(before)${it.nickName}'s hand is now ${it.hand}")
+                }
+                val result = King.swapCards(
+                    player1 = currentPlayer.value,
+                    player2 = selectedPlayer,
+                    gameRoom = gameRoom
+                )
+
+                gameRoom.players = result.players!!
+                gameRoom.players.forEach {
+                    Log.d("King", "(after)${it.nickName}'s hand is now ${it.hand}")
+                }
                 GameRules.onEnd(gameRoom = gameRoom)
 
             }
@@ -147,6 +178,29 @@ class GameViewModel : ViewModel() {
         selectPlayerAlert.value = false
     }
 
+    fun onGuess(card: Int, gameRoom: GameRoom) {
+        guessCardAlert.value = false
+        emptyCard.value = card
+        val result = Guard.returnResult(
+            player1 = currentPlayer.value,
+            player2 = selectedPlayer.value,
+            guessedCard = card
+        )
+        gameRoom.players.forEach {
+            if (result.player2?.uid == it.uid) {
+                it.isAlive = result.player2.isAlive
+            }
+        }
+        updateResult(result)
+
+        GameRules.onEnd(gameRoom = gameRoom)
+
+    }
+
+    private fun updateResult(result: Result) {
+        resultMessage.value = result.message
+        resultAlert.value = true
+    }
 
     fun observeRoom() {
         Log.d(TAG, "Observe room is being called again and again.")

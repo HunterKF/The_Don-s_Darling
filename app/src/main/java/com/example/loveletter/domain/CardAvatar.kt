@@ -87,7 +87,6 @@ sealed class CardAvatar(
 
     companion object {
         fun setCardAvatar(code: Int?): CardAvatar {
-            Log.d(TAG, "The given code is: $code")
             return when (code) {
                 1 -> Guard
                 2 -> Priest

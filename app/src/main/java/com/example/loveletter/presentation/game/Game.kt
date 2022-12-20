@@ -93,27 +93,27 @@ fun GameContent(game: GameRoom, gameViewModel: GameViewModel, navController: Nav
                 Tools.getPlayer(game.players, gameViewModel.currentUser)
         }
         Log.d("LaunchedEffect", "LaunchedEffect has been called. ")
-        game.players.forEach { player ->
-            Log.d("LaunchedEffect", "Going through players ")
-            Log.d("LaunchedEffect", "Current player: ${player.nickName} ")
-            Log.d("LaunchedEffect", "Current player turn: ${player.turn} ")
-            Log.d("LaunchedEffect", "Current player hand: ${player.hand} ")
-
-            if (player.turn && player.hand.size < 2) {
-                Log.d("LaunchedEffect", "Matching player has been found: ${player.nickName}")
-                GameRules.onTurn(
-                    gameRoom = game,
-                    player = player
-                )
-            }
-            Log.d("LaunchedEffect", "LaunchedEffect is finished.")
-
-        }
 
 
         val playerIsPlaying = Tools.checkCards(game.players)
+        val alivePlayers = game.players.filter {
+            it.isAlive
+        }
+        if (alivePlayers.size == 1 && !game.roundOver) {
+            Log.d(TAG, "(if) ending game")
+            GameRules.endRound(gameRoom = game)
+            var winner = Player()
+            game.players.forEach {
+                if (it.isWinner) {
+                    winner = it
+                }
+            }
+            Toast.makeText(context,
+                "Game finished! Winner is: ${winner.nickName}",
+                Toast.LENGTH_SHORT).show()
+        } else if (game.deck.deck.isEmpty() && !playerIsPlaying && !game.roundOver) {
+            Log.d(TAG, "(else-if) ending game")
 
-        if (game.deck.deck.isEmpty() && !playerIsPlaying) {
             GameRules.endRound(gameRoom = game)
             var winner = Player()
             game.players.forEach {
@@ -126,10 +126,25 @@ fun GameContent(game: GameRoom, gameViewModel: GameViewModel, navController: Nav
                 Toast.LENGTH_SHORT).show()
         }
         if (game.roundOver && isHost) {
+            Log.d(TAG, "A new round is starting.")
             GameRules.startNewGame(gameRoom = game)
         }
-        if (!currentPlayer.isAlive) {
+        if (!currentPlayer.isAlive && currentPlayer.hand.isNotEmpty()) {
             gameViewModel.eliminate(gameRoom = game, player = currentPlayer)
+        }
+        game.players.forEach { player ->
+            Log.d("LaunchedEffect", "Going through players ")
+            Log.d("LaunchedEffect", "Current player: ${player.nickName} ")
+            Log.d("LaunchedEffect", "Current player turn: ${player.turn} ")
+            Log.d("LaunchedEffect", "Current player hand: ${player.hand} ")
+            if (player.turn && player.hand.size < 2 && player.isAlive && !player.turnInProgress) {
+                Log.d("LaunchedEffect", "Matching player has been found: ${player.nickName}")
+                GameRules.onTurn(
+                    gameRoom = game,
+                    player = player
+                )
+            }
+            Log.d("LaunchedEffect", "LaunchedEffect is finished.")
         }
 
 
@@ -193,7 +208,7 @@ fun GameContent(game: GameRoom, gameViewModel: GameViewModel, navController: Nav
                     val playerList = gameViewModel.removeCurrentPlayer(game.players)
 
                     playerList.forEach {
-                        Log.d(TAG, "${it.nickName}'s turn is: ${it.turn}")
+//                        Log.d(TAG, "${it.nickName}'s turn is: ${it.turn}")
                         if (it.uid != HandleUser.returnUser()?.uid) {
                             val color by animateColorAsState(targetValue = if (it.turn) {
                                 Color.Green
@@ -207,7 +222,9 @@ fun GameContent(game: GameRoom, gameViewModel: GameViewModel, navController: Nav
                                         Icons.Rounded.Close,
                                         null,
                                         tint = Color.Red,
-                                        modifier = Modifier.align(Alignment.Center).zIndex(1f)
+                                        modifier = Modifier
+                                            .align(Alignment.Center)
+                                            .zIndex(1f)
                                     )
                                 }
                                 Image(
@@ -231,8 +248,8 @@ fun GameContent(game: GameRoom, gameViewModel: GameViewModel, navController: Nav
                         }
                     }
                 }
-                Button(onClick = { gameViewModel.selectPlayerAlert.value = true }) {
-                    Text("Select player")
+                Button(onClick = { GameRules.startNewGame(gameRoom = game) }) {
+                    Text("Restart game")
                 }
                 Button(onClick = { gameViewModel.guessCardAlert.value = true }) {
                     Text("Guess card")
@@ -253,6 +270,13 @@ fun GameContent(game: GameRoom, gameViewModel: GameViewModel, navController: Nav
                     Popup(popupPositionProvider = WindowCenterOffsetPositionProvider(),
                         onDismissRequest = { gameViewModel.selectPlayerAlert.value = false }) {
                         ResultMessage(message = gameViewModel.resultMessage.value,
+                            gameViewModel = gameViewModel)
+                    }
+                }
+                if (gameViewModel.revealCardAlert.value) {
+                    Popup(popupPositionProvider = WindowCenterOffsetPositionProvider(),
+                        onDismissRequest = { gameViewModel.revealCardAlert.value = false }) {
+                        RevealCard(
                             gameViewModel = gameViewModel)
                     }
                 }
@@ -336,7 +360,7 @@ fun GameContent(game: GameRoom, gameViewModel: GameViewModel, navController: Nav
                 ) {
                     game.players.forEach { player ->
                         if (player.uid == HandleUser.returnUser()!!.uid) {
-                            if(player.hand.isEmpty()) {
+                            if (player.hand.isEmpty()) {
                                 Column() {
                                     Text(
                                         text = "You were eliminated",
@@ -443,15 +467,27 @@ fun GameContent(game: GameRoom, gameViewModel: GameViewModel, navController: Nav
                         } else {
                             Color.Blue
                         })
-                        Image(
-                            painter = painterResource(id = avatar.avatar),
-                            contentDescription = avatar.description,
-                            modifier = Modifier
-                                .scale(0.7f)
-                                .padding(8.dp)
-                                .clip(CircleShape)
-                                .border(2.dp, color, CircleShape)
-                        )
+                        Box() {
+                            Image(
+                                painter = painterResource(id = avatar.avatar),
+                                contentDescription = avatar.description,
+                                modifier = Modifier
+                                    .scale(0.7f)
+                                    .padding(8.dp)
+                                    .clip(CircleShape)
+                                    .border(2.dp, color, CircleShape)
+                            )
+                            if (!currentPlayer.isAlive) {
+                                Icon(
+                                    Icons.Rounded.Close,
+                                    null,
+                                    tint = Color.Red,
+                                    modifier = Modifier
+                                        .align(Alignment.Center)
+                                        .zIndex(1f)
+                                )
+                            }
+                        }
                         Spacer(Modifier.size(4.dp))
                         Text(
                             text = currentPlayer.nickName,

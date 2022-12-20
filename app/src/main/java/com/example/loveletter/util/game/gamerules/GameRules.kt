@@ -7,6 +7,7 @@ import com.example.loveletter.dbGame
 import com.example.loveletter.domain.GameRoom
 import com.example.loveletter.domain.Player
 import com.example.loveletter.util.Tools
+import com.example.loveletter.util.game.gamerules.CardRules.Handmaid
 
 val GAMERULES_TAG = "GameRules"
 
@@ -34,7 +35,11 @@ class GameRules {
                 var deck = gameRoom.deck.deck
                 players.forEach {
                     if (it == player) {
+                        if(it.protected) {
+                            it.protected = Handmaid.toggleProtection(it)
+                        }
                         it.hand.add(card)
+                        it.turnInProgress = true
                         deck = removeFromDeck(card = card, gameRoom = gameRoom)
                     }
                 }
@@ -53,23 +58,30 @@ class GameRules {
                 }
         }
 
-        private fun changeGameTurn(turn: Int, size: Int): Int {
+        private fun changeGameTurn(turn: Int, size: Int, players: List<Player>): Int {
+
             var currentTurn = turn
             currentTurn += 1
             if (currentTurn > size) {
                 currentTurn = 1
             }
+            val sortedPlayers = players.sortedBy { it.turnOrder }.reversed()
+            sortedPlayers.forEach {
+                if (it.turnOrder == currentTurn && !it.isAlive) {
+                    currentTurn += 1
+                }
+            }
             Log.d(TAG, "Returning new turn: $currentTurn")
             return currentTurn
         }
 
-        private fun addToDiscardPile(card: Int, gameRoom: GameRoom): ArrayList<Int> {
+         fun addToDiscardPile(card: Int, gameRoom: GameRoom): ArrayList<Int> {
             val deck = gameRoom.deck.discardDeck
             deck.add(card)
             return deck
         }
 
-        private fun removeFromDeck(card: Int, gameRoom: GameRoom): ArrayList<Int> {
+        fun removeFromDeck(card: Int, gameRoom: GameRoom): ArrayList<Int> {
             val deck = gameRoom.deck.deck
             val index = deck.indexOf(card)
             val TAG1 = "removeFromDeck"
@@ -89,7 +101,7 @@ class GameRules {
             /*This can be done in the UI.*/
         }
 
-        private fun drawCard(gameRoom: GameRoom): Int {
+        fun drawCard(gameRoom: GameRoom): Int {
             val card = Tools.randomNumber(
                 size = gameRoom.deck.deck.size
             )
@@ -97,13 +109,12 @@ class GameRules {
         }
 
         fun endRound(gameRoom: GameRoom) {
-            val players = arrayListOf<Player>()
-            gameRoom.players.forEach {
-                if (it.isAlive) {
-                    players.add(it)
-                }
+            val players = gameRoom.players
+
+            val filteredPlayers = gameRoom.players.filter {
+                it.isAlive
             }
-            if (players.size > 1) {
+            if (filteredPlayers.size > 1) {
                 val winningCard = winningHand(players = players)
                 players.forEach {
                     if (it.hand.contains(winningCard)) {
@@ -112,12 +123,15 @@ class GameRules {
                     }
                 }
                 gameRoom.players = players
-            } else if (players.size == 1) {
-                /*TODO - Declare winner for this case*/
+            } else if (filteredPlayers.size == 1) {
+                players.forEach {
+                    if (it.isAlive) {
+                        it.isWinner = true
+                        it.wins += 1
+                    }
+                }
+                gameRoom.players = players
             }
-            /*TODO - Project a winner*/
-            /*TODO - Compare remaining players' cards and return a player who won. Can do this as a Boolean in the player status*/
-            /*TODO - Update game with the new game*/
             gameRoom.roundOver = true
             val winner = checkForWinner(gameRoom.players, gameRoom.playLimit)
             winner?.let {
@@ -148,6 +162,7 @@ class GameRules {
                 it.hand.clear()
                 it.isWinner = false
                 it.turn = false
+                it.turnInProgress = false
                 it.isAlive = true
                 it.turnOrder = 0
                 it.ready = true
@@ -156,7 +171,9 @@ class GameRules {
             game.roomCode = gameRoom.roomCode
             game.playLimit = gameRoom.playLimit
             game.players = gameRoom.players
-            game.players = assignTurns(game.players)
+            game.players = assignTurns(game.players, turn)
+            game.roundOver = false
+            game.gameOver = false
             gameRoom.start = true
             game.turn = turn
             game = dealCards(game)
@@ -184,15 +201,11 @@ class GameRules {
             updateGame(gameRoom)
         }
 
-        fun selectPlayer() {
-
-        }
-
         fun onEnd(gameRoom: GameRoom) {
+            Log.d("King", "Ending turn")
             gameRoom.players = endPlayerTurn(gameRoom = gameRoom)
             if (!gameRoom.gameOver) {
-                gameRoom.turn =
-                    changeGameTurn(turn = gameRoom.turn, size = gameRoom.players.size)
+                gameRoom.turn = changeGameTurn(turn = gameRoom.turn, size = gameRoom.players.size, players = gameRoom.players)
                 gameRoom.players = changePlayerTurn(gameRoom = gameRoom)
             }
             updateGame(gameRoom = gameRoom)
@@ -208,6 +221,7 @@ class GameRules {
                         currentTurn = 1
                     }
                     it.turn = false
+                    it.turnInProgress = false
                 }
             }
             return gameRoom.players
@@ -215,18 +229,19 @@ class GameRules {
 
         private fun changePlayerTurn(gameRoom: GameRoom): List<Player> {
             gameRoom.players.forEach {
-                if (it.turnOrder == gameRoom.turn) {
+                if (it.turnOrder == gameRoom.turn && it.isAlive) {
                     it.turn = true
                 }
             }
             return gameRoom.players
         }
-        fun assignTurns(list: List<Player>): List<Player> {
+        fun assignTurns(list: List<Player>, gameTurn: Int): List<Player> {
             val turn = mutableStateOf(1)
             list.forEach {
                 it.turnOrder = turn.value
-                if (it.turnOrder == 1) {
+                if (it.turnOrder == gameTurn) {
                     it.turn = true
+                    it.turnInProgress = true
                 }
                 turn.value = turn.value + 1
             }
@@ -234,25 +249,45 @@ class GameRules {
         }
 
         fun dealCards(gameRoom: GameRoom): GameRoom {
-            val size = gameRoom.deck.deck.size
+            val size = mutableStateOf(gameRoom.deck.deck.size)
             gameRoom.players.forEach { player ->
-                if (player.turn) {
-                    var randomCard = Tools.randomNumber(size)
-                    player.hand.add(gameRoom.deck.deck[randomCard])
-                    gameRoom.deck.deck.removeAt(randomCard)
-                    randomCard = Tools.randomNumber(size)
-                    player.hand.add(gameRoom.deck.deck[randomCard])
-                    gameRoom.deck.deck.removeAt(randomCard)
+                Log.d("dealCards", "deck size: ${size.value} ")
 
-                } else {
-                    val randomCard = Tools.randomNumber(size)
-                    if (randomCard == size) {
+                if (player.turn) {
+                    var randomCard = Tools.randomNumber(size.value)
+                    size.value -= 2
+
+                    Log.d("dealCards", "(if) Dealing a card: $randomCard ")
+                    Log.d("dealCards", "(if) Deck size: ${size.value}")
+
+
+                    if (randomCard == size.value) {
                         randomCard - 1
                     } else if (randomCard < 0 ) {
                         randomCard + 1
                     }
                     player.hand.add(gameRoom.deck.deck[randomCard])
                     gameRoom.deck.deck.removeAt(randomCard)
+                    randomCard = Tools.randomNumber(size.value)
+                    player.hand.add(gameRoom.deck.deck[randomCard])
+                    gameRoom.deck.deck.removeAt(randomCard)
+
+                } else {
+
+                    val randomCard = Tools.randomNumber(size.value)
+                    Log.d("dealCards", "(else) Dealing a card: $randomCard")
+                    Log.d("dealCards", "(else) Deck size: ${size.value}")
+
+                    if (randomCard == size.value) {
+                        randomCard - 1
+                    } else if (randomCard < 0 ) {
+                        randomCard + 1
+                    }
+                    size.value -= 1
+
+                    player.hand.add(gameRoom.deck.deck[randomCard])
+                    gameRoom.deck.deck.removeAt(randomCard)
+
                 }
 
             }

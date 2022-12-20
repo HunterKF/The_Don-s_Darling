@@ -33,6 +33,9 @@ import com.example.loveletter.presentation.game.GameViewModel
 @Composable
 fun GuessCard(gameRoom: GameRoom, guessCard: MutableState<Boolean>, gameViewModel: GameViewModel) {
 
+    var guessedCard by remember {
+        mutableStateOf(0)
+    }
     Box(
         modifier = Modifier
             .fillMaxWidth(1f)
@@ -64,39 +67,6 @@ fun GuessCard(gameRoom: GameRoom, guessCard: MutableState<Boolean>, gameViewMode
             )
             val state = rememberLazyListState()
             val context = LocalContext.current
-            /*LazyRow(state = state) {
-
-                itemsIndexed(cards) { index, number ->
-
-                    val scale by animateFloatAsState(targetValue = if (index == state.firstVisibleItemIndex) 1f else 0.5f)
-                    val offset by animateOffsetAsState(targetValue = when {
-                        (state.firstVisibleItemIndex > index) -> Offset(20f, 20f)
-                        (state.firstVisibleItemIndex < index) -> Offset(-50f, 0f)
-                        (state.firstVisibleItemIndex == index) -> Offset(0f, 0f)
-                        else -> {
-                            Offset(0f, 0f)
-                        }
-                    })
-                    val zIndex by animateFloatAsState(targetValue = if (index == state.firstVisibleItemIndex) 1f else 0f)
-                    println("first Visible Item Index: ${state.firstVisibleItemIndex}")
-                    println("first Visible Item Scroll Offset: ${state.firstVisibleItemScrollOffset}")
-                    println("layout info: ${state.layoutInfo}")
-                    val card = CardAvatar.setCardAvatar(number)
-                    PlayingCard(cardAvatar = card, modifier = Modifier
-                        .clickable(
-                            onClick = { Toast
-                                .makeText(context,
-                                    "x = ${offset.x.dp}. y = ${offset.y.dp}.",
-                                    Toast.LENGTH_SHORT)
-                                .show()
-                            }
-                        )
-                        .offset(offset.x.dp, offset.y.dp)
-                        .scale(scale)
-                        .zIndex(zIndex)
-                    )
-                }
-            }*/
 
             var selectedIndex by remember {
                 mutableStateOf(-1)
@@ -131,7 +101,7 @@ fun GuessCard(gameRoom: GameRoom, guessCard: MutableState<Boolean>, gameViewMode
                                             onClick = {
                                                 selectedIndex = index
                                                 Log.d(TAG, "selectedIndex: $selectedIndex")
-                                                gameViewModel.guessedCard.value = index
+                                                guessedCard = item
                                                 Log.d(TAG,
                                                     "Player guessed: ${gameViewModel.guessCardAlert.value}")
                                             }
@@ -142,9 +112,6 @@ fun GuessCard(gameRoom: GameRoom, guessCard: MutableState<Boolean>, gameViewMode
                                 }
                             },
                             measurePolicy = { measurables, constraints ->
-                                // I'm assuming you'll declaring just one root
-                                // composable in the content function above
-                                // so it's measuring just the Box
                                 val placeable = measurables.first().measure(constraints)
                                 // maxWidth is from the BoxWithConstraints
                                 val maxWidthInPx = maxWidth.roundToPx()
@@ -185,7 +152,9 @@ fun GuessCard(gameRoom: GameRoom, guessCard: MutableState<Boolean>, gameViewMode
                         "Cancel"
                     )
                 }
-                IconButton(onClick = { /*TODO*/ },
+                IconButton(onClick = {
+                    gameViewModel.onGuess(guessedCard, gameRoom = gameRoom)
+                },
                     modifier = Modifier
                         .weight(0.5f)
                         .padding(horizontal = 16.dp)
