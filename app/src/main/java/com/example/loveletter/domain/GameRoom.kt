@@ -11,6 +11,8 @@ data class GameRoom(
     var host: String,
     var roundOver: Boolean,
     var gameOver: Boolean,
+    var showLogs: Boolean,
+    var gameLog: ArrayList<LogMessage>
 ) {
     constructor() : this(Deck(),
         0,
@@ -21,5 +23,8 @@ data class GameRoom(
         false,
         "",
         false,
-        false)
+        false,
+        true,
+        arrayListOf()
+    )
 }

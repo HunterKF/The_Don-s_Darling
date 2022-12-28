@@ -4,12 +4,12 @@ import android.util.Log
 import com.example.loveletter.TAG
 import com.example.loveletter.dbGame
 import com.example.loveletter.domain.GameRoom
-import com.example.loveletter.util.startgame.StartGame
-import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.ktx.Firebase
+import com.example.loveletter.domain.LogMessage
+import com.google.firebase.firestore.FieldValue
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
+import kotlin.collections.ArrayList
 
 class GameServer {
     companion object {
@@ -37,5 +37,25 @@ class GameServer {
                 }
             }
         }
+
+        fun updateGameLog(
+            logs: ArrayList<LogMessage>,
+            logMessage: LogMessage,
+        ): ArrayList<LogMessage> {
+            logs.add(logMessage)
+            return logs
+        }
+
+        fun sendMessage(gameRoom: GameRoom, logMessage: LogMessage) {
+            dbGame.document(gameRoom.roomCode)
+                .update("gameLog", FieldValue.arrayUnion(logMessage))
+                .addOnSuccessListener {
+                    Log.d(TAG, "Successfully added player!")
+                }
+                .addOnFailureListener {
+                    Log.d(TAG, "Failed to add player! ${it.localizedMessage}")
+                }
+        }
+
     }
 }

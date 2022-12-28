@@ -36,6 +36,7 @@ import com.example.loveletter.Screen
 import com.example.loveletter.TAG
 import com.example.loveletter.domain.*
 import com.example.loveletter.presentation.game.util.*
+import com.example.loveletter.presentation.messenger.Messenger
 import com.example.loveletter.util.Tools
 import com.example.loveletter.util.game.gamerules.CardRules.Countess
 import com.example.loveletter.util.game.gamerules.GameRules
@@ -61,7 +62,15 @@ fun Game(navController: NavController, gameViewModel: GameViewModel) {
             val loaded = state as GameState.Loaded
             Text("Hey")
             Log.d(TAG, "GameState is now set to Loaded.")
-            GameContent(loaded.gameRoom, gameViewModel, navController)
+            LaunchedEffect(key1 = Unit, block = {
+                gameViewModel.chatOpen.value = false
+                gameViewModel.listOfPlayers.value = loaded.gameRoom.players
+            })
+            if (gameViewModel.chatOpen.value) {
+                Messenger(gameRoom = loaded.gameRoom, gameViewModel = gameViewModel)
+            } else {
+                GameContent(loaded.gameRoom, gameViewModel, navController)
+            }
         }
     }
 
@@ -209,7 +218,6 @@ fun GameContent(game: GameRoom, gameViewModel: GameViewModel, navController: Nav
                     val playerList = gameViewModel.removeCurrentPlayer(game.players)
 
                     playerList.forEach {
-//                        Log.d(TAG, "${it.nickName}'s turn is: ${it.turn}")
                         if (it.uid != HandleUser.returnUser()?.uid) {
                             val color by animateColorAsState(targetValue = if (it.turn) {
                                 Color.Green
@@ -526,7 +534,7 @@ fun GameContent(game: GameRoom, gameViewModel: GameViewModel, navController: Nav
                     }
                     IconButton(
                         modifier = Modifier,
-                        onClick = { /*TODO*/ }) {
+                        onClick = { gameViewModel.chatOpen.value = true }) {
                         Icon(
                             Icons.Rounded.Email,
                             null,

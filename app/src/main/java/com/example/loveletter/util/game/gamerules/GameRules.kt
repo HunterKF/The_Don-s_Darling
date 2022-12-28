@@ -5,8 +5,10 @@ import androidx.compose.runtime.mutableStateOf
 import com.example.loveletter.TAG
 import com.example.loveletter.dbGame
 import com.example.loveletter.domain.GameRoom
+import com.example.loveletter.domain.LogMessage
 import com.example.loveletter.domain.Player
 import com.example.loveletter.util.Tools
+import com.example.loveletter.util.game.GameServer
 import com.example.loveletter.util.game.gamerules.CardRules.Handmaid
 
 val GAMERULES_TAG = "GameRules"
@@ -58,6 +60,8 @@ class GameRules {
                 }
         }
 
+
+
         private fun changeGameTurn(turn: Int, size: Int, players: List<Player>): Int {
 
             var currentTurn = turn
@@ -97,9 +101,6 @@ class GameRules {
             return deck
         }
 
-        fun checkForSeven() {
-            /*This can be done in the UI.*/
-        }
 
         fun drawCard(gameRoom: GameRoom): Int {
             val card = Tools.randomNumber(
@@ -188,12 +189,7 @@ class GameRules {
                 null
             } else {
                 filterArray.first()
-
             }
-        }
-
-        fun toggleProtection() {
-
         }
 
         fun eliminatePlayer(gameRoom: GameRoom, player: Player) {
@@ -201,13 +197,14 @@ class GameRules {
             updateGame(gameRoom)
         }
 
-        fun onEnd(gameRoom: GameRoom) {
+        fun onEnd(gameRoom: GameRoom, logMessage: LogMessage) {
             Log.d("King", "Ending turn")
             gameRoom.players = endPlayerTurn(gameRoom = gameRoom)
             if (!gameRoom.gameOver) {
                 gameRoom.turn = changeGameTurn(turn = gameRoom.turn, size = gameRoom.players.size, players = gameRoom.players)
                 gameRoom.players = changePlayerTurn(gameRoom = gameRoom)
             }
+            gameRoom.gameLog = GameServer.updateGameLog(gameRoom.gameLog, logMessage)
             updateGame(gameRoom = gameRoom)
         }
 

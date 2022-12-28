@@ -53,18 +53,7 @@ class HandleUser {
                 }
         }
 
-        fun addGameToUser(roomCode: String, roomNickname: String) {
-            val joinedGame =
-                JoinedGame(roomCode = roomCode, roomNickname = roomNickname, false, false)
-            dbPlayers.document(currentUser.uid)
-                .update("joinedGames", FieldValue.arrayUnion(joinedGame))
-                .addOnSuccessListener {
-                    println("Successfully added game to user's joined game list.")
-                }
-                .addOnFailureListener {
-                    println("Failed to add game to user list. ${it.localizedMessage}")
-                }
-        }
+
 
         fun addGameToPlayer(userId: String, gameRoom: GameRoom) {
             val joinedGame =

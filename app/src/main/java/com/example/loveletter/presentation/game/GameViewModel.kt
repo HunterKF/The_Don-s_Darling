@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.loveletter.TAG
 import com.example.loveletter.domain.GameRoom
+import com.example.loveletter.domain.LogMessage
 import com.example.loveletter.domain.Player
 import com.example.loveletter.domain.Result
 import com.example.loveletter.util.game.GameServer
@@ -41,6 +42,12 @@ class GameViewModel : ViewModel() {
     val resultMessage = mutableStateOf("")
 
 
+    val chatOpen = mutableStateOf(false)
+
+    val listOfPlayers = mutableStateOf(listOf(Player()))
+
+
+
     fun onPlay(card: Int, gameRoom: GameRoom, player: Player) {
         playedCard.value = card
         when (playedCard.value) {
@@ -74,12 +81,16 @@ class GameViewModel : ViewModel() {
                     player = player,
                     gameRoom = gameRoom
                 )
+                var message = ""
                 gameRoom.players.forEach {
                     if (it.uid == currentPlayer.value.uid) {
                         it.protected = Handmaid.toggleProtection(it)
+                        message = "${it.nickName} has played the handmaid. They are protected."
                     }
                 }
-                GameRules.onEnd(gameRoom = gameRoom)
+                val logMessage = LogMessage.createLogMessage(message = message, type = "gameLog", uid = null)
+
+                GameRules.onEnd(gameRoom = gameRoom, logMessage = logMessage)
             }
             5 -> {
                 selectPlayerAlert.value = true
@@ -103,7 +114,9 @@ class GameViewModel : ViewModel() {
                     player = player,
                     gameRoom = gameRoom
                 )
-                GameRules.onEnd(gameRoom = gameRoom)
+                val logMessage =
+                    LogMessage.createLogMessage("${currentPlayer.value.nickName} has played the Countess.", type = "gameLog", uid = null)
+                GameRules.onEnd(gameRoom = gameRoom, logMessage = logMessage)
             }
             8 -> {
                 GameRules.handlePlayedCard(
@@ -112,7 +125,8 @@ class GameViewModel : ViewModel() {
                     gameRoom = gameRoom
                 )
                 val result = Princess.eliminatePlayer(gameRoom, player)
-                result.game?.let { GameRules.onEnd(gameRoom = it) }
+                val logMessage = LogMessage.createLogMessage(result.message, type = "gameLog", uid = null)
+                result.game?.let { GameRules.onEnd(gameRoom = it, logMessage) }
 
             }
         }
@@ -138,7 +152,11 @@ class GameViewModel : ViewModel() {
                 2 -> {
                     revealCardAlert.value = true
                     emptyCard.value = selectedPlayer.hand.first()
-                    GameRules.onEnd(gameRoom = gameRoom)
+                    var message =
+                        "${currentPlayer.value.nickName} looked at ${selectedPlayer.nickName}'s card."
+                    val logMessage = LogMessage.createLogMessage(message = message, type = "gameLog", uid = null)
+
+                    GameRules.onEnd(gameRoom = gameRoom, logMessage = logMessage)
 
                 }
                 3 -> {
@@ -155,9 +173,11 @@ class GameViewModel : ViewModel() {
                     result.players?.let {
                         gameRoom.players = result.players!!
                     }
+                    val logMessage = LogMessage.createLogMessage(result.message, type = "gameLog", uid = null)
+
                     updateResult(result)
 
-                    GameRules.onEnd(gameRoom = gameRoom)
+                    GameRules.onEnd(gameRoom = gameRoom, logMessage = logMessage)
                 }
                 5 -> {
 
@@ -166,11 +186,12 @@ class GameViewModel : ViewModel() {
                         player2 = selectedPlayer,
                         gameRoom = gameRoom
                     )
+                    val logMessage = LogMessage.createLogMessage(result.message, type = "gameLog", uid = null)
 
                     val updatedGame = result.game
 
                     if (updatedGame != null) {
-                        GameRules.onEnd(gameRoom = updatedGame)
+                        GameRules.onEnd(gameRoom = updatedGame, logMessage = logMessage)
                     }
 
                 }
@@ -183,18 +204,23 @@ class GameViewModel : ViewModel() {
                         player2 = selectedPlayer,
                         gameRoom = gameRoom
                     )
+                    val logMessage = LogMessage.createLogMessage(result.message, type = "gameLog", uid = null)
+
 
                     gameRoom.players = result.players!!
                     gameRoom.players.forEach {
                         Log.d("King", "(after)${it.nickName}'s hand is now ${it.hand}")
                     }
-                    GameRules.onEnd(gameRoom = gameRoom)
+                    GameRules.onEnd(gameRoom = gameRoom, logMessage)
 
                 }
             }
         } else {
             Log.d("Handmaid", "Selected player was protected.")
-            GameRules.onEnd(gameRoom = gameRoom)
+            var message = "${selectedPlayer.nickName} was protected, nothing happened."
+            val logMessage = LogMessage.createLogMessage(message, type = "gameLog", uid = null)
+
+            GameRules.onEnd(gameRoom = gameRoom, logMessage = logMessage)
         }
         selectPlayerAlert.value = false
     }
@@ -212,9 +238,11 @@ class GameViewModel : ViewModel() {
                 it.isAlive = result.player2.isAlive
             }
         }
+        val logMessage = LogMessage.createLogMessage(result.message, type = "gameLog", uid = null)
+
         updateResult(result)
 
-        GameRules.onEnd(gameRoom = gameRoom)
+        GameRules.onEnd(gameRoom = gameRoom, logMessage)
 
     }
 

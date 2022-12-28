@@ -39,7 +39,9 @@ class StartGame() {
                 start = false,
                 host = currentUser.uid,
                 roundOver = false,
-                gameOver = false
+                gameOver = false,
+                showLogs = true,
+                gameLog =  arrayListOf()
             )
             try {
                 dbGame.document(roomCode)
