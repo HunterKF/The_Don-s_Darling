@@ -55,7 +55,6 @@ fun BottomBar(
         if (it.uid == gameViewModel.currentPlayer.value.uid) {
                 currentPlayer = it
             }
-
     }
     Log.d(TAG, "Refreshing bottom bar composable")
     val context = LocalContext.current
@@ -158,9 +157,9 @@ fun BottomBar(
                 modifier = Modifier
                     .border(borderStroke, CircleShape)
                     .align(Alignment.Center)
-                    .size(75.dp)
+                    .size(85.dp)
                     .clip(CircleShape)
-                    .background(DarkNavy)
+                    .background(Navy)
             )
         }
         var selectedIndex by remember {

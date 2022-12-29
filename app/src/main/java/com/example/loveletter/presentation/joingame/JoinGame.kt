@@ -7,22 +7,31 @@ import androidx.compose.foundation.lazy.GridCells
 import androidx.compose.foundation.lazy.LazyVerticalGrid
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.sharp.Search
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardCapitalization
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.loveletter.R
 import com.example.loveletter.Screen
 import com.example.loveletter.TAG
 import com.example.loveletter.presentation.createplayer.AvatarImage
+import com.example.loveletter.ui.theme.DarkNavy
+import com.example.loveletter.ui.theme.Navy
+import com.example.loveletter.ui.theme.Steel
 import com.example.loveletter.util.joingame.JoinGame
 import com.example.loveletter.util.user.HandleUser
 
@@ -35,14 +44,22 @@ fun JoinGameScreen(navController: NavHostController, gameLobbyViewModel: GameLob
     }
     val context = LocalContext.current
 
-    Surface() {
+
+    Surface(
+        color = DarkNavy
+    ) {
 
 
-        Column(Modifier.fillMaxSize()) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(vertical = 24.dp)
+        ) {
 
-            OutlinedTextField(modifier = Modifier
+            TextField(modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp),
+                .padding(16.dp)
+                .clip(RoundedCornerShape(50.dp)),
                 value = gameLobbyViewModel.roomCode.value,
                 onValueChange = { newValue ->
                     gameLobbyViewModel.roomCode.value = newValue
@@ -51,8 +68,23 @@ fun JoinGameScreen(navController: NavHostController, gameLobbyViewModel: GameLob
                     capitalization = KeyboardCapitalization.Characters
                 ),
                 singleLine = true,
-                label = {
-                    Text(stringResource(R.string.enter_room_code))
+                colors = TextFieldDefaults.textFieldColors(
+                    backgroundColor = Navy,
+                    textColor = Steel,
+                    cursorColor = Steel,
+                    focusedLabelColor = Color.Transparent,
+                    unfocusedIndicatorColor = Color.Transparent
+                ),
+                textStyle = TextStyle(
+                    fontSize = 16.sp,
+                    color = Steel
+                ),
+                placeholder = {
+                    Text(
+                        "Enter room code here...",
+                        fontSize = 16.sp,
+                        color = Steel
+                    )
                 },
                 trailingIcon = {
                     IconButton(onClick = {
@@ -63,14 +95,17 @@ fun JoinGameScreen(navController: NavHostController, gameLobbyViewModel: GameLob
                     }) {
                         Icon(
                             Icons.Sharp.Search,
-                            null
+                            null,
+                            tint = Steel
                         )
                     }
                 }
             )
-            OutlinedTextField(modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
+            OutlinedTextField(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+                    .clip(RoundedCornerShape(50.dp)),
                 value = gameLobbyViewModel.playerNickname.value,
                 onValueChange = { newValue ->
                     gameLobbyViewModel.playerNickname.value = newValue
@@ -79,9 +114,25 @@ fun JoinGameScreen(navController: NavHostController, gameLobbyViewModel: GameLob
                     capitalization = KeyboardCapitalization.Words
                 ),
                 singleLine = true,
-                label = {
-                    Text(stringResource(R.string.enter_player_nickname))
-                }
+
+                colors = TextFieldDefaults.textFieldColors(
+                    backgroundColor = Navy,
+                    textColor = Steel,
+                    cursorColor = Steel,
+                    focusedLabelColor = Color.Transparent,
+                    unfocusedIndicatorColor = Color.Transparent
+                ),
+                textStyle = TextStyle(
+                    fontSize = 16.sp,
+                    color = Steel
+                ),
+                placeholder = {
+                    Text(
+                        "Enter your nickname here...",
+                        fontSize = 16.sp,
+                        color = Steel
+                    )
+                },
             )
 
             val icons = listOf(
@@ -96,34 +147,52 @@ fun JoinGameScreen(navController: NavHostController, gameLobbyViewModel: GameLob
             var selectedIndex by remember {
                 mutableStateOf(-1)
             }
-            LazyVerticalGrid(cells = GridCells.Adaptive(minSize = 100.dp)) {
+            val itemSize: Dp = (LocalConfiguration.current.screenWidthDp.dp / 3)
+
+            LazyVerticalGrid(
+                cells = GridCells.Fixed(3)
+            ) {
                 itemsIndexed(icons) { index, icon ->
                     println(icon)
                     AvatarImage(
-                        modifier = Modifier.selectable(
-                            selected = selectedIndex == index,
-                            onClick = {
-                                selectedIndex = index
-                                Log.d(TAG, "selectedIndex: $selectedIndex")
-                                gameLobbyViewModel.playerChar.value = index
-                                Log.d(TAG, "playerChar: ${gameLobbyViewModel.playerChar.value}")
-                            }
-                        ),
+                        modifier = Modifier
+                            .size(itemSize)
+                            .selectable(
+                                selected = selectedIndex == index,
+                                onClick = {
+                                    selectedIndex = index
+                                    Log.d(TAG, "selectedIndex: $selectedIndex")
+                                    gameLobbyViewModel.playerChar.value =
+                                        gameLobbyViewModel.assignCharNumber(index)
+                                    Log.d(TAG, "playerChar: ${gameLobbyViewModel.playerChar.value}")
+                                }
+                            ),
                         icon = icon,
                         background = if (selectedIndex == index) Color.Red else Color.Transparent
                     )
                 }
             }
-            OutlinedButton(onClick = {
-                JoinGame.joinGame(
-                    roomCode = gameLobbyViewModel.roomCode.value,
-                    player = HandleUser.createGamePlayer(avatar = gameLobbyViewModel.playerChar.value,
-                        nickname = gameLobbyViewModel.playerNickname.value, isHost = false),
-                    context = context
-                ) {
-                    navController.navigate(Screen.GameLobby.route)
-                }
-            }) {
+            Button(
+                modifier = Modifier
+                    .padding(16.dp)
+                    .fillMaxWidth(),
+                enabled = gameLobbyViewModel.playerNickname.value != "" && gameLobbyViewModel.playerChar.value != 0 && gameLobbyViewModel.roomCode.value != "",
+                colors = ButtonDefaults.buttonColors(
+                    backgroundColor = Navy,
+                    contentColor = Color.White,
+                    disabledBackgroundColor = Color.LightGray,
+                    disabledContentColor = Color.Black
+                ),
+                onClick = {
+                    JoinGame.joinGame(
+                        roomCode = gameLobbyViewModel.roomCode.value,
+                        player = HandleUser.createGamePlayer(avatar = gameLobbyViewModel.playerChar.value,
+                            nickname = gameLobbyViewModel.playerNickname.value, isHost = false),
+                        context = context
+                    ) {
+                        navController.navigate(Screen.GameLobby.route)
+                    }
+                }) {
                 Text(stringResource(R.string.join_game))
             }
         }

@@ -26,6 +26,7 @@ import com.example.loveletter.presentation.game.util.*
 import com.example.loveletter.presentation.messenger.Messenger
 import com.example.loveletter.ui.theme.DarkNavy
 import com.example.loveletter.ui.theme.Navy
+import com.example.loveletter.ui.theme.OffWhite
 import com.example.loveletter.ui.theme.Steel
 import com.example.loveletter.util.Tools
 import com.example.loveletter.util.game.gamerules.GameRules
@@ -74,10 +75,11 @@ fun GameContent(game: GameRoom, gameViewModel: GameViewModel, navController: Nav
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
 
-    val currentPlayer by remember {
+    var currentPlayer by remember {
         mutableStateOf(HandleUser.getCurrentUser(game.players,
             currentUser = HandleUser.returnUser()!!.uid))
     }
+
 
     LaunchedEffect(key1 = game) {
         val isHost = Tools.getHost(game.players, gameViewModel.currentUser)
@@ -87,7 +89,12 @@ fun GameContent(game: GameRoom, gameViewModel: GameViewModel, navController: Nav
                 Tools.getPlayer(game.players, gameViewModel.currentUser)
         }
         Log.d("LaunchedEffect", "LaunchedEffect has been called. ")
-
+        game.players.forEach {
+            if (it.uid == currentPlayer.uid) {
+                gameViewModel.currentPlayer.value = it
+                currentPlayer = it
+            }
+        }
 
         val playerIsPlaying = Tools.checkCards(game.players)
         val alivePlayers = game.players.filter {
@@ -150,6 +157,7 @@ fun GameContent(game: GameRoom, gameViewModel: GameViewModel, navController: Nav
 
     BackHandler(true) {
         Log.d(TAG, "HEYYYY YOU GUYYYYYSSSSS")
+
     }
 
     Scaffold(
@@ -233,7 +241,7 @@ fun GameContent(game: GameRoom, gameViewModel: GameViewModel, navController: Nav
                 ) {
                     PlayingTable(game = game, gameViewModel, navController,
                         modifier = Modifier
-                            .background(DarkNavy)
+                            .background(OffWhite)
                             .fillMaxSize())
                 }
                 if (gameViewModel.selectPlayerAlert.value) {
@@ -266,313 +274,7 @@ fun GameContent(game: GameRoom, gameViewModel: GameViewModel, navController: Nav
 
                 }
 
-                /*//Players in the room
-                Row(Modifier
-                    .fillMaxWidth()
-                    .background(Color.Blue.copy(0.5f))
-                    .padding(bottom = 8.dp)
-                    .weight(0.15f),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceEvenly) {
-                    val playerList = gameViewModel.removeCurrentPlayer(game.players)
 
-                    playerList.forEach {
-                        if (it.uid != HandleUser.returnUser()?.uid) {
-                            val color by animateColorAsState(targetValue = if (it.turn) {
-                                Color.Green
-                            } else {
-                                Color.Yellow
-                            })
-                            val avatar = Avatar.setAvatar(it.avatar)
-                            Box() {
-                                if (!it.isAlive) {
-                                    Icon(
-                                        Icons.Rounded.Close,
-                                        null,
-                                        tint = Color.Red,
-                                        modifier = Modifier
-                                            .align(Alignment.Center)
-                                            .zIndex(1f)
-                                    )
-                                }
-                                Image(
-                                    painter = painterResource(id = avatar.avatar),
-                                    contentDescription = avatar.description,
-                                    modifier = Modifier
-                                        .scale(0.7f)
-                                        .padding(8.dp)
-                                        .clip(CircleShape)
-                                        .border(4.dp, color, CircleShape)
-                                        .align(Alignment.Center)
-                                )
-                                Spacer(Modifier.size(4.dp))
-                                Text(
-                                    text = it.nickName,
-                                    style = MaterialTheme.typography.subtitle1,
-                                    modifier = Modifier.align(Alignment.BottomCenter)
-                                )
-
-                            }
-                        }
-                    }
-                }
-                Button(onClick = { GameRules.startNewGame(gameRoom = game) }) {
-                    Text("Restart game")
-                }
-                Text(
-                    text = "Current turn: ${game.turn}"
-                )
-                Text(modifier = Modifier,
-                    text = game.deck.deck.toString()
-                )
-
-                //Center card
-                Box(Modifier
-                    .fillMaxWidth()
-                    .weight(0.6f)) {
-                    Text(modifier = Modifier.align(Alignment.CenterEnd),
-                        text = game.deck.deck.size.toString()
-                    )
-                    //Deck
-                    Box(Modifier
-                        .padding(start = 8.dp)
-                        .height(150.dp)
-                        .width(60.dp)
-                        .background(Color.Black)
-                        .align(Alignment.CenterStart)
-                    ) {
-                        Row(
-                            Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceEvenly
-                        ) {
-                            game.deck.deck.forEach { int ->
-                                Divider(
-                                    color = Color.Red,
-                                    modifier = Modifier
-                                        .zIndex(1f)
-                                        .fillMaxHeight()
-                                        .width(1.dp)
-                                        .padding(horizontal = 0.5.dp)
-                                )
-                            }
-                        }
-
-                    }
-                    Box(modifier = Modifier.align(Alignment.Center)) {
-
-                        if (game.deck.discardDeck.isEmpty()) {
-                            Box(Modifier
-                                .width(160.dp)
-                                .height(230.dp)
-                                .clip(RoundedCornerShape(5.dp))
-                                .border(2.dp, Color.LightGray, RoundedCornerShape(5.dp)),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Icon(
-                                    Icons.Rounded.ShoppingCart,
-                                    null
-                                )
-                            }
-                        } else {
-                            game.deck.discardDeck.forEach {
-                                Box(
-                                    modifier = Modifier.rotate(gameViewModel.randomFloat())
-                                ) {
-                                    PlayingCard(cardAvatar = CardAvatar.setCardAvatar(it))
-                                }
-                            }
-
-                        }
-                    }
-                }
-
-
-                var selectedIndex by remember {
-                    mutableStateOf(-1)
-                }
-
-                //Player hand
-                Box(
-                    Modifier.weight(0.4f),
-                ) {
-                    game.players.forEach { player ->
-                        if (player.uid == HandleUser.returnUser()!!.uid) {
-                            if (player.hand.isEmpty()) {
-                                Column() {
-                                    Text(
-                                        text = "You were eliminated",
-                                        style = MaterialTheme.typography.h6
-                                    )
-                                    Text(
-                                        text = "Please wait till a new round begins.",
-                                        style = MaterialTheme.typography.body1
-                                    )
-                                }
-                            } else {
-
-                                player.hand.let { hand ->
-                                    var hasCountess by remember {
-                                        mutableStateOf(false)
-                                    }
-                                    hasCountess = Countess.checkHand(hand)
-
-                                    LazyRow(
-                                        Modifier.fillMaxWidth(),
-                                        horizontalArrangement = Arrangement.Center
-                                    ) {
-                                        itemsIndexed(hand) { index, cardNumber ->
-                                            if (hand.size == 2) {
-
-                                                var notPlayable by remember {
-                                                    mutableStateOf(false)
-                                                }
-                                                if (hasCountess) {
-                                                    notPlayable = Countess.checkCard(cardNumber)
-                                                }
-
-
-                                                val scale by animateFloatAsState(targetValue = if (selectedIndex == index) 0.8f else 0.6f)
-                                                val offset by animateDpAsState(targetValue = if (selectedIndex == index) (-50).dp else 0.dp)
-
-                                                Box(contentAlignment = Alignment.Center) {
-                                                    PlayingCard(cardAvatar = CardAvatar.setCardAvatar(
-                                                        cardNumber),
-                                                        notPlayable = notPlayable,
-                                                        modifier = Modifier
-                                                            .scale(scale)
-                                                            .offset(y = offset)
-                                                            .selectable(
-                                                                selected = selectedIndex == index,
-                                                                onClick = {
-                                                                    selectedIndex =
-                                                                        if (selectedIndex == index) {
-                                                                            -1
-                                                                        } else {
-                                                                            index
-                                                                        }
-                                                                    if ((cardNumber == 5 || cardNumber == 6) && hasCountess) {
-                                                                        Toast
-                                                                            .makeText(context,
-                                                                                "Please play the Countess.",
-                                                                                Toast.LENGTH_SHORT)
-                                                                            .show()
-                                                                    }
-
-                                                                }
-                                                            )
-                                                    )
-
-                                                    if (selectedIndex == index) {
-                                                        if ((cardNumber == 5 || cardNumber == 6) && hasCountess) {
-
-                                                        } else {
-                                                            OutlinedButton(modifier = Modifier.align(
-                                                                Alignment.BottomCenter),
-                                                                onClick = {
-                                                                    gameViewModel.onPlay(
-                                                                        card = cardNumber,
-                                                                        player = player,
-                                                                        gameRoom = game
-                                                                    )
-                                                                }) {
-                                                                Text("Play")
-                                                            }
-                                                        }
-
-                                                    }
-                                                }
-
-                                            } else {
-                                                var selected by remember {
-                                                    mutableStateOf(false)
-                                                }
-                                                val scale by animateFloatAsState(targetValue = if (selected) 0.8f else 0.6f)
-                                                Box(contentAlignment = Alignment.Center) {
-                                                    PlayingCard(modifier = Modifier
-                                                        .scale(scale)
-                                                        .clickable {
-                                                            selected = !selected
-                                                        },
-                                                        cardAvatar = CardAvatar.setCardAvatar(
-                                                            cardNumber)
-                                                    )
-                                                }
-                                            }
-
-                                        }
-                                    }
-                                }
-                            }
-
-                        }
-                    }
-
-                }*/
-                /* Row(
-                     Modifier
-                         .fillMaxWidth()
-                         .background(Color.Blue)
-                         .weight(0.1f),
-                     verticalAlignment = Alignment.CenterVertically,
-                     horizontalArrangement = Arrangement.SpaceBetween
-                 ) {
-                     //Opens modal drawer
-                     IconButton(
-                         modifier = Modifier,
-                         onClick = { scope.launch { drawerState.open() } }) {
-                         Icon(
-                             Icons.Rounded.Menu,
-                             null,
-                             tint = Color.Green
-                         )
-                     }
-
-                     Row(
-                         verticalAlignment = Alignment.CenterVertically
-                     ) {
-                         val avatar = Avatar.setAvatar(currentPlayer.avatar!!)
-                         val color by animateColorAsState(targetValue = if (currentPlayer.turn) {
-                             Color.Red
-                         } else {
-                             Color.Blue
-                         })
-                         Box() {
-                             Image(
-                                 painter = painterResource(id = avatar.avatar),
-                                 contentDescription = avatar.description,
-                                 modifier = Modifier
-                                     .scale(0.7f)
-                                     .padding(8.dp)
-                                     .clip(CircleShape)
-                                     .border(2.dp, color, CircleShape)
-                             )
-                             if (!currentPlayer.isAlive) {
-                                 Icon(
-                                     Icons.Rounded.Close,
-                                     null,
-                                     tint = Color.Red,
-                                     modifier = Modifier
-                                         .align(Alignment.Center)
-                                         .zIndex(1f)
-                                 )
-                             }
-                         }
-                         Spacer(Modifier.size(4.dp))
-                         Text(
-                             text = currentPlayer.nickName,
-                             style = MaterialTheme.typography.subtitle1,
-                         )
-                     }
-                     IconButton(
-                         modifier = Modifier,
-                         onClick = { gameViewModel.chatOpen.value = true }) {
-                         Icon(
-                             Icons.Rounded.Email,
-                             null,
-                             tint = Color.Green
-                         )
-                     }
-                 }*/
                 BottomBar(modifier = Modifier.height(100.dp),
                     player = currentPlayer,
                     game = game,

@@ -124,17 +124,26 @@ private fun HomeContent(
                 )
             }
             items(firestoreUser.joinedGames) { game ->
-                if (currentUser != null) {
-                    JoinedGameCard(game,
+                Column(
                     modifier = Modifier
-                        .padding(vertical = 8.dp, horizontal = 16.dp)) {
-                        gameViewModel.roomCode.value = game.roomCode
-                        Log.d(TAG, game.roomCode)
-                        navHostController.navigate(Screen.Game.route) {
-                            this.popUpToId
+                        .fillMaxSize()
+                ) {
+                    if (firestoreUser.joinedGames.isEmpty()) {
+                        Text(text = "Start playing today!", color = Color.White)
+                    }
+                    if (currentUser != null) {
+                        JoinedGameCard(game,
+                            modifier = Modifier
+                                .padding(vertical = 8.dp, horizontal = 16.dp)) {
+                            gameViewModel.roomCode.value = game.roomCode
+                            Log.d(TAG, game.roomCode)
+                            navHostController.navigate(Screen.Game.route) {
+                                this.popUpToId
+                            }
                         }
                     }
                 }
+
             }
             item {
                 OutlinedButton(onClick = {

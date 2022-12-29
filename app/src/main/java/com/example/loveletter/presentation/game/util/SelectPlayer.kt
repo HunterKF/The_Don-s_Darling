@@ -31,6 +31,9 @@ import com.example.loveletter.domain.Avatar
 import com.example.loveletter.domain.GameRoom
 import com.example.loveletter.domain.Player
 import com.example.loveletter.presentation.game.GameViewModel
+import com.example.loveletter.ui.theme.DarkNavy
+import com.example.loveletter.ui.theme.Navy
+import com.example.loveletter.ui.theme.OffWhite
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 
@@ -95,10 +98,6 @@ fun SelectPlayer(
                                                 Toast.LENGTH_SHORT)
                                             .show()
                                         Log.d(TAG, "It has been clicked.")
-//                                        Log.d(TAG, "currentIndex: $currentIndex")
-//                                        Log.d(TAG, "index: ${index.value}")
-//                                        Log.d(TAG, "selectedIndex: $selectedIndex")
-//                                        Log.d(TAG, "color2: $color")
                                     }
                                 ),
                         ) {
@@ -124,36 +123,34 @@ fun SelectPlayer(
 
             }
             Spacer(Modifier.height(20.dp))
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceEvenly
-            ) {
-                /*IconButton(onClick = { selectPlayer.value = false },
-                    modifier = Modifier
-                        .weight(0.5f)
-                        .padding(horizontal = 16.dp)
-                        .shadow(4.dp, shape = RoundedCornerShape(15.dp))) {
-                    Icon(
-                        Icons.Rounded.Close,
-                        "Cancel"
-                    )
-                }*/
-                IconButton(onClick = {
+
+            Button(
+                enabled = selectedPlayer.value.uid != "",
+                modifier = Modifier
+                    .weight(0.5f)
+                    .padding(16.dp)
+                    .clip(RoundedCornerShape(15.dp)),
+                colors = ButtonDefaults.buttonColors(
+                    disabledBackgroundColor = Color.Gray,
+                    disabledContentColor = OffWhite,
+                    backgroundColor = Navy,
+                    contentColor = Color.White
+                ),
+                onClick = {
                     gameViewModel.onSelectPlayer(selectedPlayer = selectedPlayer.value,
                         gameRoom = gameRoom)
                 },
-                    modifier = Modifier
-                        .weight(0.5f)
-                        .padding(horizontal = 16.dp)
-                        .shadow(4.dp, shape = RoundedCornerShape(15.dp))) {
-                    Icon(
-                        Icons.Rounded.Check,
-                        "Select player"
+            ) {
+                Icon(
+                    Icons.Rounded.Check,
+                    "Select player",
+                    tint = Color.White,
+                    modifier = Modifier.padding(8.dp),
                     )
-                }
             }
         }
     }
 }
+
 
 

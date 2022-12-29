@@ -10,6 +10,5 @@ sealed class Screen(val route: String, val label: String, val vector: ImageVecto
     object HostPlayer : Screen("host_player", "Host Player", Icons.Rounded.Create)
     object JoinGame : Screen("join_game", "Join Game", Icons.Rounded.Create)
     object GameLobby : Screen("game_lobby", "Game Lobby", Icons.Rounded.AccountBox)
-    object MyGames : Screen("my_games", "My Games", Icons.Rounded.List)
     object Game : Screen("game", "Game", Icons.Rounded.ThumbUp)
 }

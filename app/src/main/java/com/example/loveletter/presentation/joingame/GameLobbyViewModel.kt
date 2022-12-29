@@ -35,4 +35,8 @@ class GameLobbyViewModel : ViewModel() {
             }
         }
     }
+
+    fun assignCharNumber(index: Int): Int {
+        return index + 1
+    }
 }

@@ -1,5 +1,6 @@
 package com.example.loveletter.presentation.createroom
 
+import android.content.Intent
 import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.*
@@ -16,6 +17,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -28,6 +30,9 @@ import com.example.loveletter.domain.GameRoom
 import com.example.loveletter.presentation.game.GameViewModel
 import com.example.loveletter.presentation.joingame.GameLobbyState
 import com.example.loveletter.presentation.joingame.GameLobbyViewModel
+import com.example.loveletter.ui.theme.DarkNavy
+import com.example.loveletter.ui.theme.Navy
+import com.example.loveletter.ui.theme.Steel
 import com.example.loveletter.util.joingame.JoinGame
 import com.example.loveletter.util.user.HandleUser
 
@@ -90,58 +95,83 @@ private fun GameLobbyContent(
     gameLobbyViewModel: GameLobbyViewModel,
     gameRoom: GameRoom,
 ) {
-
-    Surface(Modifier.fillMaxSize()) {
+    var ready by remember { mutableStateOf(false) }
+    val sendIntent: Intent = Intent().apply {
+        action = Intent.ACTION_SEND
+        putExtra(Intent.EXTRA_TEXT, "Let's play a game! Here's the code: ${gameRoom.roomCode}")
+        type = "text/plain"
+    }
+    val shareIntent = Intent.createChooser(sendIntent, null)
+    val context = LocalContext.current
+    Surface(
+        color = DarkNavy
+    ) {
         Box() {
-            IconButton(modifier = Modifier
-                .align(Alignment.TopStart)
-                .padding(4.dp),
-                onClick = {
-                    JoinGame.leaveGame(gameRoom.roomCode,
-                        HandleUser.createGamePlayer(avatar = 0, nickname = "", isHost = false))
-                    HandleUser.deleteUserGameRoom(
-                        gameRoom.roomCode,
-                        gameRoom.roomNickname,
-                        gameRoom.players
-                    )
-                    navController.navigate(Screen.Home.route)
-                }) {
-                Icon(
-                    Icons.Rounded.ArrowBack,
-                    stringResource(R.string.go_back)
-                )
-            }
+
             Column(Modifier
                 .fillMaxSize()
                 .padding(vertical = 48.dp, horizontal = 16.dp),
                 verticalArrangement = Arrangement.SpaceBetween,
                 horizontalAlignment = Alignment.CenterHorizontally) {
-
-                Row(horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically) {
-                    Text(gameRoom.roomCode, style = MaterialTheme.typography.h6)
-                    IconButton(onClick = {
-                        Log.d(TAG,
-                            "Value for roomcode: ${gameRoom.roomCode}")
-                    }) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                ) {
+                    IconButton(modifier = Modifier
+                        .align(Alignment.TopStart)
+                        .padding(4.dp),
+                        onClick = {
+                            JoinGame.leaveGame(gameRoom.roomCode,
+                                HandleUser.createGamePlayer(avatar = 0,
+                                    nickname = "",
+                                    isHost = false))
+                            HandleUser.deleteUserGameRoom(
+                                gameRoom.roomCode,
+                                gameRoom.roomNickname,
+                                gameRoom.players
+                            )
+                            navController.navigate(Screen.Home.route)
+                        }) {
                         Icon(
-                            Icons.Rounded.Share,
-                            null
+                            Icons.Rounded.ArrowBack,
+                            stringResource(R.string.go_back),
+                            tint = Color.White
                         )
                     }
-                }
+                    Row(
+                        modifier = Modifier.align(Alignment.Center),
+                        horizontalArrangement = Arrangement.Center,
+                        verticalAlignment = Alignment.CenterVertically) {
+                        Text(gameRoom.roomCode, style = MaterialTheme.typography.h6, color = Color.White)
+                        IconButton(onClick = {
 
+                            Log.d(TAG,
+                                "Value for room code: ${gameRoom.roomCode}")
+                            context.startActivity(shareIntent)
+
+                        }) {
+                            Icon(
+                                Icons.Rounded.Share,
+                                null,
+                                tint = Color.White
+                            )
+                        }
+                    }
+                }
+                Spacer(modifier = Modifier.height(24.dp))
                 Text(
                     text = gameRoom.roomNickname,
-                    style = MaterialTheme.typography.h2
+                    style = MaterialTheme.typography.h2,
+                    color = Color.White
                 )
+                Spacer(modifier = Modifier.height(24.dp))
 
                 Column(Modifier
-                    .clip(RoundedCornerShape(10.dp))
                     .padding(16.dp)
+                    .clip(RoundedCornerShape(25.dp))
+                    .weight(1f)
                     .fillMaxWidth()
-                    .background(Color.Blue)
-                    .alpha(0.5f)) {
+                    .background(Steel)) {
 
                     gameRoom.players.forEach { player ->
 

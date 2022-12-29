@@ -6,6 +6,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -38,6 +39,7 @@ import com.example.loveletter.ui.theme.Navy
 import com.example.loveletter.ui.theme.OffWhite
 import com.example.loveletter.ui.theme.Steel
 import com.example.loveletter.util.game.GameServer
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 
 @Composable
@@ -45,6 +47,13 @@ fun Messenger(gameRoom: GameRoom, gameViewModel: GameViewModel) {
     var message = remember {
         mutableStateOf("")
     }
+    val listState = rememberLazyListState()
+    val coroutineScope = rememberCoroutineScope()
+    LaunchedEffect(key1 = gameRoom.gameLog, block = {
+        coroutineScope.launch {
+            listState.animateScrollToItem(gameRoom.gameLog.size -1)
+        }
+    })
     Surface(
         modifier = Modifier.fillMaxSize(),
         color = DarkNavy
@@ -56,11 +65,17 @@ fun Messenger(gameRoom: GameRoom, gameViewModel: GameViewModel) {
                     .padding(2.dp)
                     .fillMaxWidth()
                     .weight(1f)
-                    .clip(RoundedCornerShape(topStart = 0.dp, topEnd = 0.dp, bottomEnd = 15.dp, bottomStart = 15.dp))) {
+                    .clip(RoundedCornerShape(topStart = 0.dp,
+                        topEnd = 0.dp,
+                        bottomEnd = 15.dp,
+                        bottomStart = 15.dp))) {
                 Scaffold(
                     topBar = {
                         Row(
-                            modifier = Modifier.padding(16.dp).fillMaxWidth().height(80.dp),
+                            modifier = Modifier
+                                .padding(16.dp)
+                                .fillMaxWidth()
+                                .height(80.dp),
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.SpaceBetween
                         ) {
@@ -98,6 +113,7 @@ fun Messenger(gameRoom: GameRoom, gameViewModel: GameViewModel) {
                         Column() {
 
                             LazyColumn(
+                                state = listState,
                                 contentPadding = PaddingValues(16.dp),
                                 modifier = Modifier
                                     .fillMaxSize()

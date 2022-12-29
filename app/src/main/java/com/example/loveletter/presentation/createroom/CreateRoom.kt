@@ -1,5 +1,6 @@
 package com.example.loveletter.presentation.createroom
 
+import android.content.Intent
 import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.*
@@ -27,6 +28,9 @@ import com.example.loveletter.TAG
 import com.example.loveletter.domain.Avatar
 import com.example.loveletter.domain.GameRoom
 import com.example.loveletter.presentation.game.GameViewModel
+import com.example.loveletter.ui.theme.DarkNavy
+import com.example.loveletter.ui.theme.Navy
+import com.example.loveletter.ui.theme.Steel
 import com.example.loveletter.util.startgame.StartGame
 import com.example.loveletter.util.user.HandleUser
 
@@ -83,59 +87,84 @@ private fun CreateRoomContent(
     gameViewModel: GameViewModel,
 ) {
     var ready by remember { mutableStateOf(false) }
+    val sendIntent: Intent = Intent().apply {
+        action = Intent.ACTION_SEND
+        putExtra(Intent.EXTRA_TEXT, "Let's play a game! Here's the code: ${gameRoom.roomCode}")
+        type = "text/plain"
+    }
+    val shareIntent = Intent.createChooser(sendIntent, null)
     val context = LocalContext.current
 
-    Surface(Modifier.fillMaxSize()) {
-        Box() {
-            IconButton(modifier = Modifier
-                .align(Alignment.TopStart)
-                .padding(4.dp),
-                onClick = {
-                    navController.popBackStack()
-                    StartGame.deleteRoom(createRoomViewModel.roomCode.value)
-                    HandleUser.deleteUserGameRoom(
-                        gameRoom.roomCode,
-                        gameRoom.roomNickname,
-                        gameRoom.players
-                    )
+    Surface(
+        color = DarkNavy
+    ) {
+        Box(
 
-                }) {
-                Icon(
-                    Icons.Rounded.ArrowBack,
-                    stringResource(R.string.go_back)
-                )
-            }
+        ) {
+
             Column(Modifier
                 .fillMaxSize()
                 .padding(vertical = 48.dp, horizontal = 16.dp),
                 verticalArrangement = Arrangement.SpaceBetween,
                 horizontalAlignment = Alignment.CenterHorizontally) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                ) {
+                    IconButton(modifier = Modifier
+                        .align(Alignment.TopStart)
+                        .padding(4.dp),
+                        onClick = {
+                            navController.popBackStack()
+                            StartGame.deleteRoom(createRoomViewModel.roomCode.value)
+                            HandleUser.deleteUserGameRoom(
+                                gameRoom.roomCode,
+                                gameRoom.roomNickname,
+                                gameRoom.players
+                            )
 
-                Row(horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically) {
-                    Text(gameRoom.roomCode, style = MaterialTheme.typography.h6)
-                    IconButton(onClick = {
-                        Log.d(TAG,
-                            "Value for roomcode: ${gameRoom.roomCode}")
-                    }) {
+                        }) {
                         Icon(
-                            Icons.Rounded.Share,
-                            null
+                            Icons.Rounded.ArrowBack,
+                            stringResource(R.string.go_back)
                         )
+                    }
+                    Row(
+                        modifier = Modifier.align(Alignment.Center),
+                        horizontalArrangement = Arrangement.Center,
+                        verticalAlignment = Alignment.CenterVertically) {
+                        Text(gameRoom.roomCode,
+                            style = MaterialTheme.typography.h6,
+                            color = Color.White)
+                        IconButton(onClick = {
+                            Log.d(TAG,
+                                "Value for room code: ${gameRoom.roomCode}")
+                            context.startActivity(shareIntent)
+                        }) {
+                            Icon(
+                                Icons.Rounded.Share,
+                                null,
+                                tint = Color.White
+                            )
+                        }
                     }
                 }
 
+                Spacer(modifier = Modifier.height(24.dp))
                 Text(
                     text = gameRoom.roomNickname,
-                    style = MaterialTheme.typography.h2
+                    style = MaterialTheme.typography.h2,
+                    color = Color.White
                 )
+                Spacer(modifier = Modifier.height(24.dp))
+
 
                 Column(Modifier
-                    .clip(RoundedCornerShape(10.dp))
                     .padding(16.dp)
+                    .clip(RoundedCornerShape(25.dp))
+                    .weight(1f)
                     .fillMaxWidth()
-                    .background(Color.Blue)
-                    .alpha(0.5f)) {
+                    .background(Steel)) {
 
                     gameRoom.players.forEach { player ->
 
@@ -161,24 +190,59 @@ private fun CreateRoomContent(
 
 
                 if (!ready) {
-                    OutlinedButton(onClick = { ready = true }) {
+                    OutlinedButton(
+                        modifier = Modifier
+                            .padding(16.dp)
+                            .fillMaxWidth(),
+                        enabled = gameRoom.players.size > 1,
+                        colors = ButtonDefaults.buttonColors(
+                            backgroundColor = Navy,
+                            contentColor = Color.White,
+                            disabledBackgroundColor = Color.LightGray,
+                            disabledContentColor = Color.Black
+                        ),
+                        onClick = { ready = true }) {
                         Text("Ready?")
                     }
                 } else {
                     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
-                        Button(onClick = {
-                            gameViewModel.assignRoomCode(createRoomViewModel.roomCode.value)
-                            StartGame.startGame(
-                                gameRoom = gameRoom,
-                                context = context
-                            ) {
-                                navController.navigate(Screen.Game.route)
-                            }
-                        }) {
-                            Icon(Icons.Rounded.Check, stringResource(R.string.confirm_ready))
+                        Button(
+                            modifier = Modifier
+                                .padding(16.dp)
+                                .border(1.dp, Steel, RoundedCornerShape(5.dp)),
+                            colors = ButtonDefaults.buttonColors(
+                                backgroundColor = Navy,
+                                contentColor = Color.White,
+                                disabledBackgroundColor = Color.LightGray,
+                                disabledContentColor = Color.Black
+                            ),
+                            onClick = {
+                                gameViewModel.assignRoomCode(createRoomViewModel.roomCode.value)
+                                StartGame.startGame(
+                                    gameRoom = gameRoom,
+                                    context = context
+                                ) {
+                                    navController.navigate(Screen.Game.route)
+                                }
+                            }) {
+                            Icon(Icons.Rounded.Check,
+                                stringResource(R.string.confirm_ready),
+                                tint = Steel)
                         }
-                        Button(onClick = { ready = false }) {
-                            Icon(Icons.Rounded.Close, stringResource(R.string.cancel_ready))
+                        Button(
+                            modifier = Modifier
+                                .padding(16.dp)
+                                .border(1.dp, Steel, RoundedCornerShape(5.dp)),
+                            colors = ButtonDefaults.buttonColors(
+                                backgroundColor = Navy,
+                                contentColor = Color.White,
+                                disabledBackgroundColor = Color.LightGray,
+                                disabledContentColor = Color.Black
+                            ),
+                            onClick = { ready = false }) {
+                            Icon(Icons.Rounded.Close,
+                                stringResource(R.string.cancel_ready),
+                                tint = Steel)
                         }
                     }
                 }
