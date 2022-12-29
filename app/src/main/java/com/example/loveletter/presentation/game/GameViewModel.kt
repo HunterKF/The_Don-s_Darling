@@ -270,12 +270,17 @@ class GameViewModel : ViewModel() {
     }
 
     fun removeCurrentPlayer(list: List<Player>): List<Player> {
+
+        val newList = arrayListOf<Player>()
         list.forEach {
-            if (it.uid == HandleUser.returnUser()?.uid) {
-                list.minus(it)
+            if (it.uid != currentPlayer.value.uid) {
+                Log.d(TAG, "removing player: $it")
+                newList.add(it)
             }
         }
-        return list
+        Log.d(TAG, "removing current player: $list")
+        Log.d(TAG, "Check size: ${list.size}")
+        return newList.sortedBy { it.turnOrder }
 
     }
 

@@ -4,7 +4,7 @@ data class GameRoom(
     val deck: Deck,
     var turn: Int,
     var roomCode: String,
-    val roomNickname: String,
+    var roomNickname: String,
     var playLimit: Int,
     var players: List<Player>,
     var start: Boolean,

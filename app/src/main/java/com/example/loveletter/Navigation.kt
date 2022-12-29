@@ -13,7 +13,6 @@ import com.example.loveletter.presentation.game.Game
 import com.example.loveletter.presentation.game.GameViewModel
 import com.example.loveletter.presentation.joingame.GameLobbyViewModel
 import com.example.loveletter.presentation.joingame.JoinGameScreen
-import com.example.loveletter.presentation.mygames.MyGames
 import com.example.loveletter.presentation.mygames.MyGamesViewModel
 
 @Composable
@@ -27,7 +26,7 @@ fun Navigation(
 
     NavHost(navController = navController, startDestination = Screen.Home.route) {
         composable(Screen.Home.route) {
-            HomeScreen(navController)
+            HomeScreen(navController, myGamesViewModel, gameViewModel)
         }
         composable(Screen.CreateRoom.route) {
             CreateRoom(navController, createRoomViewModel, gameViewModel)
@@ -40,9 +39,6 @@ fun Navigation(
         }
         composable(Screen.GameLobby.route) {
             GameLobby(navController, gameLobbyViewModel, gameViewModel)
-        }
-        composable(Screen.MyGames.route) {
-            MyGames(navController, myGamesViewModel, gameViewModel)
         }
         composable(Screen.Game.route) {
             Game(navController, gameViewModel)

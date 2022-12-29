@@ -119,7 +119,7 @@ fun PlayingCard(
                 }
             )
         }
-        IconButton(onClick = { infoWindow = !infoWindow },
+        /*IconButton(onClick = { infoWindow = !infoWindow },
             modifier = Modifier
                 .align(Alignment.BottomEnd)
                 .offset(x = 10.dp, y = (10).dp)
@@ -132,7 +132,7 @@ fun PlayingCard(
                     .scale(0.5f)
                     .align(Alignment.BottomEnd)
             )
-        }
+        }*/
     }
 }
 

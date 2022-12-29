@@ -16,17 +16,29 @@ val GAMERULES_TAG = "GameRules"
 class GameRules {
     companion object {
         fun handlePlayedCard(card: Int, player: Player, gameRoom: GameRoom) {
+            val TAGHandle = "HandleCard"
+            Log.d(TAGHandle, "Removing card has started.")
 
             gameRoom.players.forEach {
-                if (it == player) {
-                    player.hand.remove(card)
+                Log.d(TAGHandle, "Checking id's: ${it.uid} and player ${player.uid}")
+
+                if (it.uid == player.uid) {
+                    Log.d(TAGHandle, "Removing a card from ${it.nickName}'s hand.")
+                    Log.d(TAGHandle, "${it.nickName}'s hand size is ${it.hand.size}.")
+
+                    it.hand.remove(card)
                     gameRoom.deck.discardDeck = addToDiscardPile(card, gameRoom = gameRoom)
+                    Log.d(TAGHandle, "${it.nickName}'s hand size after removal is ${it.hand.size}.")
+
 //                    gameRoom.deck.deck = removeFromDeck(card, gameRoom = gameRoom)
 //                    gameRoom.players = endPlayerTurn(gameRoom = gameRoom)
+                    Log.d(TAGHandle, "Updating gameRoom.")
 
                     updateGame(gameRoom = gameRoom)
                 }
             }
+            Log.d(TAGHandle, "Removing card has started.")
+
         }
 
         fun onTurn(gameRoom: GameRoom, player: Player) {
@@ -168,7 +180,13 @@ class GameRules {
                 it.turnOrder = 0
                 it.ready = true
             }
+            val gameLogs = gameRoom.gameLog.filter { it.type == "userMessage" }
+
             var game = GameRoom()
+            gameLogs.forEach {
+                game.gameLog.add(it)
+            }
+            game.roomNickname = gameRoom.roomNickname
             game.roomCode = gameRoom.roomCode
             game.playLimit = gameRoom.playLimit
             game.players = gameRoom.players
@@ -176,6 +194,7 @@ class GameRules {
             game.roundOver = false
             game.gameOver = false
             gameRoom.start = true
+
             game.turn = turn
             game = dealCards(game)
             updateGame(game)

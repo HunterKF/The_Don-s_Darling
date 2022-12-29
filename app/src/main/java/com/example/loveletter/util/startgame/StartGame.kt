@@ -7,6 +7,7 @@ import com.example.loveletter.TAG
 import com.example.loveletter.dbGame
 import com.example.loveletter.domain.Deck
 import com.example.loveletter.domain.GameRoom
+import com.example.loveletter.domain.LogMessage
 import com.example.loveletter.domain.Player
 import com.example.loveletter.util.game.gamerules.GameRules
 import com.example.loveletter.util.user.HandleUser
@@ -17,6 +18,7 @@ import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.tasks.await
+import java.util.*
 
 class StartGame() {
 
@@ -29,6 +31,7 @@ class StartGame() {
             roomCode: String,
         ) = CoroutineScope(Dispatchers.IO).launch {
             val deck = Deck()
+
             val gameRoom = GameRoom(
                 deck = deck,
                 turn = 0,
@@ -57,7 +60,13 @@ class StartGame() {
             context: Context,
             onSuccess: () -> Unit,
         ) {
+            val logMessage = LogMessage.createLogMessage(
+                "The game has started.",
+                null,
+                "gameLog"
+            )
             var updatedGameRoom = gameRoom
+            updatedGameRoom.gameLog.add(logMessage)
             val turn = (1..gameRoom.players.size).shuffled().random()
             gameRoom.players = GameRules.assignTurns(gameRoom.players, gameTurn = turn)
             gameRoom.turn = turn
