@@ -273,13 +273,16 @@ class GameViewModel : ViewModel() {
 
         val newList = arrayListOf<Player>()
         list.forEach {
+            Log.d(TAG, "Comparing uids: ${it.uid} and ${currentPlayer.value.uid}")
             if (it.uid != currentPlayer.value.uid) {
-                Log.d(TAG, "removing player: $it")
+                Log.d(TAG, "adding player to new list: ${it.nickName}")
                 newList.add(it)
+            } else {
+                Log.d(TAG, "Found local player: ${it.nickName}")
             }
         }
-        Log.d(TAG, "removing current player: $list")
-        Log.d(TAG, "Check size: ${list.size}")
+        Log.d(TAG, "removing current player: $newList")
+        Log.d(TAG, "Check size: ${newList.size}")
         return newList.sortedBy { it.turnOrder }
 
     }

@@ -63,7 +63,7 @@ class StartGame() {
             val logMessage = LogMessage.createLogMessage(
                 "The game has started.",
                 null,
-                "gameLog"
+                "serverMessage"
             )
             var updatedGameRoom = gameRoom
             updatedGameRoom.gameLog.add(logMessage)

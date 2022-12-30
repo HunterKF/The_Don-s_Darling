@@ -100,29 +100,32 @@ class HandleUser {
                     "",
                     listOf(),
                 )
-                val listener = dbPlayers.document(currentUser.uid)
-                    .addSnapshotListener { documentSnapshot, exception ->
-                        exception?.let {
-                            Log.d(TAG,
-                                "An error has occurred trying to observe my games: $exception")
-                            return@addSnapshotListener
-                        }
-                        Log.d(TAG, "Attempting to get the document")
-                        documentSnapshot?.let {
-                            val firestoreUser = it.toObject(FirestoreUser::class.java)
-                            Log.d(TAG, "Document grabbed... $firestoreUser")
-
-                            firestoreUser?.let {
-                                joinedGameList = firestoreUser
-                                Log.d(TAG, "Changing it out $joinedGameList")
-
+                currentUser?.let {
+                    val listener = dbPlayers.document(currentUser.uid)
+                        .addSnapshotListener { documentSnapshot, exception ->
+                            exception?.let {
+                                Log.d(TAG,
+                                    "An error has occurred trying to observe my games: $exception")
+                                return@addSnapshotListener
                             }
+                            Log.d(TAG, "Attempting to get the document")
+                            documentSnapshot?.let {
+                                val firestoreUser = it.toObject(FirestoreUser::class.java)
+                                Log.d(TAG, "Document grabbed... $firestoreUser")
+
+                                firestoreUser?.let {
+                                    joinedGameList = firestoreUser
+                                    Log.d(TAG, "Changing it out $joinedGameList")
+
+                                }
+                            }
+                            trySend(joinedGameList)
                         }
-                        trySend(joinedGameList)
+                    awaitClose {
+                        listener.remove()
                     }
-                awaitClose {
-                    listener.remove()
                 }
+
             }
         }
 

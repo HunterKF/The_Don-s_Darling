@@ -1,5 +1,6 @@
 package com.example.loveletter.presentation.game.util
 
+import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -11,20 +12,20 @@ import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.CheckCircle
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import androidx.navigation.NavController
 import com.example.loveletter.R
+import com.example.loveletter.TAG
 import com.example.loveletter.domain.*
 import com.example.loveletter.presentation.game.GameViewModel
 import com.example.loveletter.ui.theme.*
@@ -47,7 +48,7 @@ fun Table(
 fun PlayerIconLeft(
     player: Player,
     xDp: Dp = 20.dp,
-    borderStroke: BorderStroke = BorderStroke(1.dp, Color.Red)
+    borderStroke: BorderStroke
 ) {
 
     Box(
@@ -89,6 +90,26 @@ fun PlayerIconLeft(
             modifier = Modifier.align(Alignment.CenterStart),
             contentAlignment = Alignment.Center
         ) {
+            if (!player.isAlive) {
+                Box(
+                    modifier = Modifier
+                        .zIndex(2f)
+                        .border(borderStroke, CircleShape)
+                        .align(Alignment.Center)
+                        .size(45.dp)
+                        .clip(CircleShape)
+                        .background(Color.DarkGray.copy(0.8f))
+                ) {
+                    Icon(
+                        painterResource(id = R.drawable.dead),
+                        null,
+                        tint = Color.Black,
+                        modifier = Modifier
+                            .align(Alignment.Center)
+                            .size(35.dp),
+                    )
+                }
+            }
             Image(
                 painter = painterResource(id = avatar.avatar),
                 contentDescription = avatar.description,
@@ -130,7 +151,7 @@ fun PlayerIconLeft(
 fun PlayerIconRight(
     player: Player,
     xDp: Dp = (-50).dp,
-    borderStroke: BorderStroke = BorderStroke(1.dp, Color.Red)
+    borderStroke: BorderStroke
 ) {
 
     Box(
@@ -171,6 +192,26 @@ fun PlayerIconRight(
             modifier = Modifier.align(Alignment.CenterEnd),
             contentAlignment = Alignment.Center
         ) {
+            if (!player.isAlive) {
+                Box(
+                    modifier = Modifier
+                        .zIndex(2f)
+                        .border(borderStroke, CircleShape)
+                        .align(Alignment.Center)
+                        .size(45.dp)
+                        .clip(CircleShape)
+                        .background(Color.DarkGray.copy(0.8f))
+                ) {
+                    Icon(
+                        painterResource(id = R.drawable.dead),
+                        null,
+                        tint = Color.Black,
+                        modifier = Modifier
+                            .align(Alignment.Center)
+                            .size(35.dp),
+                    )
+                }
+            }
             Image(
                 painter = painterResource(id = avatar.avatar),
                 contentDescription = avatar.description,
@@ -288,28 +329,50 @@ modifier: Modifier = Modifier) {
                 verticalAlignment = Alignment.CenterVertically
 
             ) {
+                //player1
+
                 if (players.size >= 1) {
                     Box(
                         modifier = Modifier
                             .zIndex(2f)
                     ) {
+                        var stroke = remember {
+                            mutableStateOf(BorderStroke(0.dp, Color.Transparent))
+                        }
+                        if (players[0].turn) {
+                            Log.d(TAG, "Player1: ${players[0].nickName}'s turn value: ${players[0].turn}")
+                            stroke.value = BorderStroke(2.dp, Color.Red)
+                        } else {
+                            stroke.value = BorderStroke(0.dp, Color.Transparent)
+                        }
                         PlayerIconLeft(player = players[0],
-                            borderStroke = BorderStroke(0.dp, Color.Transparent))
+                            borderStroke = stroke.value)
                     }
                 }
                 Spacer(modifier = Modifier.weight(1f))
+                //player2
+
                 if (players.size >= 2) {
                     Box(
                         modifier = Modifier
                             .zIndex(2f)
                     ) {
-                        PlayerIconRight(player = players[1])
+                        var stroke = remember {
+                            mutableStateOf(BorderStroke(0.dp, Color.Transparent))
+                        }
+                        if (players[1].turn) {
+                            Log.d(TAG, "Player1: ${players[0].nickName}'s turn value: ${players[0].turn}")
+                            stroke.value = BorderStroke(2.dp, Color.Red)
+                        } else {
+                            stroke.value = BorderStroke(0.dp, Color.Transparent)
+                        }
+                        PlayerIconRight(player = players[1],
+                            borderStroke = stroke.value)
                     }
                 }
             }
             DeckPlace(deck = game.deck, modifier = Modifier
                 .zIndex(1f)
-//                .border(1.dp, Color.Red)
                 .weight(0.8f))
             Row(
                 modifier = Modifier
@@ -319,21 +382,42 @@ modifier: Modifier = Modifier) {
                 verticalAlignment = Alignment.CenterVertically
 
             ) {
+                //player3
+
                 if (players.size >= 3) {
                     Box(
                         modifier = Modifier
                             .zIndex(2f)
                     ) {
+                        var stroke = remember {
+                            mutableStateOf(BorderStroke(0.dp, Color.Transparent))
+                        }
+                        if (players[2].turn) {
+                            Log.d(TAG, "Player1: ${players[2].nickName}'s turn value: ${players[0].turn}")
+                            stroke.value = BorderStroke(2.dp, Color.Red)
+                        } else {
+                            stroke.value = BorderStroke(0.dp, Color.Transparent)
+                        }
                         PlayerIconLeft(player = players[2],
-                            borderStroke = BorderStroke(0.dp, Color.Transparent))
+                            borderStroke = stroke.value)
                     }
                 }
                 Spacer(modifier = Modifier.weight(1f))
+                //local player
                 Box(
                     modifier = Modifier
                         .zIndex(2f)
                 ) {
-                    PlayerIconRight(player = gameViewModel.currentPlayer.value, borderStroke = BorderStroke(0.dp, Color.Red))
+                    var stroke = remember {
+                        mutableStateOf(BorderStroke(0.dp, Color.Transparent))
+                    }
+                    if (gameViewModel.currentPlayer.value.turn) {
+                        Log.d(TAG, "Player1: ${gameViewModel.currentPlayer.value.nickName}'s turn value: ${gameViewModel.currentPlayer.value.turn}")
+                        stroke.value = BorderStroke(2.dp, Color.Red)
+                    } else {
+                        stroke.value = BorderStroke(0.dp, Color.Transparent)
+                    }
+                    PlayerIconRight(player = gameViewModel.currentPlayer.value, borderStroke = stroke.value)
                 }
             }
 

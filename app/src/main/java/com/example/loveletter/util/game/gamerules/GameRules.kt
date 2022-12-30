@@ -124,15 +124,18 @@ class GameRules {
         fun endRound(gameRoom: GameRoom) {
             val players = gameRoom.players
 
+
             val filteredPlayers = gameRoom.players.filter {
                 it.isAlive
             }
+            var roundWinner = Player()
             if (filteredPlayers.size > 1) {
                 val winningCard = winningHand(players = players)
                 players.forEach {
                     if (it.hand.contains(winningCard)) {
                         it.isWinner = true
                         it.wins += 1
+                        roundWinner = it
                     }
                 }
                 gameRoom.players = players
@@ -141,12 +144,20 @@ class GameRules {
                     if (it.isAlive) {
                         it.isWinner = true
                         it.wins += 1
+                        roundWinner = it
+
                     }
                 }
                 gameRoom.players = players
             }
             gameRoom.roundOver = true
             val winner = checkForWinner(gameRoom.players, gameRoom.playLimit)
+            val logMessage = LogMessage.createLogMessage(
+                message = "Round over! ${roundWinner.nickName} has won the round!",
+                type = "serverMessage",
+                uid = roundWinner.uid
+            )
+            gameRoom.gameLog.add(logMessage)
             winner?.let {
                 gameRoom.gameOver = true
                 if (gameRoom.gameOver && gameRoom.roundOver) {
@@ -180,12 +191,20 @@ class GameRules {
                 it.turnOrder = 0
                 it.ready = true
             }
-            val gameLogs = gameRoom.gameLog.filter { it.type == "userMessage" }
+            val gameLogs = gameRoom.gameLog.filter { it.type == "userMessage" || it.type == "serverMessage" }
+
+            val logMessage = LogMessage.createLogMessage(
+                message = "A new round is starting.",
+                uid = null,
+                type = "serverMessage"
+            )
 
             var game = GameRoom()
             gameLogs.forEach {
                 game.gameLog.add(it)
             }
+            game.gameLog.add(logMessage)
+            game.gameLog.sortByDescending { it.date }
             game.roomNickname = gameRoom.roomNickname
             game.roomCode = gameRoom.roomCode
             game.playLimit = gameRoom.playLimit
@@ -213,6 +232,10 @@ class GameRules {
 
         fun eliminatePlayer(gameRoom: GameRoom, player: Player) {
             gameRoom.deck.discardDeck = addToDiscardPile(player.hand.first(), gameRoom)
+            val filteredList = gameRoom.players.filter { it.isAlive }
+            if (filteredList.size != 1) {
+                changeGameTurn(turn = gameRoom.turn, size = gameRoom.players.size, players = gameRoom.players)
+            }
             updateGame(gameRoom)
         }
 
@@ -309,5 +332,7 @@ class GameRules {
             }
             return gameRoom
         }
+
+
     }
 }

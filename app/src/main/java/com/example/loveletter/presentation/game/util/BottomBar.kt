@@ -13,6 +13,8 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Check
+import androidx.compose.material.icons.rounded.ExitToApp
 import androidx.compose.material.icons.rounded.Menu
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -26,6 +28,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
+import com.example.loveletter.R
 import com.example.loveletter.TAG
 import com.example.loveletter.domain.Avatar
 import com.example.loveletter.domain.CardAvatar
@@ -47,14 +50,14 @@ fun BottomBar(
     color: Color = Navy,
     game: GameRoom,
     gameViewModel: GameViewModel,
-    onOpen: () -> Job
+    onOpen: () -> Job,
 ) {
 
     var currentPlayer = Player()
     game.players.forEach {
         if (it.uid == gameViewModel.currentPlayer.value.uid) {
-                currentPlayer = it
-            }
+            currentPlayer = it
+        }
     }
     Log.d(TAG, "Refreshing bottom bar composable")
     val context = LocalContext.current
@@ -62,7 +65,8 @@ fun BottomBar(
         mutableStateOf(0)
     }
 
-    val borderStroke = if (player.turn) BorderStroke(1.dp, Color.Red) else BorderStroke(0.dp, Color.Transparent)
+    val borderStroke =
+        if (player.turn) BorderStroke(1.dp, Color.Red) else BorderStroke(0.dp, Color.Transparent)
 
     Box(
         modifier = modifier
@@ -97,7 +101,7 @@ fun BottomBar(
                         .border(1.dp, Steel, RoundedCornerShape(10.dp))
                         .background(DarkNavy), onClick = { gameViewModel.chatOpen.value = true }) {
                     Icon(
-                        Icons.Rounded.Menu,
+                        painterResource(id = R.drawable.comment),
                         null,
                         tint = Steel
                     )
@@ -144,6 +148,26 @@ fun BottomBar(
                 .offset(y = (-30).dp)
         ) {
             val avatar = Avatar.setAvatar(player.avatar)
+            if (!player.isAlive) {
+                Box(
+                    modifier = Modifier
+                        .zIndex(2f)
+                        .border(borderStroke, CircleShape)
+                        .align(Alignment.Center)
+                        .size(65.dp)
+                        .clip(CircleShape)
+                        .background(Color.DarkGray.copy(0.8f))
+                ) {
+                    Icon(
+                        painterResource(id = R.drawable.dead),
+                        null,
+                        tint = Color.Black,
+                        modifier = Modifier
+                            .align(Alignment.Center)
+                            .size(55.dp),
+                    )
+                }
+            }
             Image(
                 painter = painterResource(id = avatar.avatar),
                 contentDescription = avatar.description,
@@ -181,8 +205,6 @@ fun BottomBar(
                     if (hasCountess) {
                         notPlayable = Countess.checkCard(cardNumber)
                     }
-
-
                     val scale by animateDpAsState(targetValue = if (selectedIndex == index) 60.dp else 50.dp)
                     val offset by animateDpAsState(targetValue = if (selectedIndex == index) (-30).dp else 0.dp)
 
@@ -220,13 +242,13 @@ fun BottomBar(
                             if ((cardNumber == 5 || cardNumber == 6) && hasCountess) {
 
                             } else {
-                               /* OutlinedButton(modifier = Modifier.align(
-                                    Alignment.BottomCenter),
-                                    onClick = {
+                                /* OutlinedButton(modifier = Modifier.align(
+                                     Alignment.BottomCenter),
+                                     onClick = {
 
-                                    }) {
-                                    Text("Play")
-                                }*/
+                                     }) {
+                                     Text("Play")
+                                 }*/
                             }
 
                         }

@@ -132,6 +132,7 @@ fun GameContent(game: GameRoom, gameViewModel: GameViewModel, navController: Nav
         }
         if (!currentPlayer.isAlive && currentPlayer.hand.isNotEmpty()) {
             gameViewModel.eliminate(gameRoom = game, player = currentPlayer)
+
         }
         game.players.forEach { player ->
             Log.d("LaunchedEffect", "Going through players ")
@@ -150,19 +151,10 @@ fun GameContent(game: GameRoom, gameViewModel: GameViewModel, navController: Nav
 
 
     }
-
-
-
-
-
-    BackHandler(true) {
-        Log.d(TAG, "HEYYYY YOU GUYYYYYSSSSS")
-
+    BackHandler(false) {
     }
 
-    Scaffold(
-
-    ) {
+    Scaffold {
         ModalDrawer(
             drawerState = drawerState,
             scrimColor = Steel.copy(0.5f),

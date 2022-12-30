@@ -146,6 +146,8 @@ fun Messenger(gameRoom: GameRoom, gameViewModel: GameViewModel) {
 
                                     } else if (it.type == "gameLog") {
                                         GameMessage(message = it.message, time = date)
+                                    } else if (it.type == "serverMessage") {
+                                        GameMessage(message = it.message, time = date)
                                     }
 
                                 }
