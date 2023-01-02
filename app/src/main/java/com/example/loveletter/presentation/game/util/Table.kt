@@ -411,13 +411,13 @@ modifier: Modifier = Modifier) {
                     var stroke = remember {
                         mutableStateOf(BorderStroke(0.dp, Color.Transparent))
                     }
-                    if (gameViewModel.currentPlayer.value.turn) {
-                        Log.d(TAG, "Player1: ${gameViewModel.currentPlayer.value.nickName}'s turn value: ${gameViewModel.currentPlayer.value.turn}")
+                    if (gameViewModel.localPlayer.value.turn) {
+                        Log.d(TAG, "Player1: ${gameViewModel.localPlayer.value.nickName}'s turn value: ${gameViewModel.localPlayer.value.turn}")
                         stroke.value = BorderStroke(2.dp, Color.Red)
                     } else {
                         stroke.value = BorderStroke(0.dp, Color.Transparent)
                     }
-                    PlayerIconRight(player = gameViewModel.currentPlayer.value, borderStroke = stroke.value)
+                    PlayerIconRight(player = gameViewModel.localPlayer.value, borderStroke = stroke.value)
                 }
             }
 

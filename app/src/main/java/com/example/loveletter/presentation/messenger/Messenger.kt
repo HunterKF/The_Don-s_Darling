@@ -2,7 +2,6 @@ package com.example.loveletter.presentation.messenger
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -15,7 +14,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Send
 import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.Menu
-import androidx.compose.material.icons.rounded.Send
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -130,7 +128,7 @@ fun Messenger(gameRoom: GameRoom, gameViewModel: GameViewModel) {
                                         Row(
                                             modifier = Modifier.fillMaxWidth()
                                         ) {
-                                            if (player.uid == gameViewModel.currentPlayer.value.uid) {
+                                            if (player.uid == gameViewModel.localPlayer.value.uid) {
                                                 UserMessage(
                                                     message = it.message,
                                                     time = date,
@@ -190,7 +188,7 @@ fun Messenger(gameRoom: GameRoom, gameViewModel: GameViewModel) {
                         GameServer.sendMessage(gameRoom = gameRoom,
                             LogMessage.createLogMessage(
                                 message = message.value,
-                                uid = gameViewModel.currentPlayer.value.uid,
+                                uid = gameViewModel.localPlayer.value.uid,
                                 type = "userMessage"
                             )
                         )
@@ -212,7 +210,7 @@ fun Messenger(gameRoom: GameRoom, gameViewModel: GameViewModel) {
                         GameServer.sendMessage(gameRoom = gameRoom,
                             LogMessage.createLogMessage(
                                 message = message.value,
-                                uid = gameViewModel.currentPlayer.value.uid,
+                                uid = gameViewModel.localPlayer.value.uid,
                                 type = "userMessage"
                             )
                         )

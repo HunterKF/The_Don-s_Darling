@@ -26,6 +26,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
+import com.example.loveletter.R
 import com.example.loveletter.TAG
 import com.example.loveletter.domain.Avatar
 import com.example.loveletter.domain.GameRoom
@@ -34,6 +36,7 @@ import com.example.loveletter.presentation.game.GameViewModel
 import com.example.loveletter.ui.theme.DarkNavy
 import com.example.loveletter.ui.theme.Navy
 import com.example.loveletter.ui.theme.OffWhite
+import com.example.loveletter.ui.theme.Steel
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 
@@ -68,10 +71,6 @@ fun SelectPlayer(
             Row(
                 modifier = Modifier.fillMaxWidth()
             ) {
-                var selectedIndex by remember {
-                    mutableStateOf(-1)
-                }
-//                var index = remember { mutableStateOf(2) }
 
                 gameRoom.players.forEach {
 
@@ -82,7 +81,6 @@ fun SelectPlayer(
                         else Color.Red)
 
                         val dp by animateDpAsState(targetValue = if (it == selectedPlayer.value) 130.dp else 120.dp)
-//                        val currentIndex = index.value
 
                         Card(
                             modifier = Modifier
@@ -106,15 +104,58 @@ fun SelectPlayer(
                                 verticalArrangement = Arrangement.Center,
                                 modifier = Modifier.fillMaxHeight()
                             ) {
-                                Image(
-                                    painter = painterResource(id = avatar.avatar),
-                                    contentDescription = avatar.description,
-                                    modifier = Modifier
-                                        .clip(CircleShape)
-                                        .border(6.dp, color, CircleShape)
-                                )
-                                Spacer(Modifier.padding(12.dp))
+                                Box(
+                                    modifier = Modifier.fillMaxSize(),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    if (it.protected) {
+                                        Box(
+                                            modifier = Modifier
+                                                .zIndex(2f)
+                                                .align(Alignment.Center)
+                                                .fillMaxSize()
+                                                .clip(CircleShape)
+                                                .background(Navy.copy(0.6f))
+                                        ) {
+                                            Icon(
+                                                painterResource(id = R.drawable.shield),
+                                                null,
+                                                tint = Steel,
+                                                modifier = Modifier
+                                                    .align(Alignment.Center)
+                                                    .size(55.dp),
+                                            )
+                                        }
+                                    } else if (!it.isAlive) {
+                                        Box(
+                                            modifier = Modifier
+                                                .zIndex(2f)
+                                                .align(Alignment.Center)
+                                                .fillMaxSize()
+                                                .clip(CircleShape)
+                                                .background(Color.DarkGray.copy(0.8f))
+                                        ) {
+                                            Icon(
+                                                painterResource(id = R.drawable.dead),
+                                                null,
+                                                tint = Color.Black,
+                                                modifier = Modifier
+                                                    .align(Alignment.Center)
+                                                    .size(55.dp),
+                                            )
+                                        }
+                                    }
+                                    Image(
+                                        painter = painterResource(id = avatar.avatar),
+                                        contentDescription = avatar.description,
+                                        modifier = Modifier
+                                            .clip(CircleShape)
+                                            .border(6.dp, color, CircleShape)
+                                    )
+                                    Spacer(Modifier.padding(12.dp))
+                                }
                                 Text(text = it.nickName)
+
                             }
                         }
 

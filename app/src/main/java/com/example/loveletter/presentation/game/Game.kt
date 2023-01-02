@@ -75,7 +75,7 @@ fun GameContent(game: GameRoom, gameViewModel: GameViewModel, navController: Nav
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
 
-    var currentPlayer by remember {
+    var localPlayer by remember {
         mutableStateOf(HandleUser.getCurrentUser(game.players,
             currentUser = HandleUser.returnUser()!!.uid))
     }
@@ -84,15 +84,15 @@ fun GameContent(game: GameRoom, gameViewModel: GameViewModel, navController: Nav
     LaunchedEffect(key1 = game) {
         val isHost = Tools.getHost(game.players, gameViewModel.currentUser)
 
-        if (gameViewModel.currentPlayer.value.uid == "") {
-            gameViewModel.currentPlayer.value =
+        if (gameViewModel.localPlayer.value.uid == "") {
+            gameViewModel.localPlayer.value =
                 Tools.getPlayer(game.players, gameViewModel.currentUser)
         }
         Log.d("LaunchedEffect", "LaunchedEffect has been called. ")
         game.players.forEach {
-            if (it.uid == currentPlayer.uid) {
-                gameViewModel.currentPlayer.value = it
-                currentPlayer = it
+            if (it.uid == localPlayer.uid) {
+                gameViewModel.localPlayer.value = it
+                localPlayer = it
             }
         }
 
@@ -130,21 +130,24 @@ fun GameContent(game: GameRoom, gameViewModel: GameViewModel, navController: Nav
             Log.d(TAG, "A new round is starting.")
             GameRules.startNewGame(gameRoom = game)
         }
-        if (!currentPlayer.isAlive && currentPlayer.hand.isNotEmpty()) {
-            gameViewModel.eliminate(gameRoom = game, player = currentPlayer)
-
+        if (!localPlayer.isAlive && localPlayer.hand.isNotEmpty()) {
+//            gameViewModel.eliminate(gameRoom = game, player = localPlayer)
         }
+
+        //Why do I have this here....
         game.players.forEach { player ->
             Log.d("LaunchedEffect", "Going through players ")
             Log.d("LaunchedEffect", "Current player: ${player.nickName} ")
             Log.d("LaunchedEffect", "Current player turn: ${player.turn} ")
             Log.d("LaunchedEffect", "Current player hand: ${player.hand} ")
-            if (player.turn && player.hand.size < 2 && player.isAlive && !player.turnInProgress) {
-                Log.d("LaunchedEffect", "Matching player has been found: ${player.nickName}")
-                GameRules.onTurn(
-                    gameRoom = game,
-                    player = player
-                )
+            if (localPlayer.uid == player.uid) {
+                if (player.turn && player.hand.size < 2 && player.isAlive && !player.turnInProgress) {
+                    Log.d("LaunchedEffect", "Matching player has been found: ${player.nickName}")
+                    GameRules.onTurn(
+                        gameRoom = game,
+                        player = player
+                    )
+                }
             }
             Log.d("LaunchedEffect", "LaunchedEffect is finished.")
         }
@@ -268,10 +271,10 @@ fun GameContent(game: GameRoom, gameViewModel: GameViewModel, navController: Nav
 
 
                 BottomBar(modifier = Modifier.height(100.dp),
-                    player = currentPlayer,
+                    player = localPlayer,
                     game = game,
                     gameViewModel = gameViewModel,
-                    hand = currentPlayer.hand) { scope.launch { drawerState.open() } }
+                    hand = localPlayer.hand) { scope.launch { drawerState.open() } }
             }
         }
     }

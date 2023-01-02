@@ -11,6 +11,7 @@ import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.ktx.Firebase
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
@@ -125,17 +126,19 @@ class HandleUser {
                         listener.remove()
                     }
                 }
-
             }
         }
 
         fun getCurrentUser(list: List<Player>, currentUser: String): Player {
+            Log.d(TAG, "getCurrentUser is being called.")
             var currentPlayer = Player()
             list.forEach {
                 if (it.uid == currentUser) {
                     currentPlayer = it
                 }
             }
+            Log.d(TAG, "getCurrentUser is done.")
+
             return currentPlayer
         }
     }

@@ -13,8 +13,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Check
-import androidx.compose.material.icons.rounded.ExitToApp
 import androidx.compose.material.icons.rounded.Menu
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -24,8 +22,6 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import com.example.loveletter.R
@@ -55,7 +51,7 @@ fun BottomBar(
 
     var currentPlayer = Player()
     game.players.forEach {
-        if (it.uid == gameViewModel.currentPlayer.value.uid) {
+        if (it.uid == gameViewModel.localPlayer.value.uid) {
             currentPlayer = it
         }
     }

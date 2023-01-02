@@ -42,11 +42,16 @@ class GameServer {
             logs: ArrayList<LogMessage>,
             logMessage: LogMessage,
         ): ArrayList<LogMessage> {
+            Log.d(TAG, "updateGameLog is being called")
             logs.add(logMessage)
+            Log.d(TAG, "updateGameLog is done")
+
             return logs
         }
 
         fun sendMessage(gameRoom: GameRoom, logMessage: LogMessage) {
+            Log.d(TAG, "sendMessage is being called")
+
             dbGame.document(gameRoom.roomCode)
                 .update("gameLog", FieldValue.arrayUnion(logMessage))
                 .addOnSuccessListener {
@@ -55,6 +60,8 @@ class GameServer {
                 .addOnFailureListener {
                     Log.d(TAG, "Failed to add player! ${it.localizedMessage}")
                 }
+            Log.d(TAG, "sendMessage is done")
+
         }
 
     }
