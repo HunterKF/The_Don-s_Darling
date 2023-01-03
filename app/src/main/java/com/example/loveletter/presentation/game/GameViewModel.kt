@@ -46,7 +46,6 @@ class GameViewModel : ViewModel() {
     val listOfPlayers = mutableStateOf(listOf(Player()))
 
 
-
     fun onPlay(card: Int, gameRoom: GameRoom, player: Player) {
         playedCard.value = card
         when (playedCard.value) {
@@ -87,7 +86,8 @@ class GameViewModel : ViewModel() {
                         message = "${it.nickName} has played the handmaid. They are protected."
                     }
                 }
-                val logMessage = LogMessage.createLogMessage(message = message, type = "gameLog", uid = null)
+                val logMessage =
+                    LogMessage.createLogMessage(message = message, type = "gameLog", uid = null)
 
                 GameRules.onEnd(gameRoom = gameRoom, logMessage = logMessage)
             }
@@ -114,17 +114,24 @@ class GameViewModel : ViewModel() {
                     gameRoom = gameRoom
                 )
                 val logMessage =
-                    LogMessage.createLogMessage("${localPlayer.value.nickName} has played the Countess.", type = "gameLog", uid = null)
+                    LogMessage.createLogMessage("${localPlayer.value.nickName} has played the Countess.",
+                        type = "gameLog",
+                        uid = null)
                 GameRules.onEnd(gameRoom = gameRoom, logMessage = logMessage)
             }
             8 -> {
+                val updatedGameRoom = GameRules.eliminatePlayer(
+                    gameRoom = gameRoom,
+                    player = player
+                )
                 GameRules.handlePlayedCard(
                     card = playedCard.value,
                     player = player,
-                    gameRoom = gameRoom
+                    gameRoom = updatedGameRoom
                 )
                 val result = Princess.eliminatePlayer(gameRoom, player)
-                val logMessage = LogMessage.createLogMessage(result.message, type = "gameLog", uid = null)
+                val logMessage =
+                    LogMessage.createLogMessage(result.message, type = "gameLog", uid = null)
                 result.game?.let { GameRules.onEnd(gameRoom = it, logMessage) }
 
             }
@@ -153,7 +160,8 @@ class GameViewModel : ViewModel() {
                     emptyCard.value = selectedPlayer.hand.first()
                     var message =
                         "${localPlayer.value.nickName} looked at ${selectedPlayer.nickName}'s card."
-                    val logMessage = LogMessage.createLogMessage(message = message, type = "gameLog", uid = null)
+                    val logMessage =
+                        LogMessage.createLogMessage(message = message, type = "gameLog", uid = null)
 
                     GameRules.onEnd(gameRoom = gameRoom, logMessage = logMessage)
 
@@ -167,25 +175,27 @@ class GameViewModel : ViewModel() {
                     val result = Baron.compareCards(
                         player1 = localPlayer.value,
                         player2 = selectedPlayer,
-                        players = players
+                        players = players,
+                        game = gameRoom
                     )
                     result.players?.let {
                         gameRoom.players = result.players!!
                     }
-                    val logMessage = LogMessage.createLogMessage(result.message, type = "gameLog", uid = null)
+                    val logMessage =
+                        LogMessage.createLogMessage(result.message, type = "gameLog", uid = null)
 
                     updateResult(result)
 
-                    GameRules.onEnd(gameRoom = gameRoom, logMessage = logMessage)
+                    result.game?.let { GameRules.onEnd(gameRoom = it, logMessage = logMessage) }
                 }
                 5 -> {
-
                     val result = Prince.discardAndDraw(
                         player1 = localPlayer.value,
                         player2 = selectedPlayer,
                         gameRoom = gameRoom
                     )
-                    val logMessage = LogMessage.createLogMessage(result.message, type = "gameLog", uid = null)
+                    val logMessage =
+                        LogMessage.createLogMessage(result.message, type = "gameLog", uid = null)
 
                     val updatedGame = result.game
 
@@ -203,7 +213,8 @@ class GameViewModel : ViewModel() {
                         player2 = selectedPlayer,
                         gameRoom = gameRoom
                     )
-                    val logMessage = LogMessage.createLogMessage(result.message, type = "gameLog", uid = null)
+                    val logMessage =
+                        LogMessage.createLogMessage(result.message, type = "gameLog", uid = null)
 
 
                     gameRoom.players = result.players!!
@@ -230,17 +241,13 @@ class GameViewModel : ViewModel() {
         val result = Guard.returnResult(
             player1 = localPlayer.value,
             player2 = selectedPlayer.value,
-            guessedCard = card
+            guessedCard = card,
+            gameRoom = gameRoom
         )
         var updatedGameRoom = gameRoom
-
-            gameRoom.players.forEach {
+        updatedGameRoom.players.forEach {
             if (result.player2?.uid == it.uid) {
                 it.isAlive = result.player2.isAlive
-                updatedGameRoom = GameRules.eliminatePlayer(
-                    gameRoom = gameRoom,
-                    player = result.player2
-                )
             }
         }
         val logMessage = LogMessage.createLogMessage(result.message, type = "gameLog", uid = null)

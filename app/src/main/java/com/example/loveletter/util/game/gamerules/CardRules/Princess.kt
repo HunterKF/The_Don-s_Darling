@@ -28,7 +28,7 @@ class Princess {
                 message = "${player1.nickName} forced ${player2.nickName} to discard his hand. ${player2} has been eliminated."
                 gameRoom.players.forEach {
                     if (it.uid == player2.uid) {
-                        it.isAlive = false
+                        GameRules.eliminatePlayer(gameRoom = gameRoom, player = player2)
                     }
                 }
             }

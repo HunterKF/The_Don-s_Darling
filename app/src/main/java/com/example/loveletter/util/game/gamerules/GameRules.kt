@@ -89,6 +89,9 @@ class GameRules {
             sortedPlayers.forEach {
                 if (it.turnOrder == currentTurn && !it.isAlive) {
                     currentTurn += 1
+                    if (currentTurn > size) {
+                        currentTurn = 1
+                    }
                 }
             }
             Log.d(TAG, "Returning new turn: $currentTurn")
@@ -268,11 +271,19 @@ class GameRules {
             Log.d(TAG, "eliminatePlayer is being called")
 
             gameRoom.deck.discardDeck = addToDiscardPile(player.hand.first(), gameRoom)
+            gameRoom.players.forEach {
+                if (it.uid == player.uid) {
+                    it.isAlive = false
+                    it.hand.clear()
+                }
+            }
             val filteredList = gameRoom.players.filter { it.isAlive }
+            //Do i need this...
             if (filteredList.size != 1) {
-                gameRoom.turn = changeGameTurn(turn = gameRoom.turn, size = gameRoom.players.size, players = gameRoom.players)
+                changeGameTurn(turn = gameRoom.turn, size = gameRoom.players.size, players = gameRoom.players)
             }
             Log.d(TAG, "eliminatePlayer is done")
+            //returns a gameroom where player is not alive, the discard deck is updated.
             return gameRoom
         }
 
@@ -281,8 +292,9 @@ class GameRules {
 
             gameRoom.players = endPlayerTurn(gameRoom = gameRoom)
             if (!gameRoom.gameOver) {
+                val changedTurn = changeGameTurn(turn = gameRoom.turn, size = gameRoom.players.size, players = gameRoom.players)
                 gameRoom.turn = changeGameTurn(turn = gameRoom.turn, size = gameRoom.players.size, players = gameRoom.players)
-                gameRoom.players = changePlayerTurn(gameRoom = gameRoom)
+                gameRoom.players = changePlayerTurn(gameRoom = gameRoom, changedTurn = changedTurn)
             }
             gameRoom.gameLog = GameServer.updateGameLog(gameRoom.gameLog, logMessage)
             updateGame(gameRoom = gameRoom)
@@ -310,11 +322,11 @@ class GameRules {
              return gameRoom.players
         }
 
-        private fun changePlayerTurn(gameRoom: GameRoom): List<Player> {
+        private fun changePlayerTurn(gameRoom: GameRoom, changedTurn: Int): List<Player> {
             Log.d(TAG, "changePlayerTurn is being called")
 
             gameRoom.players.forEach {
-                if (it.turnOrder == gameRoom.turn && it.isAlive) {
+                if (it.turnOrder == changedTurn && it.isAlive) {
                     it.turn = true
                 }
             }
