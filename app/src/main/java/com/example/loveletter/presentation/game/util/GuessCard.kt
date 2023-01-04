@@ -143,26 +143,19 @@ fun GuessCard(gameRoom: GameRoom, guessCard: MutableState<Boolean>, gameViewMode
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
-                IconButton(onClick = { guessCard.value = false },
-                    modifier = Modifier
-                        .weight(0.5f)
-                        .padding(horizontal = 16.dp)
-                        .shadow(4.dp, shape = RoundedCornerShape(15.dp))) {
-                    Icon(
-                        Icons.Rounded.Close,
-                        "Cancel"
-                    )
-                }
-                IconButton(onClick = {
-                    gameViewModel.onGuess(guessedCard, gameRoom = gameRoom)
-                },
+
+                Button(
+                    enabled = guessedCard != 0,
+                    onClick = {
+                        gameViewModel.onGuess(guessedCard, gameRoom = gameRoom)
+                    },
                     modifier = Modifier
                         .weight(0.5f)
                         .padding(horizontal = 16.dp)
                         .shadow(4.dp, shape = RoundedCornerShape(15.dp))) {
                     Icon(
                         Icons.Rounded.Check,
-                        "Cancel"
+                        "Confirm"
                     )
                 }
             }

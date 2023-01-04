@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.CheckCircle
@@ -48,7 +49,7 @@ fun Table(
 fun PlayerIconLeft(
     player: Player,
     xDp: Dp = 20.dp,
-    borderStroke: BorderStroke
+    borderStroke: BorderStroke,
 ) {
 
     Box(
@@ -133,25 +134,26 @@ fun PlayerIconLeft(
                 .offset(y = 50.dp, x = xDp)
 
                 .align(Alignment.Center)
-                .border(1.dp, Color.Green)
+//                .border(1.dp, Color.Green)
         ) {
             Row() {
                 player.hand.forEach { _ ->
                     Image(
                         modifier = Modifier
                             .size(40.dp),
-                        painter = painterResource(id = R.drawable.card_back),
+                        painter = painterResource(id = R.drawable.icon_card_back),
                         contentDescription = null)
                 }
             }
         }
     }
 }
+
 @Composable
 fun PlayerIconRight(
     player: Player,
     xDp: Dp = (-50).dp,
-    borderStroke: BorderStroke
+    borderStroke: BorderStroke,
 ) {
 
     Box(
@@ -235,14 +237,14 @@ fun PlayerIconRight(
                 .offset(y = 50.dp, x = xDp)
 
                 .align(Alignment.Center)
-                .border(1.dp, Color.Green)
+//                .border(1.dp, Color.Green)
         ) {
             Row() {
                 player.hand.forEach { _ ->
                     Image(
                         modifier = Modifier
                             .size(40.dp),
-                        painter = painterResource(id = R.drawable.card_back),
+                        painter = painterResource(id = R.drawable.icon_card_back),
                         contentDescription = null)
                 }
             }
@@ -269,11 +271,17 @@ fun DeckPlace(deck: Deck, modifier: Modifier = Modifier) {
                 deck.deck.forEach { _ ->
                     Image(
                         modifier = Modifier
-                            .border(1.dp, Color.Cyan)
+//                            .border(1.dp, Color.Cyan)
                             .size(90.dp),
-                        painter = painterResource(id = R.drawable.card_back),
-                        contentDescription = null)
+                        painter = painterResource(id = R.drawable.icon_card_back),
+                        contentDescription = null,
+                    )
                 }
+                Text(text = "${deck.deck.size}",
+                    style = MaterialTheme.typography.h6,
+                    fontWeight = FontWeight.SemiBold,
+                    color = Steel,
+                    modifier = Modifier.align(Alignment.Center))
             }
             Spacer(modifier = Modifier.width(20.dp))
             Box(
@@ -302,8 +310,10 @@ fun DeckPlace(deck: Deck, modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun PlayingTable(game: GameRoom, gameViewModel: GameViewModel, navController: NavController,
-modifier: Modifier = Modifier) {
+fun PlayingTable(
+    game: GameRoom, gameViewModel: GameViewModel, navController: NavController,
+    modifier: Modifier = Modifier,
+) {
 
     val players = gameViewModel.removeCurrentPlayer(game.players)
 
@@ -340,7 +350,8 @@ modifier: Modifier = Modifier) {
                             mutableStateOf(BorderStroke(0.dp, Color.Transparent))
                         }
                         if (players[0].turn) {
-                            Log.d(TAG, "Player1: ${players[0].nickName}'s turn value: ${players[0].turn}")
+                            Log.d(TAG,
+                                "Player1: ${players[0].nickName}'s turn value: ${players[0].turn}")
                             stroke.value = BorderStroke(2.dp, Color.Red)
                         } else {
                             stroke.value = BorderStroke(0.dp, Color.Transparent)
@@ -361,7 +372,8 @@ modifier: Modifier = Modifier) {
                             mutableStateOf(BorderStroke(0.dp, Color.Transparent))
                         }
                         if (players[1].turn) {
-                            Log.d(TAG, "Player1: ${players[0].nickName}'s turn value: ${players[0].turn}")
+                            Log.d(TAG,
+                                "Player1: ${players[0].nickName}'s turn value: ${players[0].turn}")
                             stroke.value = BorderStroke(2.dp, Color.Red)
                         } else {
                             stroke.value = BorderStroke(0.dp, Color.Transparent)
@@ -393,7 +405,8 @@ modifier: Modifier = Modifier) {
                             mutableStateOf(BorderStroke(0.dp, Color.Transparent))
                         }
                         if (players[2].turn) {
-                            Log.d(TAG, "Player1: ${players[2].nickName}'s turn value: ${players[0].turn}")
+                            Log.d(TAG,
+                                "Player1: ${players[2].nickName}'s turn value: ${players[0].turn}")
                             stroke.value = BorderStroke(2.dp, Color.Red)
                         } else {
                             stroke.value = BorderStroke(0.dp, Color.Transparent)
@@ -412,12 +425,14 @@ modifier: Modifier = Modifier) {
                         mutableStateOf(BorderStroke(0.dp, Color.Transparent))
                     }
                     if (gameViewModel.localPlayer.value.turn) {
-                        Log.d(TAG, "Player1: ${gameViewModel.localPlayer.value.nickName}'s turn value: ${gameViewModel.localPlayer.value.turn}")
+                        Log.d(TAG,
+                            "Player1: ${gameViewModel.localPlayer.value.nickName}'s turn value: ${gameViewModel.localPlayer.value.turn}")
                         stroke.value = BorderStroke(2.dp, Color.Red)
                     } else {
                         stroke.value = BorderStroke(0.dp, Color.Transparent)
                     }
-                    PlayerIconRight(player = gameViewModel.localPlayer.value, borderStroke = stroke.value)
+                    PlayerIconRight(player = gameViewModel.localPlayer.value,
+                        borderStroke = stroke.value)
                 }
             }
 

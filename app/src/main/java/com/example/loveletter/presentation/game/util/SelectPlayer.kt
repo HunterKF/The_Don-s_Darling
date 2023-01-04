@@ -33,10 +33,7 @@ import com.example.loveletter.domain.Avatar
 import com.example.loveletter.domain.GameRoom
 import com.example.loveletter.domain.Player
 import com.example.loveletter.presentation.game.GameViewModel
-import com.example.loveletter.ui.theme.DarkNavy
-import com.example.loveletter.ui.theme.Navy
-import com.example.loveletter.ui.theme.OffWhite
-import com.example.loveletter.ui.theme.Steel
+import com.example.loveletter.ui.theme.*
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 
@@ -105,7 +102,7 @@ fun SelectPlayer(
                                 modifier = Modifier.fillMaxHeight()
                             ) {
                                 Box(
-                                    modifier = Modifier.fillMaxSize(),
+                                    modifier = Modifier.fillMaxSize(0.5f),
                                     contentAlignment = Alignment.Center
                                 ) {
                                     if (it.protected) {
@@ -114,14 +111,21 @@ fun SelectPlayer(
                                                 .zIndex(2f)
                                                 .align(Alignment.Center)
                                                 .fillMaxSize()
-                                                .clip(CircleShape)
-                                                .background(Navy.copy(0.6f))
+
                                         ) {
+                                            Box(
+                                                modifier = Modifier
+                                                    .align(Alignment.Center)
+                                                    .clip(CircleShape)
+                                                    .fillMaxSize()
+                                                    .background(DarkNavy.copy(0.8f))
+                                            )
                                             Icon(
                                                 painterResource(id = R.drawable.shield),
                                                 null,
                                                 tint = Steel,
                                                 modifier = Modifier
+                                                    .zIndex(3f)
                                                     .align(Alignment.Center)
                                                     .size(55.dp),
                                             )
@@ -163,19 +167,19 @@ fun SelectPlayer(
                 }
 
             }
-            Spacer(Modifier.height(20.dp))
+            Spacer(Modifier.height(10.dp))
 
             Button(
                 enabled = selectedPlayer.value.uid != "",
                 modifier = Modifier
-                    .weight(0.5f)
+                    .fillMaxWidth(0.4f)
                     .padding(16.dp)
                     .clip(RoundedCornerShape(15.dp)),
                 colors = ButtonDefaults.buttonColors(
-                    disabledBackgroundColor = Color.Gray,
-                    disabledContentColor = OffWhite,
-                    backgroundColor = Navy,
-                    contentColor = Color.White
+                    backgroundColor = WarmRed,
+                    contentColor = SoftYellow,
+                    disabledBackgroundColor = ColdRed,
+                    disabledContentColor = WarmRed
                 ),
                 onClick = {
                     gameViewModel.onSelectPlayer(selectedPlayer = selectedPlayer.value,

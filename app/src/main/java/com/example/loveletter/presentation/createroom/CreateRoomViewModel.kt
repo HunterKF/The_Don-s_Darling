@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
 class CreateRoomViewModel : ViewModel() {
+    var playLimit = mutableStateOf(5)
     var playerChar = mutableStateOf(0)
     private val loadingState = MutableStateFlow<CreateRoomState>(CreateRoomState.Loading)
 
@@ -31,7 +32,7 @@ class CreateRoomViewModel : ViewModel() {
     fun observeRoom() {
         viewModelScope.launch {
             StartGame.createRoom(roomNickname = roomNickname.value,
-                5,
+                playLimit.value,
                 listOf(HandleUser.createGamePlayer(
                     avatar = playerChar.value,
                     nickname = playerNickname.value,

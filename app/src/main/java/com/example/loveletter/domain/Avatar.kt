@@ -40,12 +40,12 @@ sealed class Avatar(
     companion object {
         fun setAvatar(code: Int?): Avatar {
             return when (code) {
-                0 -> PurpleChar
                 1 -> BlueChar
-                2 -> GoldChar
-                3 -> GreenChar
-                4 -> RedChar
-                5 -> PinkChar
+                2 -> GreenChar
+                3 -> GoldChar
+                4 -> PinkChar
+                5 -> PurpleChar
+                6 -> RedChar
                 else -> PurpleChar
             }
         }

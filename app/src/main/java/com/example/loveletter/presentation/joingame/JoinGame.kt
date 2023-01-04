@@ -1,6 +1,7 @@
 package com.example.loveletter.presentation.joingame
 
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.GridCells
@@ -153,13 +154,13 @@ fun JoinGameScreen(navController: NavHostController, gameLobbyViewModel: GameLob
                 cells = GridCells.Fixed(3)
             ) {
                 itemsIndexed(icons) { index, icon ->
-                    println(icon)
                     AvatarImage(
                         modifier = Modifier
                             .size(itemSize)
                             .selectable(
                                 selected = selectedIndex == index,
                                 onClick = {
+                                    Toast.makeText(context, "Index: $index.", Toast.LENGTH_SHORT).show()
                                     selectedIndex = index
                                     Log.d(TAG, "selectedIndex: $selectedIndex")
                                     gameLobbyViewModel.playerChar.value =
@@ -170,6 +171,7 @@ fun JoinGameScreen(navController: NavHostController, gameLobbyViewModel: GameLob
                         icon = icon,
                         background = if (selectedIndex == index) Color.Red else Color.Transparent
                     )
+
                 }
             }
             Button(

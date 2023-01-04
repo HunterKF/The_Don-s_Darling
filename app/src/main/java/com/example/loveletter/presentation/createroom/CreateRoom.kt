@@ -137,8 +137,6 @@ private fun CreateRoomContent(
                             style = MaterialTheme.typography.h6,
                             color = Color.White)
                         IconButton(onClick = {
-                            Log.d(TAG,
-                                "Value for room code: ${gameRoom.roomCode}")
                             context.startActivity(shareIntent)
                         }) {
                             Icon(

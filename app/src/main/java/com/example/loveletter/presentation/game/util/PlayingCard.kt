@@ -33,8 +33,6 @@ import com.example.loveletter.domain.CardAvatar
 @Composable
 fun PlayingCard(
     modifier: Modifier = Modifier,
-    width: Dp = 160.dp,
-    height: Dp = 230.dp,
     cardAvatar: CardAvatar,
     color: Color = Color.White,
     notPlayable: Boolean = false,
@@ -43,8 +41,7 @@ fun PlayingCard(
         mutableStateOf(false)
     }
     Box(modifier = modifier
-        .width(width)
-        .height(height)
+        .size(50.dp)
         .clip(RoundedCornerShape(5.dp))
         .border(1.dp, Color.Gray, RoundedCornerShape(5.dp))
         .border(2.dp, Color.LightGray, RoundedCornerShape(5.dp))
@@ -54,7 +51,7 @@ fun PlayingCard(
             Modifier
                 .padding(6.dp)
                 .border(2.dp, Color.Red, CircleShape)
-                .align(Alignment.TopStart)
+                .align(Alignment.TopEnd)
                 .clip(CircleShape)
                 .size(20.dp)
                 .background(Color.White)
@@ -67,9 +64,11 @@ fun PlayingCard(
             )
         }
         Image(
-            painterResource(id = cardAvatar.avatar),
+            modifier = Modifier.size(90.dp),
+            painter = painterResource(id = cardAvatar.avatar),
             contentDescription = cardAvatar.cardName,
-            contentScale = ContentScale.FillHeight,
+            contentScale = ContentScale.FillBounds,
+
         )
         if (notPlayable) {
             Box(
@@ -79,7 +78,7 @@ fun PlayingCard(
                     .zIndex(1f)
             )
         }
-        Box(
+        /*Box(
             modifier = Modifier
                 .fillMaxWidth(0.7f)
                 .padding(bottom = 20.dp)
@@ -92,7 +91,7 @@ fun PlayingCard(
                 text = cardAvatar.cardName,
                 textAlign = TextAlign.Center
             )
-        }
+        }*/
 
         if (infoWindow) {
             AlertDialog(
@@ -139,6 +138,6 @@ fun PlayingCard(
 @Preview
 @Composable
 fun Preview() {
-    val card = CardAvatar.setCardAvatar(8)
-//    Card(card, Modifier)
+    val card = CardAvatar.setCardAvatar(1)
+//    PlayingCard(card, Modifier)
 }

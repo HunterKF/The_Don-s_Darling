@@ -148,11 +148,11 @@ class GameRules {
             val players = gameRoom.players
 
 
-            val filteredPlayers = gameRoom.players.filter {
+            val alivePlayers = gameRoom.players.filter {
                 it.isAlive
             }
             var roundWinner = Player()
-            if (filteredPlayers.size > 1) {
+            if (alivePlayers.size > 1) {
                 val winningCard = winningHand(players = players)
                 players.forEach {
                     if (it.hand.contains(winningCard)) {
@@ -162,7 +162,7 @@ class GameRules {
                     }
                 }
                 gameRoom.players = players
-            } else if (filteredPlayers.size == 1) {
+            } else if (alivePlayers.size == 1) {
                 players.forEach {
                     if (it.isAlive) {
                         it.isWinner = true
@@ -218,6 +218,7 @@ class GameRules {
                 it.isWinner = false
                 it.turn = false
                 it.turnInProgress = false
+                it.protected = false
                 it.isAlive = true
                 it.turnOrder = 0
                 it.ready = true
@@ -277,11 +278,11 @@ class GameRules {
                     it.hand.clear()
                 }
             }
-            val filteredList = gameRoom.players.filter { it.isAlive }
+            /*val filteredList = gameRoom.players.filter { it.isAlive }
             //Do i need this...
             if (filteredList.size != 1) {
                 changeGameTurn(turn = gameRoom.turn, size = gameRoom.players.size, players = gameRoom.players)
-            }
+            }*/
             Log.d(TAG, "eliminatePlayer is done")
             //returns a gameroom where player is not alive, the discard deck is updated.
             return gameRoom

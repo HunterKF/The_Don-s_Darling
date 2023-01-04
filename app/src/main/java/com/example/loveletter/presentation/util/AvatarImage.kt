@@ -28,7 +28,7 @@ fun AvatarImage(
             painterResource(id = icon), null,
             modifier = Modifier
                 .clip(RoundedCornerShape(5.dp))
-                .border(2.dp, background, RoundedCornerShape(5.dp))
+                .border(4.dp, background, RoundedCornerShape(5.dp))
         )
     }
 }
