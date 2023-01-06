@@ -9,18 +9,24 @@ import androidx.compose.foundation.lazy.LazyVerticalGrid
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.material.icons.sharp.Search
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusDirection
+import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -33,6 +39,7 @@ import com.example.loveletter.presentation.createplayer.AvatarImage
 import com.example.loveletter.ui.theme.DarkNavy
 import com.example.loveletter.ui.theme.Navy
 import com.example.loveletter.ui.theme.Steel
+import com.example.loveletter.ui.theme.WarmRed
 import com.example.loveletter.util.joingame.JoinGame
 import com.example.loveletter.util.user.HandleUser
 
@@ -44,11 +51,33 @@ fun JoinGameScreen(navController: NavHostController, gameLobbyViewModel: GameLob
         mutableStateOf(false)
     }
     val context = LocalContext.current
+    val focusManager = LocalFocusManager.current
 
 
     Surface(
         color = DarkNavy
     ) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+        ) {
+            IconButton(onClick = {
+                gameLobbyViewModel.playerChar.value = -1
+                gameLobbyViewModel.roomCode.value = ""
+                gameLobbyViewModel.playerNickname.value = ""
+                navController.navigate(Screen.Home.route) {
+                    popUpTo(Screen.JoinGame.route) {
+                        inclusive = true
+                    }
+                }
+            }) {
+                Icon(
+                    Icons.Rounded.ArrowBack,
+                    null,
+                    tint = WarmRed
+                )
+            }
+        }
 
 
         Column(
@@ -66,7 +95,13 @@ fun JoinGameScreen(navController: NavHostController, gameLobbyViewModel: GameLob
                     gameLobbyViewModel.roomCode.value = newValue
                 },
                 keyboardOptions = KeyboardOptions(
-                    capitalization = KeyboardCapitalization.Characters
+                    capitalization = KeyboardCapitalization.Characters,
+                    imeAction = ImeAction.Done
+                ),
+                keyboardActions = KeyboardActions(
+                    onDone = {
+                        focusManager.moveFocus(focusDirection = FocusDirection.Down)
+                    }
                 ),
                 singleLine = true,
                 colors = TextFieldDefaults.textFieldColors(
@@ -89,10 +124,15 @@ fun JoinGameScreen(navController: NavHostController, gameLobbyViewModel: GameLob
                 },
                 trailingIcon = {
                     IconButton(onClick = {
-                        roomFound.value =
-                            JoinGame.checkGame(roomCode = gameLobbyViewModel.roomCode.value,
-                                roomFound = roomFound,
-                                context = context)
+                        if (gameLobbyViewModel.roomCode.value == ""){
+                            Toast.makeText(context, "Enter a room code.", Toast.LENGTH_SHORT).show()
+                        } else {
+                            roomFound.value =
+                                JoinGame.checkGame(roomCode = gameLobbyViewModel.roomCode.value,
+                                    roomFound = roomFound,
+                                    context = context
+                                )
+                        }
                     }) {
                         Icon(
                             Icons.Sharp.Search,
@@ -112,7 +152,14 @@ fun JoinGameScreen(navController: NavHostController, gameLobbyViewModel: GameLob
                     gameLobbyViewModel.playerNickname.value = newValue
                 },
                 keyboardOptions = KeyboardOptions(
-                    capitalization = KeyboardCapitalization.Words
+                    capitalization = KeyboardCapitalization.Words,
+                    imeAction = ImeAction.Done
+
+                ),
+                keyboardActions = KeyboardActions(
+                    onDone = {
+                        focusManager.clearFocus()
+                    }
                 ),
                 singleLine = true,
 
@@ -160,12 +207,11 @@ fun JoinGameScreen(navController: NavHostController, gameLobbyViewModel: GameLob
                             .selectable(
                                 selected = selectedIndex == index,
                                 onClick = {
-                                    Toast.makeText(context, "Index: $index.", Toast.LENGTH_SHORT).show()
+
                                     selectedIndex = index
-                                    Log.d(TAG, "selectedIndex: $selectedIndex")
                                     gameLobbyViewModel.playerChar.value =
                                         gameLobbyViewModel.assignCharNumber(index)
-                                    Log.d(TAG, "playerChar: ${gameLobbyViewModel.playerChar.value}")
+                                    focusManager.clearFocus()
                                 }
                             ),
                         icon = icon,
@@ -200,3 +246,4 @@ fun JoinGameScreen(navController: NavHostController, gameLobbyViewModel: GameLob
         }
     }
 }
+

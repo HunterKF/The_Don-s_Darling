@@ -33,7 +33,8 @@ class HandleUser {
                 isHost = isHost,
                 isAlive = true,
                 isWinner = false,
-                wins = 0
+                wins = 0,
+                unread = false
             )
         }
 

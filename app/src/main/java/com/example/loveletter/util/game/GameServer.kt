@@ -51,11 +51,11 @@ class GameServer {
 
         fun sendMessage(gameRoom: GameRoom, logMessage: LogMessage) {
             Log.d(TAG, "sendMessage is being called")
-
             dbGame.document(gameRoom.roomCode)
                 .update("gameLog", FieldValue.arrayUnion(logMessage))
                 .addOnSuccessListener {
                     Log.d(TAG, "Successfully added player!")
+                    logMessage.uid?.let { uid -> updateUnreadStatusForAll(gameRoom = gameRoom, uid = uid) }
                 }
                 .addOnFailureListener {
                     Log.d(TAG, "Failed to add player! ${it.localizedMessage}")
@@ -63,6 +63,38 @@ class GameServer {
             Log.d(TAG, "sendMessage is done")
 
         }
+        private fun updateUnreadStatusForAll(gameRoom: GameRoom, uid: String) {
+            gameRoom.players.forEach {
+                if (it.uid != uid) {
+                    it.unread = true
+                }
+            }
+            dbGame.document(gameRoom.roomCode)
+                .update("players", gameRoom.players)
+                .addOnSuccessListener {
+                    Log.d(TAG, "Successfully updated player's unread status")
+                }
+                .addOnFailureListener {
+                    Log.d(TAG, "Failed to update player's unread status. ${it.localizedMessage}")
 
+                }
+        }
+        fun updateUnreadStatusForLocal(gameRoom: GameRoom, uid: String) {
+            gameRoom.players.forEach {
+                if (it.uid == uid) {
+                    it.unread = false
+                }
+            }
+            dbGame.document(gameRoom.roomCode)
+                .update("players", gameRoom.players)
+                .addOnSuccessListener {
+                    Log.d(TAG, "Successfully updated player's unread status")
+                }
+                .addOnFailureListener {
+                    Log.d(TAG, "Failed to update player's unread status. ${it.localizedMessage}")
+
+                }
+        }
     }
+
 }

@@ -130,9 +130,6 @@ fun GameContent(game: GameRoom, gameViewModel: GameViewModel, navController: Nav
             Log.d(TAG, "A new round is starting.")
             GameRules.startNewGame(gameRoom = game)
         }
-        if (!localPlayer.isAlive && localPlayer.hand.isNotEmpty()) {
-//            gameViewModel.eliminate(gameRoom = game, player = localPlayer)
-        }
 
         //Why do I have this here....
         game.players.forEach { player ->

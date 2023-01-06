@@ -14,6 +14,7 @@ data class Player(
     var isAlive: Boolean,
     var isWinner: Boolean,
     var wins: Int,
+    var unread: Boolean
 ) {
     constructor() : this(
         avatar = 0,
@@ -27,6 +28,7 @@ data class Player(
         isHost = false,
         isAlive = false,
         isWinner = false,
-        wins =0
+        wins =0,
+        unread = false
     )
 }

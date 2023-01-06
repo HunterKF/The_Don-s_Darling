@@ -27,7 +27,7 @@ class MyGamesViewModel : ViewModel() {
             }.collect {
                 loadingState.emit(it)
             }
-            awaitCancellation()
+
         }
     }
 }

@@ -1,11 +1,15 @@
 package com.example.loveletter.presentation.messenger
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.animateContentSize
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement.Absolute.SpaceBetween
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -16,9 +20,11 @@ import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.Menu
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
@@ -26,6 +32,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.loveletter.domain.Avatar
 import com.example.loveletter.domain.GameRoom
 import com.example.loveletter.domain.LogMessage
 import com.example.loveletter.presentation.game.GameViewModel
@@ -49,8 +56,9 @@ fun Messenger(gameRoom: GameRoom, gameViewModel: GameViewModel) {
     val coroutineScope = rememberCoroutineScope()
     LaunchedEffect(key1 = gameRoom.gameLog, block = {
         coroutineScope.launch {
-            listState.animateScrollToItem(gameRoom.gameLog.size -1)
+            listState.animateScrollToItem(gameRoom.gameLog.size - 1)
         }
+        gameViewModel.currentUser?.let { GameServer.updateUnreadStatusForLocal(gameRoom, it.uid) }
     })
     Surface(
         modifier = Modifier.fillMaxSize(),
@@ -69,37 +77,88 @@ fun Messenger(gameRoom: GameRoom, gameViewModel: GameViewModel) {
                         bottomStart = 15.dp))) {
                 Scaffold(
                     topBar = {
-                        Row(
-                            modifier = Modifier
-                                .padding(16.dp)
-                                .fillMaxWidth()
-                                .height(80.dp),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.SpaceBetween
+                        var showScoreboard by remember {
+                            mutableStateOf(false)
+                        }
+                        Column(
+                            modifier = Modifier.fillMaxWidth().animateContentSize()
                         ) {
-                            IconButton(onClick = { gameViewModel.chatOpen.value = false },
-                                modifier = Modifier) {
-                                Icon(
-                                    Icons.Rounded.ArrowBack,
-                                    null
-                                )
-                            }
-                            Box(
-                                modifier = Modifier.weight(1f),
-                                contentAlignment = Alignment.Center
+                            Row(
+                                modifier = Modifier
+                                    .padding(16.dp)
+                                    .fillMaxWidth(),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.SpaceBetween
                             ) {
-                                Text(
-                                    text = gameRoom.roomNickname,
-                                    style = MaterialTheme.typography.h6,
-                                    textAlign = TextAlign.Center
-                                )
+                                IconButton(onClick = {
+                                    gameViewModel.chatOpen.value = false
+                                    GameServer.updateUnreadStatusForLocal(gameRoom,
+                                        gameViewModel.currentUser!!.uid)
+                                },
+                                    modifier = Modifier) {
+                                    Icon(
+                                        Icons.Rounded.ArrowBack,
+                                        null
+                                    )
+                                }
+                                Box(
+                                    modifier = Modifier.weight(1f),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Text(
+                                        text = gameRoom.roomNickname,
+                                        style = MaterialTheme.typography.h6,
+                                        textAlign = TextAlign.Center
+                                    )
+                                }
+                                IconButton(onClick = { showScoreboard = !showScoreboard },
+                                    modifier = Modifier) {
+                                    Icon(
+                                        Icons.Rounded.Menu,
+                                        null
+                                    )
+                                }
                             }
-                            IconButton(onClick = { /*TODO - Make a scoreboard*/ },
-                                modifier = Modifier) {
-                                Icon(
-                                    Icons.Rounded.Menu,
-                                    null
-                                )
+                            if (showScoreboard) {
+                                Column(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(vertical = 4.dp, horizontal = 16.dp),
+                                    horizontalAlignment = Alignment.CenterHorizontally
+                                ) {
+                                    gameRoom.players.sortedByDescending { it.wins }.forEach {
+                                        Row(
+                                            modifier = Modifier
+                                                .fillMaxWidth(0.9f),
+                                            horizontalArrangement = SpaceBetween,
+                                            verticalAlignment = CenterVertically
+                                        ) {
+                                            val avatar = Avatar.setAvatar(it.avatar)
+                                            Image(
+                                                painter = painterResource(id = avatar.avatar),
+                                                contentDescription = avatar.description,
+                                                modifier = Modifier
+                                                    .size(40.dp)
+                                                    .clip(CircleShape)
+                                            )
+                                            Text(
+                                                text = it.nickName,
+                                                style = MaterialTheme.typography.h6,
+                                                textAlign = TextAlign.Left,
+                                                modifier = Modifier
+                                                    .padding(start = 8.dp)
+                                                    .weight(1f)
+                                            )
+                                            Text(
+                                                text = it.wins.toString(),
+                                                style = MaterialTheme.typography.h6,
+                                                textAlign = TextAlign.Center
+                                            )
+                                        }
+                                        Spacer(modifier = Modifier.height(18.dp))
+
+                                    }
+                                }
                             }
                         }
                     }
@@ -120,32 +179,36 @@ fun Messenger(gameRoom: GameRoom, gameViewModel: GameViewModel) {
                                 items(gameRoom.gameLog) {
                                     val sdf = SimpleDateFormat("HH:mm")
                                     val date = sdf.format(it.date)
-                                    if (it.type == "userMessage") {
-                                        val player =
-                                            gameViewModel.listOfPlayers.value.filter { player ->
-                                                it.uid == player.uid
-                                            }.first()
-                                        Row(
-                                            modifier = Modifier.fillMaxWidth()
-                                        ) {
-                                            if (player.uid == gameViewModel.localPlayer.value.uid) {
-                                                UserMessage(
-                                                    message = it.message,
-                                                    time = date,
-                                                )
-                                            } else {
-                                                PlayerMessage(message = it.message,
-                                                    avatar = player.avatar,
-                                                    nickName = player.nickName,
-                                                    time = date
-                                                )
+                                    when (it.type) {
+                                        "userMessage" -> {
+                                            val player =
+                                                gameViewModel.listOfPlayers.value.filter { player ->
+                                                    it.uid == player.uid
+                                                }.first()
+                                            Row(
+                                                modifier = Modifier.fillMaxWidth()
+                                            ) {
+                                                if (player.uid == gameViewModel.localPlayer.value.uid) {
+                                                    UserMessage(
+                                                        message = it.message,
+                                                        time = date,
+                                                    )
+                                                } else {
+                                                    PlayerMessage(message = it.message,
+                                                        avatar = player.avatar,
+                                                        nickName = player.nickName,
+                                                        time = date
+                                                    )
+                                                }
                                             }
-                                        }
 
-                                    } else if (it.type == "gameLog") {
-                                        GameMessage(message = it.message, time = date)
-                                    } else if (it.type == "serverMessage") {
-                                        GameMessage(message = it.message, time = date)
+                                        }
+                                        "gameLog" -> {
+                                            GameMessage(message = it.message, time = date)
+                                        }
+                                        "serverMessage" -> {
+                                            GameMessage(message = it.message, time = date)
+                                        }
                                     }
 
                                 }
@@ -177,11 +240,11 @@ fun Messenger(gameRoom: GameRoom, gameViewModel: GameViewModel) {
                     color = Steel
                 ),
                 placeholder = {
-                  Text(
-                      "Type here...",
-                      fontSize = 16.sp,
-                      color = Steel
-                  )
+                    Text(
+                        "Type here...",
+                        fontSize = 16.sp,
+                        color = Steel
+                    )
                 },
                 trailingIcon = {
                     IconButton(onClick = {
@@ -224,6 +287,7 @@ fun Messenger(gameRoom: GameRoom, gameViewModel: GameViewModel) {
     }
     BackHandler() {
         gameViewModel.chatOpen.value = false
+        GameServer.updateUnreadStatusForLocal(gameRoom, gameViewModel.currentUser!!.uid)
     }
 
 }

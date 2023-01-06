@@ -13,6 +13,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Menu
+import androidx.compose.material.icons.rounded.Warning
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -95,16 +96,37 @@ fun BottomBar(
                     )
                 }
                 Spacer(modifier = Modifier.width(8.dp))
-                IconButton(
-                    modifier = Modifier
-                        .clip(RoundedCornerShape(10.dp))
-                        .border(1.dp, Steel, RoundedCornerShape(10.dp))
-                        .background(DarkNavy), onClick = { gameViewModel.chatOpen.value = true }) {
-                    Icon(
-                        painterResource(id = R.drawable.comment),
-                        null,
-                        tint = Steel
-                    )
+                Box {
+                    Box(
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(10.dp))
+                            .border(1.dp, Steel, RoundedCornerShape(10.dp))
+                            .background(DarkNavy)
+                    ) {
+                        IconButton(
+                            modifier = Modifier.align(Alignment.Center),
+                            onClick = { gameViewModel.chatOpen.value = true }
+                        ) {
+                            Icon(
+                                painterResource(id = R.drawable.comment),
+                                null,
+                                tint = Steel
+                            )
+                        }
+
+                    }
+                    if (player.unread) {
+                        Box(
+                            modifier = Modifier
+                                .clip(CircleShape)
+                                .border(4.dp, DarkNavy, CircleShape)
+                                .zIndex(3f)
+                                .background(WarmRed)
+                                .padding(2.dp)
+                                .size(18.dp)
+                                .align(Alignment.TopEnd)
+                        )
+                    }
                 }
             }
 
@@ -128,13 +150,11 @@ fun BottomBar(
                     contentColor = SoftYellow
                 ),
                 onClick = {
-//                    currentPlayer.hand.remove(currentCard)
                     gameViewModel.onPlay(
                         card = currentCard,
                         player = player,
                         gameRoom = game
                     )
-//                    selectedIndex = -1
                 }) {
                 Text(
                     text = if (player.turn) "Play" else "Wait"
@@ -280,21 +300,6 @@ fun BottomBar(
                                     }
                                 )
                         )
-
-                        if (selectedIndex == index) {
-                            if ((cardNumber == 5 || cardNumber == 6) && hasCountess) {
-
-                            } else {
-                                /* OutlinedButton(modifier = Modifier.align(
-                                     Alignment.BottomCenter),
-                                     onClick = {
-
-                                     }) {
-                                     Text("Play")
-                                 }*/
-                            }
-
-                        }
                     }
 
                 } else {
@@ -303,21 +308,19 @@ fun BottomBar(
                     }
                     val scale by animateFloatAsState(targetValue = if (selected) 0.8f else 0.6f)
                     Box(contentAlignment = Alignment.Center) {
-                        PlayingCard(modifier = Modifier
-                            .scale(scale)
-                            .clickable {
-                                selected = !selected
-                            },
+                        PlayingCard(
+                            modifier = Modifier
+                                .scale(scale)
+                                .clickable {
+                                    selected = !selected
+                                },
                             cardAvatar = CardAvatar.setCardAvatar(
                                 cardNumber)
                         )
                     }
                 }
-
             }
         }
-
-
     }
 }
 

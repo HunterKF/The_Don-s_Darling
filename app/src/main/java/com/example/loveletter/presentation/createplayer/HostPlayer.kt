@@ -1,6 +1,5 @@
 package com.example.loveletter.presentation.createplayer
 
-import android.util.Log
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.*
@@ -8,15 +7,15 @@ import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -27,11 +26,10 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.loveletter.R
 import com.example.loveletter.Screen
-import com.example.loveletter.TAG
+import com.example.loveletter.domain.Avatar
 import com.example.loveletter.presentation.createroom.CreateRoomViewModel
 import com.example.loveletter.ui.theme.*
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun HostPlayer(navController: NavHostController, createRoomViewModel: CreateRoomViewModel) {
     Surface(
@@ -40,15 +38,31 @@ fun HostPlayer(navController: NavHostController, createRoomViewModel: CreateRoom
         var playLimit by remember {
             mutableStateOf(-1)
         }
+        val scrollState = rememberScrollState()
         Column(
             modifier = Modifier
                 .padding(18.dp)
                 .fillMaxSize()
                 .border(5.dp, Navy, RectangleShape)
-                .padding(24.dp),
+                .padding(24.dp)
+                .verticalScroll(scrollState),
 
             verticalArrangement = Arrangement.SpaceEvenly) {
-
+            Box(
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                IconButton(onClick = {
+                    navController.navigate(Screen.Home.route) {
+                        popUpToId
+                    }
+                }) {
+                    Icon(
+                        Icons.Rounded.ArrowBack,
+                        null,
+                        tint = WarmRed
+                    )
+                }
+            }
             Column {
                 Text(
                     text = "Room Name",
@@ -161,7 +175,7 @@ fun HostPlayer(navController: NavHostController, createRoomViewModel: CreateRoom
                             contentAlignment = Alignment.Center
                         ) {
                             Text(
-                                text= "$displayNumber",
+                                text = "$displayNumber",
                                 style = MaterialTheme.typography.h6,
                                 color = if (number == playLimit) Navy else SoftYellow,
                                 modifier = Modifier
@@ -173,47 +187,74 @@ fun HostPlayer(navController: NavHostController, createRoomViewModel: CreateRoom
 
             }
 
-            val icons = listOf(
-                R.drawable.bluechar,
-                R.drawable.greenchar,
-                R.drawable.goldchar,
-                R.drawable.pinkchar,
-                R.drawable.purplechar,
-                R.drawable.redchar
+            val topIcons = listOf(
+                1,
+                2,
+                3,
+            )
+            val bottomIcons = listOf(
+                4,
+                5,
+                6,
             )
 
             var selectedIndex by remember {
                 mutableStateOf(-1)
             }
-            val itemSize: Dp = (LocalConfiguration.current.screenWidthDp.dp / 3)
-
-            LazyVerticalGrid(
-                cells = GridCells.Fixed(3)
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                horizontalArrangement = Arrangement.Start
             ) {
+                topIcons.forEach { icon ->
+                    var avatar = Avatar.setAvatar(icon)
 
-                itemsIndexed(icons) { index, icon ->
                     AvatarImage(
                         modifier = Modifier
-                            .size(itemSize)
+                            .weight(1f)
                             .selectable(
-                                selected = selectedIndex == index,
+                                selected = selectedIndex == icon,
                                 onClick = {
-                                    selectedIndex = index
+                                    selectedIndex = icon
                                     createRoomViewModel.playerChar.value =
-                                        createRoomViewModel.assignCharNumber(index)
+                                        createRoomViewModel.assignCharNumber(icon)
                                 }
                             ),
-                        icon = icon,
-                        background = if (selectedIndex == index) WarmRed else Color.Transparent
+                        icon = avatar.avatar,
+                        background = if (selectedIndex == icon) WarmRed else Color.Transparent
                     )
                 }
             }
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                horizontalArrangement = Arrangement.Start
+            ) {
+                bottomIcons.forEach { icon ->
+                    var avatar = Avatar.setAvatar(icon)
+
+                    AvatarImage(
+                        modifier = Modifier
+                            .weight(1f)
+                            .selectable(
+                                selected = selectedIndex == icon,
+                                onClick = {
+                                    selectedIndex = icon
+                                    createRoomViewModel.playerChar.value =
+                                        createRoomViewModel.assignCharNumber(icon)
+                                }
+                            ),
+                        icon = avatar.avatar,
+                        background = if (selectedIndex == icon) WarmRed else Color.Transparent
+                    )
+                }
+            }
+            Spacer(Modifier.height(12.dp))
 
             Button(
                 enabled = createRoomViewModel.playerNickname.value != "" && createRoomViewModel.playerChar.value != 0 && createRoomViewModel.roomNickname.value != "" && playLimit != -1,
                 modifier = Modifier
-                    .fillMaxWidth()
-                ,
+                    .fillMaxWidth(),
                 colors = ButtonDefaults.buttonColors(
                     backgroundColor = WarmRed,
                     contentColor = SoftYellow,
@@ -224,7 +265,7 @@ fun HostPlayer(navController: NavHostController, createRoomViewModel: CreateRoom
                     navController.navigate(Screen.CreateRoom.route)
                 }) {
                 Text(stringResource(R.string.create_room),
-                modifier = Modifier.padding(vertical = 6.dp))
+                    modifier = Modifier.padding(vertical = 6.dp))
             }
         }
     }
