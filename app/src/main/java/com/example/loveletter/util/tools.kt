@@ -27,5 +27,11 @@ class Tools {
             }
             return player.first()
         }
+        fun getRandomString(): String {
+            val allowedChars = ('A'..'Z') + ('0'..'9')
+            return (1..4)
+                .map { allowedChars.shuffled().random() }
+                .joinToString("")
+        }
     }
 }

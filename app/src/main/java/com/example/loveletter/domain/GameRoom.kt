@@ -12,7 +12,8 @@ data class GameRoom(
     var roundOver: Boolean,
     var gameOver: Boolean,
     var showLogs: Boolean,
-    var gameLog: ArrayList<LogMessage>
+    var deleteRoom: Boolean,
+    var gameLog: ArrayList<LogMessage>,
 ) {
     constructor() : this(Deck(),
         0,
@@ -25,6 +26,7 @@ data class GameRoom(
         false,
         false,
         true,
+        false,
         arrayListOf()
     )
 }

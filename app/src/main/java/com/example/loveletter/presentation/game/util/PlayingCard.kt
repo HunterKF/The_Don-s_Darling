@@ -6,10 +6,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.AlertDialog
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.Info
@@ -50,16 +47,26 @@ fun PlayingCard(
         Box(
             Modifier
                 .padding(6.dp)
-                .border(2.dp, Color.Red, CircleShape)
-                .align(Alignment.TopEnd)
-                .clip(CircleShape)
-                .size(20.dp)
-                .background(Color.White)
+//                .border(2.dp, Color.Red, CircleShape)
+                .align(Alignment.TopStart)
+//                .clip(CircleShape)
+//                .size(30.dp)
+//                .background(Color.White)
                 .zIndex(1f)
         ) {
             Text(
+                modifier = Modifier.align(Alignment.Center).offset(y= 1.dp, x = 1.dp),
+                text = cardAvatar.number.toString(),
+                style = MaterialTheme.typography.h1,
+                color = Color.Red,
+                textAlign = TextAlign.Center
+            )
+
+            Text(
                 modifier = Modifier.align(Alignment.Center),
                 text = cardAvatar.number.toString(),
+                style = MaterialTheme.typography.h1,
+                color = Color.White,
                 textAlign = TextAlign.Center
             )
         }

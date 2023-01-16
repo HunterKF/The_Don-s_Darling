@@ -13,7 +13,6 @@ import androidx.compose.material.icons.rounded.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
@@ -31,9 +30,8 @@ import com.example.loveletter.presentation.game.GameViewModel
 import com.example.loveletter.presentation.joingame.GameLobbyState
 import com.example.loveletter.presentation.joingame.GameLobbyViewModel
 import com.example.loveletter.ui.theme.DarkNavy
-import com.example.loveletter.ui.theme.Navy
 import com.example.loveletter.ui.theme.Steel
-import com.example.loveletter.util.joingame.JoinGame
+import com.example.loveletter.util.game.gamerules.gameserver.ConnectionRules
 import com.example.loveletter.util.user.HandleUser
 
 @Composable
@@ -63,15 +61,13 @@ fun GameLobby(
                 }
             } else {
                 Log.d(TAG, "Game lobby is refreshing...")
-                LaunchedEffect(key1 = Unit, block = {
-//                    HandleUser.addGameToUser(loaded.gameRoom.roomCode, loaded.gameRoom.roomNickname)
-                })
+
                 GameLobbyContent(
                     navController = navController,
                     gameLobbyViewModel = gameLobbyViewModel,
                     gameRoom = loaded.gameRoom)
                 BackHandler() {
-                    JoinGame.leaveGame(gameLobbyViewModel.roomCode.value,
+                    ConnectionRules.leaveGame(gameLobbyViewModel.roomCode.value,
                         HandleUser.createGamePlayer(gameLobbyViewModel.playerChar.value,
                             gameLobbyViewModel.playerNickname.value, isHost = false))
                     HandleUser.deleteUserGameRoom(
@@ -121,7 +117,7 @@ private fun GameLobbyContent(
                         .align(Alignment.TopStart)
                         .padding(4.dp),
                         onClick = {
-                            JoinGame.leaveGame(gameRoom.roomCode,
+                            ConnectionRules.leaveGame(gameRoom.roomCode,
                                 HandleUser.createGamePlayer(avatar = 0,
                                     nickname = "",
                                     isHost = false))

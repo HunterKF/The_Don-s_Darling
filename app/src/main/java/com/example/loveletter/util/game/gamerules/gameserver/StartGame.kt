@@ -1,4 +1,4 @@
-package com.example.loveletter.util.startgame
+package com.example.loveletter.util.game.gamerules.gameserver
 
 import android.content.Context
 import android.util.Log
@@ -18,7 +18,6 @@ import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.tasks.await
-import java.util.*
 
 class StartGame() {
 
@@ -44,7 +43,8 @@ class StartGame() {
                 roundOver = false,
                 gameOver = false,
                 showLogs = true,
-                gameLog =  arrayListOf()
+                deleteRoom = false,
+                gameLog = arrayListOf()
             )
             try {
                 dbGame.document(roomCode)
@@ -52,7 +52,6 @@ class StartGame() {
             } catch (e: Exception) {
                 println(e.localizedMessage)
             }
-
         }
 
         fun startGame(
@@ -94,11 +93,6 @@ class StartGame() {
 
         }
 
-
-
-
-
-
         suspend fun subscribeToRealtimeUpdates(roomCode: String): Flow<GameRoom> {
             return callbackFlow {
                 var room = GameRoom()
@@ -121,24 +115,6 @@ class StartGame() {
                     listener.remove()
                 }
             }
-        }
-
-        fun deleteRoom(roomCode: String) {
-            dbGame.document(roomCode)
-                .get()
-                .addOnSuccessListener { result ->
-                    result.reference.delete()
-                }
-                .addOnFailureListener {
-                    println("Failure...")
-                }
-        }
-
-        fun getRandomString(): String {
-            val allowedChars = ('A'..'Z') + ('0'..'9')
-            return (1..4)
-                .map { allowedChars.shuffled().random() }
-                .joinToString("")
         }
 
     }

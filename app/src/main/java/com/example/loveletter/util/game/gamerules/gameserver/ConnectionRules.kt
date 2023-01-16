@@ -1,4 +1,4 @@
-package com.example.loveletter.util.joingame
+package com.example.loveletter.util.game.gamerules.gameserver
 
 import android.content.Context
 import android.util.Log
@@ -9,11 +9,8 @@ import com.example.loveletter.dbGame
 import com.example.loveletter.domain.GameRoom
 import com.example.loveletter.domain.Player
 import com.google.firebase.firestore.FieldValue
-import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.firestore.ktx.toObject
-import com.google.firebase.ktx.Firebase
 
-class JoinGame {
+class ConnectionRules {
     companion object {
         fun checkGame(
             roomCode: String,
@@ -64,30 +61,12 @@ class JoinGame {
                             }
                         }
                     }
-
-                   /* if (result.data!!.size == 4) {
-                        Log.d(TAG, "${result.data!!.size}")
-                        Log.d(TAG, "Room code found, but too many players.")
-                        Toast.makeText(context, "Game is full!", Toast.LENGTH_SHORT).show()
-                    } else {
-                        dbGame.document(roomCode)
-                            .update("players", FieldValue.arrayUnion(player))
-                            .addOnSuccessListener {
-                                Log.d(TAG, "Successfully added player!")
-                                onSuccess()
-                            }
-                            .addOnFailureListener {
-                                Log.d(TAG, "Failed to add player! ${it.localizedMessage}")
-                            }
-                    }*/
                 }
                 .addOnFailureListener {
                     Toast.makeText(context,
                         "Room code not find, try again!",
                         Toast.LENGTH_SHORT).show()
                 }
-
-
         }
 
         fun leaveGame(roomCode: String, player: Player) {

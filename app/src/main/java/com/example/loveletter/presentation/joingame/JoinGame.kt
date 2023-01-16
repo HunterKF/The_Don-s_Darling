@@ -1,6 +1,5 @@
 package com.example.loveletter.presentation.joingame
 
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.*
@@ -19,7 +18,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusDirection
-import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
@@ -34,13 +32,12 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.loveletter.R
 import com.example.loveletter.Screen
-import com.example.loveletter.TAG
 import com.example.loveletter.presentation.createplayer.AvatarImage
 import com.example.loveletter.ui.theme.DarkNavy
 import com.example.loveletter.ui.theme.Navy
 import com.example.loveletter.ui.theme.Steel
 import com.example.loveletter.ui.theme.WarmRed
-import com.example.loveletter.util.joingame.JoinGame
+import com.example.loveletter.util.game.gamerules.gameserver.ConnectionRules
 import com.example.loveletter.util.user.HandleUser
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -128,7 +125,7 @@ fun JoinGameScreen(navController: NavHostController, gameLobbyViewModel: GameLob
                             Toast.makeText(context, "Enter a room code.", Toast.LENGTH_SHORT).show()
                         } else {
                             roomFound.value =
-                                JoinGame.checkGame(roomCode = gameLobbyViewModel.roomCode.value,
+                                ConnectionRules.checkGame(roomCode = gameLobbyViewModel.roomCode.value,
                                     roomFound = roomFound,
                                     context = context
                                 )
@@ -232,7 +229,7 @@ fun JoinGameScreen(navController: NavHostController, gameLobbyViewModel: GameLob
                     disabledContentColor = Color.Black
                 ),
                 onClick = {
-                    JoinGame.joinGame(
+                    ConnectionRules.joinGame(
                         roomCode = gameLobbyViewModel.roomCode.value,
                         player = HandleUser.createGamePlayer(avatar = gameLobbyViewModel.playerChar.value,
                             nickname = gameLobbyViewModel.playerNickname.value, isHost = false),

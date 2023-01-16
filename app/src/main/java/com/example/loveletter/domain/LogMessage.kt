@@ -5,9 +5,9 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 data class LogMessage(
-    val message: String,
+    var message: String,
     val type: String,
-    val uid: String?,
+    var uid: String?,
     val date: Date,
 ) {
     constructor(): this(

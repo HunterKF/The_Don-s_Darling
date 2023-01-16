@@ -1,7 +1,6 @@
 package com.example.loveletter.presentation.createroom
 
 import android.content.Intent
-import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
@@ -13,7 +12,6 @@ import androidx.compose.material.icons.rounded.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
@@ -24,14 +22,15 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.loveletter.R
 import com.example.loveletter.Screen
-import com.example.loveletter.TAG
 import com.example.loveletter.domain.Avatar
 import com.example.loveletter.domain.GameRoom
 import com.example.loveletter.presentation.game.GameViewModel
 import com.example.loveletter.ui.theme.DarkNavy
 import com.example.loveletter.ui.theme.Navy
 import com.example.loveletter.ui.theme.Steel
-import com.example.loveletter.util.startgame.StartGame
+import com.example.loveletter.util.Tools
+import com.example.loveletter.util.game.gamerules.gameserver.GameServer
+import com.example.loveletter.util.game.gamerules.gameserver.StartGame
 import com.example.loveletter.util.user.HandleUser
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -47,7 +46,7 @@ fun CreateRoom(
 
     when (state) {
         CreateRoomState.Loading -> {
-            createRoomViewModel.roomCode.value = StartGame.getRandomString()
+            createRoomViewModel.roomCode.value = Tools.getRandomString()
             LaunchedEffect(key1 = Unit) {
                 createRoomViewModel.observeRoom()
             }
@@ -64,7 +63,7 @@ fun CreateRoom(
                 gameViewModel = gameViewModel
             )
             BackHandler() {
-                StartGame.deleteRoom(loaded.gameRoom.roomCode)
+                GameServer.deleteRoom(loaded.gameRoom)
                 HandleUser.deleteUserGameRoom(
                     loaded.gameRoom.roomCode,
                     loaded.gameRoom.roomNickname,
@@ -116,7 +115,7 @@ private fun CreateRoomContent(
                         .padding(4.dp),
                         onClick = {
                             navController.popBackStack()
-                            StartGame.deleteRoom(createRoomViewModel.roomCode.value)
+                            GameServer.deleteRoom(game = gameRoom)
                             HandleUser.deleteUserGameRoom(
                                 gameRoom.roomCode,
                                 gameRoom.roomNickname,

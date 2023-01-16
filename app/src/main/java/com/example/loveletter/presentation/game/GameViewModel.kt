@@ -1,15 +1,19 @@
 package com.example.loveletter.presentation.game
 
+import android.content.Context
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.NavController
+import com.example.loveletter.Screen
 import com.example.loveletter.TAG
 import com.example.loveletter.domain.GameRoom
 import com.example.loveletter.domain.LogMessage
 import com.example.loveletter.domain.Player
 import com.example.loveletter.domain.Result
-import com.example.loveletter.util.game.GameServer
+import com.example.loveletter.util.Tools
+import com.example.loveletter.util.game.gamerules.gameserver.GameServer
 import com.example.loveletter.util.game.gamerules.CardRules.*
 import com.example.loveletter.util.game.gamerules.GameRules
 import com.google.firebase.auth.FirebaseUser
@@ -36,12 +40,18 @@ class GameViewModel : ViewModel() {
     var selectPlayerAlert = mutableStateOf(false)
     val guessCardAlert = mutableStateOf(false)
     val revealCardAlert = mutableStateOf(false)
-    val emptyCard = mutableStateOf(0)
+    private val emptyCard = mutableStateOf(0)
     val resultAlert = mutableStateOf(false)
     val resultMessage = mutableStateOf("")
+    val isHost = mutableStateOf(false)
+    val endRoundAlert = mutableStateOf(false)
+    var winner = mutableStateOf(Player())
+
 
 
     val chatOpen = mutableStateOf(false)
+    val settingsOpen = mutableStateOf(false)
+
 
     val listOfPlayers = mutableStateOf(listOf(Player()))
 
@@ -277,10 +287,6 @@ class GameViewModel : ViewModel() {
         }
     }
 
-    fun randomFloat(): Float {
-        return (-5..5).random().toFloat()
-    }
-
     fun removeCurrentPlayer(list: List<Player>): List<Player> {
 
         val newList = arrayListOf<Player>()
@@ -302,12 +308,69 @@ class GameViewModel : ViewModel() {
     fun assignRoomCode(roomCode2: String) {
         roomCode.value = roomCode2
     }
-
-    fun eliminate(gameRoom: GameRoom, player: Player) {
-        Log.d("eliminate", "eliminate function is being called")
-        GameRules.eliminatePlayer(
-            gameRoom = gameRoom,
-            player = player
-        )
+    /*LaunchedEffect functions*/
+    fun declareIsHost(gameRoom: GameRoom) {
+        isHost.value = Tools.getHost(gameRoom.players, currentUser)
     }
+    fun localizeCurrentPlayer(
+        game: GameRoom,
+    ) {
+        if (localPlayer.value.uid == "") {
+            localPlayer.value = Tools.getPlayer(game.players, currentUser)
+        }
+    }
+    fun checkRoundOver(gameRoom: GameRoom) {
+        if (gameRoom.roundOver && !gameRoom.gameOver) {
+            endRoundAlert.value = true
+        }
+    }
+    fun getPlayerFromGameList(
+        game: GameRoom,
+    ): Player {
+        game.players.forEach {
+            if (it.uid == localPlayer.value.uid) {
+                localPlayer.value = it
+            }
+        }
+        return localPlayer.value
+    }
+    fun endRound(
+        alivePlayers: List<Player>,
+        game: GameRoom,
+        context: Context,
+        playerIsPlaying: Boolean,
+    ) {
+        if (alivePlayers.size == 1 && !game.roundOver) {
+            Log.d(TAG, "(if) ending game")
+            GameRules.endRound(gameRoom = game)
+            game.players.forEach {
+                if (it.isWinner) {
+                    winner.value = it
+                }
+            }
+            endRoundAlert.value = true
+
+        } else if (game.deck.deck.isEmpty() && !playerIsPlaying && !game.roundOver) {
+            Log.d(TAG, "(else-if) ending game")
+
+            GameRules.endRound(gameRoom = game)
+            var winner = Player()
+            game.players.forEach {
+                if (it.isWinner) {
+                    winner = it
+                }
+            }
+            endRoundAlert.value = true
+
+        }
+    }
+    fun handleDeletedRoom(
+        game: GameRoom,
+        navController: NavController,
+    ) {
+        if (game.deleteRoom) {
+            navController.navigate(Screen.Home.route)
+        }
+    }
+
 }

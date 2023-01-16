@@ -39,11 +39,12 @@ import com.example.loveletter.presentation.game.GameViewModel
 import com.example.loveletter.presentation.messenger.util.GameMessage
 import com.example.loveletter.presentation.messenger.util.PlayerMessage
 import com.example.loveletter.presentation.messenger.util.UserMessage
+import com.example.loveletter.presentation.util.Scoreboard
 import com.example.loveletter.ui.theme.DarkNavy
 import com.example.loveletter.ui.theme.Navy
 import com.example.loveletter.ui.theme.OffWhite
 import com.example.loveletter.ui.theme.Steel
-import com.example.loveletter.util.game.GameServer
+import com.example.loveletter.util.game.gamerules.gameserver.GameServer
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 
@@ -120,45 +121,7 @@ fun Messenger(gameRoom: GameRoom, gameViewModel: GameViewModel) {
                                 }
                             }
                             if (showScoreboard) {
-                                Column(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(vertical = 4.dp, horizontal = 16.dp),
-                                    horizontalAlignment = Alignment.CenterHorizontally
-                                ) {
-                                    gameRoom.players.sortedByDescending { it.wins }.forEach {
-                                        Row(
-                                            modifier = Modifier
-                                                .fillMaxWidth(0.9f),
-                                            horizontalArrangement = SpaceBetween,
-                                            verticalAlignment = CenterVertically
-                                        ) {
-                                            val avatar = Avatar.setAvatar(it.avatar)
-                                            Image(
-                                                painter = painterResource(id = avatar.avatar),
-                                                contentDescription = avatar.description,
-                                                modifier = Modifier
-                                                    .size(40.dp)
-                                                    .clip(CircleShape)
-                                            )
-                                            Text(
-                                                text = it.nickName,
-                                                style = MaterialTheme.typography.h6,
-                                                textAlign = TextAlign.Left,
-                                                modifier = Modifier
-                                                    .padding(start = 8.dp)
-                                                    .weight(1f)
-                                            )
-                                            Text(
-                                                text = it.wins.toString(),
-                                                style = MaterialTheme.typography.h6,
-                                                textAlign = TextAlign.Center
-                                            )
-                                        }
-                                        Spacer(modifier = Modifier.height(18.dp))
-
-                                    }
-                                }
+                                Scoreboard(gameRoom)
                             }
                         }
                     }
@@ -202,6 +165,9 @@ fun Messenger(gameRoom: GameRoom, gameViewModel: GameViewModel) {
                                                 }
                                             }
 
+                                        }
+                                        "winnerMessage" -> {
+                                            GameMessage(message = it.message, time = date)
                                         }
                                         "gameLog" -> {
                                             GameMessage(message = it.message, time = date)
@@ -291,6 +257,8 @@ fun Messenger(gameRoom: GameRoom, gameViewModel: GameViewModel) {
     }
 
 }
+
+
 
 @Preview
 @Composable

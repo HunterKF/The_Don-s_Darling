@@ -1,7 +1,6 @@
 package com.example.loveletter.presentation.game
 
 import android.util.Log
-import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -24,6 +23,7 @@ import com.example.loveletter.TAG
 import com.example.loveletter.domain.*
 import com.example.loveletter.presentation.game.util.*
 import com.example.loveletter.presentation.messenger.Messenger
+import com.example.loveletter.presentation.settings.Settings
 import com.example.loveletter.ui.theme.DarkNavy
 import com.example.loveletter.ui.theme.Navy
 import com.example.loveletter.ui.theme.OffWhite
@@ -59,6 +59,10 @@ fun Game(navController: NavController, gameViewModel: GameViewModel) {
             })
             if (gameViewModel.chatOpen.value) {
                 Messenger(gameRoom = loaded.gameRoom, gameViewModel = gameViewModel)
+            } else if (gameViewModel.settingsOpen.value) {
+                Settings(game = loaded.gameRoom, gameViewModel = gameViewModel) {
+                    navController.navigate(Screen.Home.route)
+                }
             } else {
                 GameContent(loaded.gameRoom, gameViewModel, navController)
             }
@@ -75,6 +79,7 @@ fun GameContent(game: GameRoom, gameViewModel: GameViewModel, navController: Nav
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
 
+    /*This constantly updates the player so you always have the player's current hand*/
     var localPlayer by remember {
         mutableStateOf(HandleUser.getCurrentUser(game.players,
             currentUser = HandleUser.returnUser()!!.uid))
@@ -82,72 +87,25 @@ fun GameContent(game: GameRoom, gameViewModel: GameViewModel, navController: Nav
 
 
     LaunchedEffect(key1 = game) {
-        val isHost = Tools.getHost(game.players, gameViewModel.currentUser)
 
-        if (gameViewModel.localPlayer.value.uid == "") {
-            gameViewModel.localPlayer.value =
-                Tools.getPlayer(game.players, gameViewModel.currentUser)
-        }
+        gameViewModel.declareIsHost(game)
+        gameViewModel.localizeCurrentPlayer(game)
+        gameViewModel.checkRoundOver(game)
         Log.d("LaunchedEffect", "LaunchedEffect has been called. ")
-        game.players.forEach {
-            if (it.uid == localPlayer.uid) {
-                gameViewModel.localPlayer.value = it
-                localPlayer = it
-            }
-        }
+        /*This constantly updates the player so you always have the player's current hand*/
+        localPlayer = gameViewModel.getPlayerFromGameList(game)
 
+        gameViewModel.handleDeletedRoom(game, navController)
         val playerIsPlaying = Tools.checkCards(game.players)
         val alivePlayers = game.players.filter {
             it.isAlive
         }
-        if (alivePlayers.size == 1 && !game.roundOver) {
-            Log.d(TAG, "(if) ending game")
-            GameRules.endRound(gameRoom = game)
-            var winner = Player()
-            game.players.forEach {
-                if (it.isWinner) {
-                    winner = it
-                }
-            }
-            Toast.makeText(context,
-                "Game finished! Winner is: ${winner.nickName}",
-                Toast.LENGTH_SHORT).show()
-        } else if (game.deck.deck.isEmpty() && !playerIsPlaying && !game.roundOver) {
-            Log.d(TAG, "(else-if) ending game")
-
-            GameRules.endRound(gameRoom = game)
-            var winner = Player()
-            game.players.forEach {
-                if (it.isWinner) {
-                    winner = it
-                }
-            }
-            Toast.makeText(context,
-                "Game finished! Winner is: ${winner.nickName}",
-                Toast.LENGTH_SHORT).show()
-        }
-        if (game.roundOver && isHost) {
-            Log.d(TAG, "A new round is starting.")
-            GameRules.startNewGame(gameRoom = game)
-        }
+        /*This all ends the round. HOWEVER it should not update the game UNLESS they are the host.
+        * So I have to go through this and fix the code.*/
+        gameViewModel.endRound(alivePlayers, game, context, playerIsPlaying)
 
         //Why do I have this here....
-        game.players.forEach { player ->
-            Log.d("LaunchedEffect", "Going through players ")
-            Log.d("LaunchedEffect", "Current player: ${player.nickName} ")
-            Log.d("LaunchedEffect", "Current player turn: ${player.turn} ")
-            Log.d("LaunchedEffect", "Current player hand: ${player.hand} ")
-            if (localPlayer.uid == player.uid) {
-                if (player.turn && player.hand.size < 2 && player.isAlive && !player.turnInProgress) {
-                    Log.d("LaunchedEffect", "Matching player has been found: ${player.nickName}")
-                    GameRules.onTurn(
-                        gameRoom = game,
-                        player = player
-                    )
-                }
-            }
-            Log.d("LaunchedEffect", "LaunchedEffect is finished.")
-        }
+        GameRules.launchOnTurn(game, localPlayer)
 
 
     }
@@ -205,12 +163,14 @@ fun GameContent(game: GameRoom, gameViewModel: GameViewModel, navController: Nav
                                 .clip(RoundedCornerShape(10.dp))
                                 .border(1.dp, Steel, RoundedCornerShape(10.dp))
                                 .background(DarkNavy),
-                            onClick = { GameRules.startNewGame(gameRoom = game) }) {
+                            onClick = {
+//                                GameRules.startNewGame(gameRoom = game)
+                                gameViewModel.settingsOpen.value = true
+                            }) {
                             Icon(
-                                Icons.Rounded.Refresh,
+                                Icons.Rounded.Settings,
                                 null,
                                 tint = Steel
-
                             )
                         }
 
@@ -242,7 +202,7 @@ fun GameContent(game: GameRoom, gameViewModel: GameViewModel, navController: Nav
                             gameViewModel = gameViewModel)
                     }
                 }
-                if (gameViewModel.resultAlert.value) {
+                if (gameViewModel.resultAlert.value && !gameViewModel.endRoundAlert.value) {
                     Popup(popupPositionProvider = WindowCenterOffsetPositionProvider(),
                         onDismissRequest = { gameViewModel.selectPlayerAlert.value = false }) {
                         ResultMessage(message = gameViewModel.resultMessage.value,
@@ -265,9 +225,21 @@ fun GameContent(game: GameRoom, gameViewModel: GameViewModel, navController: Nav
                     }
 
                 }
+                if (gameViewModel.endRoundAlert.value) {
+                    Popup(
+                        popupPositionProvider = WindowCenterOffsetPositionProvider()
+                    ) {
+                        RoundEndedAlert(
+                            gameRoom = game,
+                            gameViewModel = gameViewModel
+                        )
+                    }
+
+                }
 
 
-                BottomBar(modifier = Modifier.height(100.dp),
+                BottomBar(
+                    modifier = Modifier.height(100.dp),
                     player = localPlayer,
                     game = game,
                     gameViewModel = gameViewModel,
@@ -277,5 +249,9 @@ fun GameContent(game: GameRoom, gameViewModel: GameViewModel, navController: Nav
     }
 
 }
+
+
+
+
 
 

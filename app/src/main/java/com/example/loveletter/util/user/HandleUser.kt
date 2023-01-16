@@ -61,7 +61,6 @@ class HandleUser {
             val joinedGame =
                 JoinedGame(roomCode = gameRoom.roomCode,
                     roomNickname = gameRoom.roomNickname,
-                    false,
                     ready = false)
 
             joinedGame.ready = true
@@ -81,16 +80,16 @@ class HandleUser {
         }
 
         fun deleteUserGameRoom(roomCode: String, roomNickname: String, players: List<Player>) {
-            val joinedGame =
-                JoinedGame(roomCode = roomCode, roomNickname = roomNickname, false, false)
+            val joinedGame = JoinedGame(roomCode = roomCode, roomNickname = roomNickname,
+                ready = true)
 
             players.forEach {
                 dbPlayers.document(it.uid).update("joinedGames", FieldValue.arrayRemove(joinedGame))
                     .addOnSuccessListener {
-                        println("Successfully added game to user's joined game list.")
+                        Log.d(TAG, "Successfully added game to user's joined game list.")
                     }
                     .addOnFailureListener {
-                        println("Failed to add game to user list. ${it.localizedMessage}")
+                        Log.d(TAG, "Failed to add game to user list. ${it.localizedMessage}")
                     }
             }
 

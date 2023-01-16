@@ -16,7 +16,7 @@ sealed class CardAvatar(
     object Guard : CardAvatar(
         cardName = "Guard",
         number = 1,
-        avatar = R.drawable.icon_gallo,
+        avatar = R.drawable.icon_police_officer,
         ruleDescription = R.string.rule_guard,
         ruleShortDescription = R.string.short_rule_guard,
         numberInGame = 6
@@ -26,7 +26,7 @@ sealed class CardAvatar(
         cardName = "Priest",
         number = 2,
         ruleDescription = R.string.rule_priest,
-        avatar = R.drawable.icon_catrin,
+        avatar = R.drawable.icon_detective,
         R.string.short_rule_priest,
         2
     )
@@ -35,7 +35,7 @@ sealed class CardAvatar(
         cardName = "Baron",
         number = 3,
         ruleDescription = R.string.rule_baron,
-        avatar = R.drawable.icon_valiente,
+        avatar = R.drawable.icon_loan_shark,
         R.string.short_rule_baron,
         2
     )
@@ -44,7 +44,7 @@ sealed class CardAvatar(
         cardName = "Handmaid",
         number = 4,
         ruleDescription = R.string.rule_handmaid,
-        avatar = R.drawable.icon_dama,
+        avatar = R.drawable.icon_doctor,
         R.string.short_rule_handmaid,
         2
     )
@@ -53,7 +53,7 @@ sealed class CardAvatar(
         cardName = "Prince",
         number = 5,
         ruleDescription = R.string.rule_prince,
-        avatar = R.drawable.icon_diablo,
+        avatar = R.drawable.icon_mobster,
         R.string.short_rule_prince,
         2
     )
@@ -62,7 +62,7 @@ sealed class CardAvatar(
         cardName = "King",
         number = 6,
         ruleDescription = R.string.rule_king,
-        avatar = R.drawable.icon_diablo,
+        avatar = R.drawable.icon_godfather,
         R.string.short_rule_king,
         1
     )
@@ -71,7 +71,7 @@ sealed class CardAvatar(
         cardName = "Countess",
         number = 7,
         ruleDescription =  R.string.rule_countess,
-        avatar = R.drawable.icon_sirena,
+        avatar = R.drawable.icon_courtesan,
         R.string.short_rule_countess,
         1
     )
@@ -80,7 +80,7 @@ sealed class CardAvatar(
         cardName = "Princess",
         number = 8,
         ruleDescription = R.string.rule_princess,
-        avatar = R.drawable.icon_muerte,
+        avatar = R.drawable.icon_the_daughter,
         R.string.short_rule_princess,
         1
     )

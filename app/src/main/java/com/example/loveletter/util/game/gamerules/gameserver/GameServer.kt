@@ -1,10 +1,12 @@
-package com.example.loveletter.util.game
+package com.example.loveletter.util.game.gamerules.gameserver
 
 import android.util.Log
 import com.example.loveletter.TAG
 import com.example.loveletter.dbGame
 import com.example.loveletter.domain.GameRoom
 import com.example.loveletter.domain.LogMessage
+import com.example.loveletter.util.game.gamerules.GAMERULES_TAG
+import com.example.loveletter.util.game.gamerules.GameRules
 import com.google.firebase.firestore.FieldValue
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
@@ -95,6 +97,78 @@ class GameServer {
 
                 }
         }
+        fun deleteRoom(game: GameRoom) {
+            game.deleteRoom = true
+            updateGame(game)
+            dbGame.document(game.roomCode)
+                .get()
+                .addOnSuccessListener { result ->
+                    result.reference.delete()
+                }
+                .addOnFailureListener {
+                    println("Failure...")
+                }
+        }
+        fun startNewGame(gameRoom: GameRoom) {
+            Log.d(TAG, "startNewGame is being called")
+
+            val turn = (1..gameRoom.players.size).shuffled().random()
+            gameRoom.players.forEach {
+                it.hand.clear()
+                it.isWinner = false
+                it.turn = false
+                it.turnInProgress = false
+                it.protected = false
+                it.isAlive = true
+                it.turnOrder = 0
+                it.ready = true
+            }
+            val gameLogs = gameRoom.gameLog.filter { it.type == "userMessage" || it.type == "serverMessage" || it.type == "winnerMessage" }
+
+            val logMessage = LogMessage.createLogMessage(
+                message = "A new round is starting.",
+                uid = null,
+                type = "serverMessage"
+            )
+
+            var game = GameRoom()
+            gameLogs.forEach {
+                game.gameLog.add(it)
+            }
+            game.gameLog.add(logMessage)
+            game.gameLog.sortByDescending { it.date }
+            game.roomNickname = gameRoom.roomNickname
+            game.roomCode = gameRoom.roomCode
+            game.playLimit = gameRoom.playLimit
+            game.players = gameRoom.players
+            game.players = GameRules.assignTurns(game.players, turn)
+            game.roundOver = false
+            game.gameOver = false
+            gameRoom.start = true
+
+            game.turn = turn
+            game = GameRules.dealCards(game)
+            updateGame(game)
+            Log.d(TAG, "startNewGame is done")
+
+        }
+         fun updateGame(gameRoom: GameRoom) {
+            Log.d(TAG, "updateGame is being called")
+            Log.d(TAG, "updateGame is done")
+
+
+            dbGame.document(gameRoom.roomCode).set(gameRoom)
+                .addOnSuccessListener {
+                    Log.d(GAMERULES_TAG, "Successfully updated game room")
+                }
+                .addOnFailureListener {
+                    Log.d(GAMERULES_TAG, "Failed to update room: ${it.localizedMessage}")
+                }
+            Log.d(TAG, "updateGame is done")
+
+        }
+
+
     }
 
 }
