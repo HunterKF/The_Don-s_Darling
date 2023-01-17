@@ -2,14 +2,11 @@ package com.example.loveletter.presentation.messenger
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.animateContentSize
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.layout.Arrangement.Absolute.SpaceBetween
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -20,11 +17,9 @@ import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.Menu
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
@@ -32,7 +27,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.loveletter.domain.Avatar
 import com.example.loveletter.domain.GameRoom
 import com.example.loveletter.domain.LogMessage
 import com.example.loveletter.presentation.game.GameViewModel
@@ -40,7 +34,7 @@ import com.example.loveletter.presentation.messenger.util.GameMessage
 import com.example.loveletter.presentation.messenger.util.PlayerMessage
 import com.example.loveletter.presentation.messenger.util.UserMessage
 import com.example.loveletter.presentation.util.Scoreboard
-import com.example.loveletter.ui.theme.DarkNavy
+import com.example.loveletter.ui.theme.Black
 import com.example.loveletter.ui.theme.Navy
 import com.example.loveletter.ui.theme.OffWhite
 import com.example.loveletter.ui.theme.Steel
@@ -63,7 +57,7 @@ fun Messenger(gameRoom: GameRoom, gameViewModel: GameViewModel) {
     })
     Surface(
         modifier = Modifier.fillMaxSize(),
-        color = DarkNavy
+        color = Black
     ) {
         Column(
         ) {
@@ -82,7 +76,7 @@ fun Messenger(gameRoom: GameRoom, gameViewModel: GameViewModel) {
                             mutableStateOf(false)
                         }
                         Column(
-                            modifier = Modifier.fillMaxWidth().animateContentSize()
+                            modifier = Modifier.fillMaxWidth().animateContentSize().background(MaterialTheme.colors.primary)
                         ) {
                             Row(
                                 modifier = Modifier
@@ -99,7 +93,8 @@ fun Messenger(gameRoom: GameRoom, gameViewModel: GameViewModel) {
                                     modifier = Modifier) {
                                     Icon(
                                         Icons.Rounded.ArrowBack,
-                                        null
+                                        null,
+                                        tint = MaterialTheme.colors.onPrimary
                                     )
                                 }
                                 Box(
@@ -109,14 +104,16 @@ fun Messenger(gameRoom: GameRoom, gameViewModel: GameViewModel) {
                                     Text(
                                         text = gameRoom.roomNickname,
                                         style = MaterialTheme.typography.h6,
-                                        textAlign = TextAlign.Center
+                                        textAlign = TextAlign.Center,
+                                        color = MaterialTheme.colors.onPrimary
                                     )
                                 }
                                 IconButton(onClick = { showScoreboard = !showScoreboard },
                                     modifier = Modifier) {
                                     Icon(
                                         Icons.Rounded.Menu,
-                                        null
+                                        null,
+                                        tint = MaterialTheme.colors.onPrimary
                                     )
                                 }
                             }

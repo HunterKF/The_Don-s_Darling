@@ -1,6 +1,7 @@
 package com.example.loveletter.presentation.util
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.MaterialTheme
@@ -9,6 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -16,16 +18,18 @@ import com.example.loveletter.domain.Avatar
 import com.example.loveletter.domain.GameRoom
 
 @Composable
-fun Scoreboard(gameRoom: GameRoom) {
+fun Scoreboard(
+    gameRoom: GameRoom,
+    modifier: Modifier = Modifier,
+    color: Color = Color.White,
+) {
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .padding(vertical = 4.dp, horizontal = 16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(
-            text = "Scoreboard"
-        )
+
         gameRoom.players.sortedByDescending { it.wins }.forEach {
             Row(
                 modifier = Modifier
@@ -45,6 +49,7 @@ fun Scoreboard(gameRoom: GameRoom) {
                     text = it.nickName,
                     style = MaterialTheme.typography.h6,
                     textAlign = TextAlign.Left,
+                    color = color,
                     modifier = Modifier
                         .padding(start = 8.dp)
                         .weight(1f)
@@ -52,6 +57,8 @@ fun Scoreboard(gameRoom: GameRoom) {
                 Text(
                     text = it.wins.toString(),
                     style = MaterialTheme.typography.h6,
+                    color = color,
+
                     textAlign = TextAlign.Center
                 )
             }

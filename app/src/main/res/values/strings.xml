@@ -29,4 +29,5 @@
     <string name="short_rule_king">Trade hands.</string>
     <string name="short_rule_countess">Must play if you have a King or Prince.</string>
     <string name="short_rule_princess">Out of the round if you play or discard.</string>
+    <string name="ready_question">Ready?</string>
 </resources>

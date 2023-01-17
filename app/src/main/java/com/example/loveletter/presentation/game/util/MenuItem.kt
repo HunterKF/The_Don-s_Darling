@@ -18,7 +18,10 @@ import com.example.loveletter.ui.theme.Navy
 import com.example.loveletter.ui.theme.Steel
 
 @Composable
-fun MenuItem(cardAvatar: CardAvatar, modifier: Modifier, textColor: Color = Color.White) {
+fun MenuItem(
+    cardAvatar: CardAvatar,
+    modifier: Modifier,
+    textColor: Color = Color.Black) {
 
     Box(modifier = modifier
         .clip(RoundedCornerShape(50.dp))

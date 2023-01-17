@@ -3,8 +3,8 @@ package com.example.loveletter.presentation
 import android.content.Context
 import android.util.Log
 import android.widget.Toast
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -32,10 +32,8 @@ import com.example.loveletter.presentation.game.GameViewModel
 import com.example.loveletter.presentation.mygames.JoinedGameCard
 import com.example.loveletter.presentation.mygames.MyGamesState
 import com.example.loveletter.presentation.mygames.MyGamesViewModel
-import com.example.loveletter.ui.theme.DarkNavy
+import com.example.loveletter.ui.theme.Black
 import com.example.loveletter.ui.theme.Navy
-import com.example.loveletter.ui.theme.OffWhite
-import com.example.loveletter.ui.theme.Steel
 import com.example.loveletter.util.user.HandleUser
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.auth
@@ -85,11 +83,15 @@ private fun HomeContent(
     context: Context,
     firestoreUser: FirestoreUser,
 ) {
-    Surface(Modifier.fillMaxSize(),
-        color = DarkNavy) {
-        LazyColumn(Modifier.padding(vertical = 48.dp, horizontal = 16.dp),
+    Surface(
+        modifier = Modifier.fillMaxSize(),
+        color = Black) {
+        LazyColumn(Modifier.padding(vertical = 8.dp, horizontal = 16.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.SpaceEvenly) {
+            verticalArrangement = Arrangement.Top) {
+            item {
+                Image(painter = painterResource(id = R.drawable._12_512_b), contentDescription = null)
+            }
             item {
                 Row(
                     modifier = Modifier
@@ -115,6 +117,9 @@ private fun HomeContent(
                         }
                     )
                 }
+            }
+            item {
+                /*TODO - How to play*/
             }
             item {
                 Text(
@@ -145,16 +150,8 @@ private fun HomeContent(
                 }
 
             }
-            item {
-                OutlinedButton(onClick = {
-                    Toast.makeText(context,
-                        "Current user: ${currentUser.uid}",
-                        Toast.LENGTH_SHORT).show()
-                }) {
-                    Text(stringResource(R.string.test_name))
-                }
-            }
         }
+
     }
 }
 
@@ -168,7 +165,6 @@ private fun HomeButton(
     Box(
         modifier = modifier
             .padding(8.dp)
-            .border(2.dp, Steel, RoundedCornerShape(25.dp))
             .clip(RoundedCornerShape(25.dp))
             .background(Navy)
             .clickable {
@@ -186,12 +182,12 @@ private fun HomeButton(
             Text(
                 text = text,
                 style = MaterialTheme.typography.h6,
-                color = OffWhite
+                color = Black
             )
             Icon(
                 painter = painterResource(id = icon),
                 contentDescription = "Host game",
-                tint = OffWhite
+                tint = Black
             )
         }
     }

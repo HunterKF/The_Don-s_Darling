@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material.icons.rounded.CheckCircle
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.runtime.Composable
@@ -14,12 +13,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.example.loveletter.domain.GameRoom
-import com.example.loveletter.presentation.game.GameViewModel
-import com.example.loveletter.presentation.game.util.PlayingCard
-import com.example.loveletter.presentation.util.SteelButton
+import com.example.loveletter.presentation.util.OutlinedButton
 import com.example.loveletter.ui.theme.Steel
 
 @Composable
@@ -52,12 +47,12 @@ fun EndGameAlert(onCancel: () -> Unit, onClick: () -> Unit) {
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
-                SteelButton(
+                OutlinedButton(
                     icon = Icons.Rounded.Close
                 ) {
                     onCancel()
                 }
-                SteelButton(
+                OutlinedButton(
                     icon = Icons.Rounded.CheckCircle
                 ) {
                     onClick()

@@ -340,7 +340,7 @@ class GameViewModel : ViewModel() {
         context: Context,
         playerIsPlaying: Boolean,
     ) {
-        if (alivePlayers.size == 1 && !game.roundOver) {
+        if (alivePlayers.size == 1 && !game.roundOver && !playerIsPlaying) {
             Log.d(TAG, "(if) ending game")
             GameRules.endRound(gameRoom = game)
             game.players.forEach {

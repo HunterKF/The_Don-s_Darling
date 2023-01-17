@@ -16,12 +16,13 @@ import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material.icons.rounded.Refresh
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment.Companion.Center
+import androidx.compose.ui.Alignment.Companion.CenterStart
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -34,7 +35,7 @@ import com.example.loveletter.presentation.game.GameViewModel
 import com.example.loveletter.presentation.game.util.WindowCenterOffsetPositionProvider
 import com.example.loveletter.presentation.settings.util.EndGameAlert
 import com.example.loveletter.presentation.settings.util.ReportPlayer
-import com.example.loveletter.presentation.util.SteelButton
+import com.example.loveletter.presentation.util.OutlinedButton
 import com.example.loveletter.ui.theme.*
 import com.example.loveletter.util.game.gamerules.gameserver.ConnectionRules
 import com.example.loveletter.util.game.gamerules.gameserver.GameServer
@@ -61,7 +62,7 @@ fun Settings(game: GameRoom, gameViewModel: GameViewModel, onExit: () -> Unit) {
     }
 
     Scaffold(
-        backgroundColor = DarkNavy
+        backgroundColor = Black
     ) {
         Column(
             modifier = Modifier
@@ -70,25 +71,27 @@ fun Settings(game: GameRoom, gameViewModel: GameViewModel, onExit: () -> Unit) {
                 .border(5.dp, Navy, RectangleShape)
                 .padding(24.dp)
         ) {
-            Row(
+            Box(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceEvenly,
-                verticalAlignment = CenterVertically
+                contentAlignment = Center
             ) {
-                IconButton(onClick = { gameViewModel.settingsOpen.value = false }) {
+                IconButton(
+                    modifier = Modifier.align(CenterStart),
+                    onClick = { gameViewModel.settingsOpen.value = false }) {
                     Icon(
                         Icons.Rounded.ArrowBack,
                         null,
-                        tint = Steel
                     )
                 }
 
                 Text(
                     "Settings",
-                    style = MaterialTheme.typography.h5
+                    style = MaterialTheme.typography.h5,
+                    modifier = Modifier.align(Center)
                 )
-                Spacer(Modifier.weight(1f))
             }
+            Spacer(modifier = Modifier.height(26.dp))
+
             if (gameViewModel.isHost.value) {
                 Row(
                     modifier = Modifier
@@ -102,10 +105,11 @@ fun Settings(game: GameRoom, gameViewModel: GameViewModel, onExit: () -> Unit) {
                         style = MaterialTheme.typography.h6,
                         modifier = Modifier.weight(1f)
                     )
-                    SteelButton(icon = Icons.Rounded.Refresh) {
+                    OutlinedButton(icon = Icons.Rounded.Refresh) {
                         GameServer.startNewGame(gameRoom = game)
                     }
                 }
+                Spacer(modifier = Modifier.height(16.dp))
                 Row(
                     modifier = Modifier
                         .fillMaxWidth(),
@@ -117,13 +121,15 @@ fun Settings(game: GameRoom, gameViewModel: GameViewModel, onExit: () -> Unit) {
                         style = MaterialTheme.typography.h6,
                         modifier = Modifier.weight(1f)
                     )
-                    SteelButton(drawable = R.drawable.exit) {
+                    OutlinedButton(drawable = R.drawable.icon_end_game) {
                         endGameAlert = true
                     }
                 }
 
 
             }
+            Spacer(modifier = Modifier.height(26.dp))
+
             Column(
                 modifier = Modifier
                     .fillMaxWidth(),
@@ -214,6 +220,7 @@ fun Settings(game: GameRoom, gameViewModel: GameViewModel, onExit: () -> Unit) {
                 }
 
             }
+            Spacer(modifier = Modifier.height(6.dp))
 
             if (!gameViewModel.isHost.value) {
                 Row(
@@ -227,7 +234,7 @@ fun Settings(game: GameRoom, gameViewModel: GameViewModel, onExit: () -> Unit) {
                         style = MaterialTheme.typography.h6,
                         modifier = Modifier.weight(1f)
                     )
-                    SteelButton(drawable = R.drawable.exit) {
+                    OutlinedButton(drawable = R.drawable.exit) {
                         ConnectionRules.leaveGame(game.roomCode, gameViewModel.localPlayer.value)
                         onExit()
                     }

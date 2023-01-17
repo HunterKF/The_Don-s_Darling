@@ -24,7 +24,7 @@ import com.example.loveletter.domain.*
 import com.example.loveletter.presentation.game.util.*
 import com.example.loveletter.presentation.messenger.Messenger
 import com.example.loveletter.presentation.settings.Settings
-import com.example.loveletter.ui.theme.DarkNavy
+import com.example.loveletter.ui.theme.Black
 import com.example.loveletter.ui.theme.Navy
 import com.example.loveletter.ui.theme.OffWhite
 import com.example.loveletter.ui.theme.Steel
@@ -115,8 +115,8 @@ fun GameContent(game: GameRoom, gameViewModel: GameViewModel, navController: Nav
     Scaffold {
         ModalDrawer(
             drawerState = drawerState,
-            scrimColor = Steel.copy(0.5f),
-            drawerBackgroundColor = DarkNavy,
+            scrimColor = MaterialTheme.colors.primary.copy(0.5f),
+            drawerBackgroundColor = Black,
             drawerContent = {
                 Column(Modifier
                     .fillMaxHeight()
@@ -147,22 +147,26 @@ fun GameContent(game: GameRoom, gameViewModel: GameViewModel, navController: Nav
                         IconButton(
                             modifier = Modifier
                                 .clip(RoundedCornerShape(10.dp))
-                                .border(1.dp, Steel, RoundedCornerShape(10.dp))
-                                .background(DarkNavy),
+                                .border(1.dp,
+                                    MaterialTheme.colors.onPrimary,
+                                    RoundedCornerShape(10.dp))
+                                .background(Black),
                             onClick = {
                                 navController.navigate(Screen.Home.route)
                             }) {
                             Icon(
                                 Icons.Outlined.Home,
                                 null,
-                                tint = Steel
+                                tint = MaterialTheme.colors.onPrimary
                             )
                         }
                         IconButton(
                             modifier = Modifier
                                 .clip(RoundedCornerShape(10.dp))
-                                .border(1.dp, Steel, RoundedCornerShape(10.dp))
-                                .background(DarkNavy),
+                                .border(1.dp,
+                                    MaterialTheme.colors.onPrimary,
+                                    RoundedCornerShape(10.dp))
+                                .background(Black),
                             onClick = {
 //                                GameRules.startNewGame(gameRoom = game)
                                 gameViewModel.settingsOpen.value = true
@@ -170,7 +174,7 @@ fun GameContent(game: GameRoom, gameViewModel: GameViewModel, navController: Nav
                             Icon(
                                 Icons.Rounded.Settings,
                                 null,
-                                tint = Steel
+                                tint = MaterialTheme.colors.onPrimary
                             )
                         }
 
@@ -180,7 +184,7 @@ fun GameContent(game: GameRoom, gameViewModel: GameViewModel, navController: Nav
 
             Column(Modifier
                 .fillMaxSize()
-                .background(Navy)
+                .background(Black)
             ) {
                 Box(
                     modifier = Modifier

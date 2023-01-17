@@ -15,12 +15,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardCapitalization
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
@@ -28,12 +26,13 @@ import com.example.loveletter.R
 import com.example.loveletter.Screen
 import com.example.loveletter.domain.Avatar
 import com.example.loveletter.presentation.createroom.CreateRoomViewModel
+import com.example.loveletter.presentation.util.CustomTextButton
 import com.example.loveletter.ui.theme.*
 
 @Composable
 fun HostPlayer(navController: NavHostController, createRoomViewModel: CreateRoomViewModel) {
     Surface(
-        color = DarkNavy
+        color = Black
     ) {
         var playLimit by remember {
             mutableStateOf(-1)
@@ -42,8 +41,8 @@ fun HostPlayer(navController: NavHostController, createRoomViewModel: CreateRoom
         Column(
             modifier = Modifier
                 .padding(18.dp)
+                .border(5.dp, MaterialTheme.colors.onPrimary, RectangleShape)
                 .fillMaxSize()
-                .border(5.dp, Navy, RectangleShape)
                 .padding(24.dp)
                 .verticalScroll(scrollState),
 
@@ -59,7 +58,6 @@ fun HostPlayer(navController: NavHostController, createRoomViewModel: CreateRoom
                     Icon(
                         Icons.Rounded.ArrowBack,
                         null,
-                        tint = WarmRed
                     )
                 }
             }
@@ -67,7 +65,6 @@ fun HostPlayer(navController: NavHostController, createRoomViewModel: CreateRoom
                 Text(
                     text = "Room Name",
                     style = MaterialTheme.typography.h5,
-                    color = WarmRed,
                     fontWeight = FontWeight.SemiBold
                 )
                 Spacer(Modifier.height(4.dp))
@@ -84,32 +81,31 @@ fun HostPlayer(navController: NavHostController, createRoomViewModel: CreateRoom
                         capitalization = KeyboardCapitalization.Words
                     ),
                     colors = TextFieldDefaults.textFieldColors(
-                        backgroundColor = Navy,
-                        textColor = SoftYellow,
-                        cursorColor = SoftYellow,
+                        textColor = MaterialTheme.colors.primary,
+                        backgroundColor = MaterialTheme.colors.onPrimary,
+                        focusedIndicatorColor = Color.Transparent,
                         focusedLabelColor = Color.Transparent,
                         unfocusedIndicatorColor = Color.Transparent
                     ),
                     textStyle = TextStyle(
                         fontSize = 16.sp,
-                        color = SoftYellow
                     ),
                     placeholder = {
                         Text(
                             "Enter room nickname here...",
 
                             fontSize = 16.sp,
-                            color = Steel
                         )
                     },
                     singleLine = true,
                 )
             }
+            Spacer(Modifier.height(4.dp))
+
             Column {
                 Text(
                     text = "Your Name",
                     style = MaterialTheme.typography.h5,
-                    color = WarmRed,
                     fontWeight = FontWeight.SemiBold
                 )
                 Spacer(Modifier.height(4.dp))
@@ -126,58 +122,61 @@ fun HostPlayer(navController: NavHostController, createRoomViewModel: CreateRoom
                         capitalization = KeyboardCapitalization.Words
                     ),
                     colors = TextFieldDefaults.textFieldColors(
-                        backgroundColor = Navy,
-                        textColor = SoftYellow,
-                        cursorColor = SoftYellow,
+                        textColor = MaterialTheme.colors.primary,
+                        backgroundColor = MaterialTheme.colors.onPrimary,
+                        focusedIndicatorColor = Color.Transparent,
                         focusedLabelColor = Color.Transparent,
                         unfocusedIndicatorColor = Color.Transparent
                     ),
                     textStyle = TextStyle(
                         fontSize = 16.sp,
-                        color = SoftYellow
                     ),
                     placeholder = {
                         Text(
                             "Enter your nickname here...",
                             fontSize = 16.sp,
-                            color = Steel
                         )
                     },
                     singleLine = true,
                 )
             }
+            Spacer(Modifier.height(4.dp))
+
             Column(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text(
                     text = "Play Limit",
                     style = MaterialTheme.typography.h5,
-                    color = WarmRed,
                     fontWeight = FontWeight.SemiBold
                 )
                 Spacer(Modifier.height(4.dp))
-                LazyRow(
+                val playLimits = listOf(
+                    5,
+                    7,
+                    9
+                )
+                Row(
                     modifier = Modifier.fillMaxWidth(),
-                    contentPadding = PaddingValues(vertical = 8.dp)
+                    horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
-                    items(98) { number ->
-                        val displayNumber = number + 1
+                    playLimits.forEach { number ->
                         Box(
                             modifier = Modifier
                                 .padding(10.dp)
                                 .clip(RoundedCornerShape(15.dp))
                                 .width(60.dp)
-                                .background(if (number == playLimit) SoftYellow else Navy)
+                                .background(if (number == playLimit) WarmRed else Color.White)
                                 .clickable {
                                     playLimit = number
-                                    createRoomViewModel.playLimit.value = displayNumber
+                                    createRoomViewModel.playLimit.value = number
                                 },
                             contentAlignment = Alignment.Center
                         ) {
                             Text(
-                                text = "$displayNumber",
+                                text = "$number",
                                 style = MaterialTheme.typography.h6,
-                                color = if (number == playLimit) Navy else SoftYellow,
+                                color = if (number == playLimit)  Color.White else Black,
                                 modifier = Modifier
                                     .padding(vertical = 4.dp)
                             )
@@ -251,22 +250,14 @@ fun HostPlayer(navController: NavHostController, createRoomViewModel: CreateRoom
             }
             Spacer(Modifier.height(12.dp))
 
-            Button(
+            CustomTextButton(
                 enabled = createRoomViewModel.playerNickname.value != "" && createRoomViewModel.playerChar.value != 0 && createRoomViewModel.roomNickname.value != "" && playLimit != -1,
                 modifier = Modifier
                     .fillMaxWidth(),
-                colors = ButtonDefaults.buttonColors(
-                    backgroundColor = WarmRed,
-                    contentColor = SoftYellow,
-                    disabledBackgroundColor = ColdRed,
-                    disabledContentColor = WarmRed
-                ),
+                text = stringResource(R.string.create_room),
                 onClick = {
                     navController.navigate(Screen.CreateRoom.route)
-                }) {
-                Text(stringResource(R.string.create_room),
-                    modifier = Modifier.padding(vertical = 6.dp))
-            }
+                })
         }
     }
 }

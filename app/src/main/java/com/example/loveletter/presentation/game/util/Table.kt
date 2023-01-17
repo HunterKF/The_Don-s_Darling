@@ -40,7 +40,7 @@ fun Table(
             .fillMaxSize()
             .border(15.dp, Steel, RoundedCornerShape(150.dp))
             .clip(RoundedCornerShape(350.dp))
-            .background(DarkNavy)
+            .background(Black)
     )
 
 }
@@ -126,7 +126,7 @@ fun PlayerIconLeft(
                     .align(Alignment.Center)
                     .size(55.dp)
                     .clip(CircleShape)
-                    .background(DarkNavy)
+                    .background(Black)
             )
         }
         Box(
@@ -140,8 +140,10 @@ fun PlayerIconLeft(
                 player.hand.forEach { _ ->
                     Image(
                         modifier = Modifier
+                            .border(1.dp, Color.White, RoundedCornerShape(10.dp))
+
                             .size(40.dp),
-                        painter = painterResource(id = R.drawable.icon_card_back),
+                        painter = painterResource(id = R.drawable._12_512_b),
                         contentDescription = null)
                 }
             }
@@ -229,7 +231,7 @@ fun PlayerIconRight(
                     .align(Alignment.Center)
                     .size(55.dp)
                     .clip(CircleShape)
-                    .background(DarkNavy)
+                    .background(Black)
             )
         }
         Box(
@@ -243,9 +245,11 @@ fun PlayerIconRight(
                 player.hand.forEach { _ ->
                     Image(
                         modifier = Modifier
+                            .border(1.dp, Color.White, RoundedCornerShape(10.dp))
                             .size(40.dp),
-                        painter = painterResource(id = R.drawable.icon_card_back),
+                        painter = painterResource(id = R.drawable._12_512_b),
                         contentDescription = null)
+                    Spacer(modifier = Modifier.width(2.dp))
                 }
             }
         }
@@ -271,17 +275,12 @@ fun DeckPlace(deck: Deck, modifier: Modifier = Modifier) {
                 deck.deck.forEach { _ ->
                     Image(
                         modifier = Modifier
-//                            .border(1.dp, Color.Cyan)
+                            .border(2.dp, Color.White, RoundedCornerShape(10.dp))
                             .size(90.dp),
-                        painter = painterResource(id = R.drawable.icon_card_back),
+                        painter = painterResource(id = R.drawable._12_512_b),
                         contentDescription = null,
                     )
                 }
-                Text(text = "${deck.deck.size}",
-                    style = MaterialTheme.typography.h6,
-                    fontWeight = FontWeight.SemiBold,
-                    color = Steel,
-                    modifier = Modifier.align(Alignment.Center))
             }
             Spacer(modifier = Modifier.width(20.dp))
             Box(
@@ -289,15 +288,8 @@ fun DeckPlace(deck: Deck, modifier: Modifier = Modifier) {
                 contentAlignment = Alignment.Center
 
             ) {
-                if (deck.discardDeck.isEmpty()) {
-                    Icon(
-                        Icons.Rounded.CheckCircle,
-                        null,
-                        tint = Navy.copy(0.9f)
-                    )
-                } else {
+                if (deck.discardDeck.isNotEmpty()) {
                     deck.discardDeck.forEach {
-
                         PlayingCard(cardAvatar = CardAvatar.setCardAvatar(it),
                             modifier = Modifier.size(90.dp))
 

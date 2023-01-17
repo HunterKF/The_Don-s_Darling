@@ -46,7 +46,7 @@ fun JoinedGameCard(game: JoinedGame, color: Color = Navy, modifier: Modifier = M
         ) {
             Text(
                 text = game.roomNickname,
-                color = Color.White
+                color = MaterialTheme.colors.primary
             )
         }
     }

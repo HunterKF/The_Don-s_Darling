@@ -25,15 +25,15 @@ import com.example.loveletter.Screen
 import com.example.loveletter.domain.Avatar
 import com.example.loveletter.domain.GameRoom
 import com.example.loveletter.presentation.game.GameViewModel
-import com.example.loveletter.ui.theme.DarkNavy
+import com.example.loveletter.presentation.util.CustomTextButton
+import com.example.loveletter.presentation.util.ShadowDivider
+import com.example.loveletter.ui.theme.Black
 import com.example.loveletter.ui.theme.Navy
-import com.example.loveletter.ui.theme.Steel
 import com.example.loveletter.util.Tools
 import com.example.loveletter.util.game.gamerules.gameserver.GameServer
 import com.example.loveletter.util.game.gamerules.gameserver.StartGame
 import com.example.loveletter.util.user.HandleUser
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun CreateRoom(
     navController: NavHostController,
@@ -95,7 +95,7 @@ private fun CreateRoomContent(
     val context = LocalContext.current
 
     Surface(
-        color = DarkNavy
+        color = Black
     ) {
         Box(
 
@@ -161,9 +161,9 @@ private fun CreateRoomContent(
                     .clip(RoundedCornerShape(25.dp))
                     .weight(1f)
                     .fillMaxWidth()
-                    .background(Steel)) {
+                    .background(MaterialTheme.colors.onPrimary)) {
 
-                    gameRoom.players.forEach { player ->
+                    gameRoom.players.forEachIndexed { index, player ->
 
                         val avatar = Avatar.setAvatar(player.avatar)
                         Row(Modifier
@@ -173,43 +173,52 @@ private fun CreateRoomContent(
                             verticalAlignment = Alignment.CenterVertically) {
 
                             Image(modifier = Modifier
-                                .scale(0.7f)
+                                .size(70.dp)
                                 .padding(4.dp)
                                 .clip(CircleShape),
                                 painter = painterResource(id = avatar.avatar),
                                 contentDescription = avatar.description)
+                            Spacer(modifier = Modifier.width(6.dp))
 
-                            Text(player.nickName, style = MaterialTheme.typography.h6)
+                            Text(
+                                text = player.nickName,
+                                style = MaterialTheme.typography.h6,
+                                modifier = Modifier.weight(1f),
+                                color = Black
+                            )
                         }
+                        Box(
+                            modifier = Modifier.fillMaxWidth(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            if (index != gameRoom.players.size) {
+                                ShadowDivider(
+                                    modifier = Modifier.fillMaxWidth(0.8f)
+                                )
+                            }
+                        }
+
                     }
                 }
 
 
 
                 if (!ready) {
-                    OutlinedButton(
+                    CustomTextButton(
                         modifier = Modifier
                             .padding(16.dp)
                             .fillMaxWidth(),
                         enabled = gameRoom.players.size > 1,
-                        colors = ButtonDefaults.buttonColors(
-                            backgroundColor = Navy,
-                            contentColor = Color.White,
-                            disabledBackgroundColor = Color.LightGray,
-                            disabledContentColor = Color.Black
-                        ),
-                        onClick = { ready = true }) {
-                        Text("Ready?")
-                    }
+                        text = stringResource(R.string.ready_question),
+                        onClick = { ready = true })
                 } else {
                     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
                         Button(
                             modifier = Modifier
                                 .padding(16.dp)
-                                .border(1.dp, Steel, RoundedCornerShape(5.dp)),
+                                .border(1.dp, Color.Black, RoundedCornerShape(5.dp)),
                             colors = ButtonDefaults.buttonColors(
-                                backgroundColor = Navy,
-                                contentColor = Color.White,
+                                backgroundColor = MaterialTheme.colors.onPrimary,
                                 disabledBackgroundColor = Color.LightGray,
                                 disabledContentColor = Color.Black
                             ),
@@ -224,35 +233,26 @@ private fun CreateRoomContent(
                             }) {
                             Icon(Icons.Rounded.Check,
                                 stringResource(R.string.confirm_ready),
-                                tint = Steel)
+                                tint = Color.Black)
                         }
                         Button(
                             modifier = Modifier
                                 .padding(16.dp)
-                                .border(1.dp, Steel, RoundedCornerShape(5.dp)),
+                                .border(1.dp, Color.Black, RoundedCornerShape(5.dp)),
                             colors = ButtonDefaults.buttonColors(
-                                backgroundColor = Navy,
-                                contentColor = Color.White,
+                                backgroundColor = MaterialTheme.colors.onPrimary,
                                 disabledBackgroundColor = Color.LightGray,
                                 disabledContentColor = Color.Black
                             ),
                             onClick = { ready = false }) {
                             Icon(Icons.Rounded.Close,
                                 stringResource(R.string.cancel_ready),
-                                tint = Steel)
+                                tint = Color.Black)
                         }
                     }
                 }
             }
-            IconButton(modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .padding(4.dp),
-                onClick = { /*TODO*/ }) {
-                Icon(
-                    Icons.Rounded.Email,
-                    stringResource(R.string.open_chat)
-                )
-            }
+
         }
     }
 }

@@ -13,7 +13,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Menu
-import androidx.compose.material.icons.rounded.Warning
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -41,7 +40,7 @@ fun BottomBar(
     modifier: Modifier = Modifier,
     player: Player,
     hand: List<Int>,
-    color: Color = Navy,
+    color: Color = MaterialTheme.colors.primary,
     game: GameRoom,
     gameViewModel: GameViewModel,
     onOpen: () -> Job,
@@ -53,7 +52,6 @@ fun BottomBar(
             currentPlayer = it
         }
     }
-    Log.d(TAG, "Refreshing bottom bar composable")
     val context = LocalContext.current
     var currentCard by remember {
         mutableStateOf(0)
@@ -67,7 +65,7 @@ fun BottomBar(
     }
     val coroutineScope = rememberCoroutineScope()
     val borderStroke =
-        if (player.turn) BorderStroke(1.dp, Color.Red) else BorderStroke(0.dp, Color.Transparent)
+        if (player.turn) BorderStroke(2.dp, Color.Red) else BorderStroke(0.dp, Color.Transparent)
 
     Box(
         modifier = modifier
@@ -87,12 +85,12 @@ fun BottomBar(
                 IconButton(
                     modifier = Modifier
                         .clip(RoundedCornerShape(10.dp))
-                        .border(1.dp, Steel, RoundedCornerShape(10.dp))
-                        .background(DarkNavy), onClick = { onOpen() }) {
+                        .border(1.dp, MaterialTheme.colors.onPrimary, RoundedCornerShape(10.dp))
+                        .background(Black), onClick = { onOpen() }) {
                     Icon(
                         Icons.Rounded.Menu,
                         null,
-                        tint = Steel
+                        tint = MaterialTheme.colors.onPrimary
                     )
                 }
                 Spacer(modifier = Modifier.width(8.dp))
@@ -100,8 +98,8 @@ fun BottomBar(
                     Box(
                         modifier = Modifier
                             .clip(RoundedCornerShape(10.dp))
-                            .border(1.dp, Steel, RoundedCornerShape(10.dp))
-                            .background(DarkNavy)
+                            .border(1.dp, MaterialTheme.colors.onPrimary, RoundedCornerShape(10.dp))
+                            .background(Black)
                     ) {
                         IconButton(
                             modifier = Modifier.align(Alignment.Center),
@@ -110,7 +108,7 @@ fun BottomBar(
                             Icon(
                                 painterResource(id = R.drawable.comment),
                                 null,
-                                tint = Steel
+                                tint = MaterialTheme.colors.onPrimary
                             )
                         }
 
@@ -119,7 +117,7 @@ fun BottomBar(
                         Box(
                             modifier = Modifier
                                 .clip(CircleShape)
-                                .border(4.dp, DarkNavy, CircleShape)
+                                .border(4.dp, Black, CircleShape)
                                 .zIndex(3f)
                                 .background(WarmRed)
                                 .padding(2.dp)
@@ -135,11 +133,8 @@ fun BottomBar(
                     .weight(1f)
                     .width(25.dp)
                     .height(50.dp)
-                    .zIndex(1f),
-                contentAlignment = Alignment.BottomCenter
-            ) {
-
-            }
+                    .zIndex(1f)
+            )
             Button(
                 modifier = Modifier.padding(horizontal = 12.dp),
                 enabled = player.turn && currentCard != 0,
@@ -183,7 +178,7 @@ fun BottomBar(
                     Icon(
                         painterResource(id = R.drawable.dead),
                         null,
-                        tint = Color.Black,
+                        tint = WarmRed,
                         modifier = Modifier
                             .align(Alignment.Center)
                             .size(55.dp),
@@ -205,7 +200,7 @@ fun BottomBar(
                     .align(Alignment.Center)
                     .size(85.dp)
                     .clip(CircleShape)
-                    .background(Navy)
+                    .background(color)
             )
         }
         val shakeKeyframes: AnimationSpec<Float> = keyframes {

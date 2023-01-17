@@ -7,46 +7,46 @@ sealed class Avatar(
     val description: String,
     @DrawableRes val avatar: Int,
 ) {
-    object PurpleChar : Avatar(
-        description = "Purple Avatar",
-        avatar = R.drawable.purplechar
+    object Angela : Avatar(
+        description = "Angela",
+        avatar = R.drawable.character_angela
     )
 
-    object BlueChar : Avatar(
-        description = "Blue Avatar",
-        avatar = R.drawable.bluechar
+    object Luigi : Avatar(
+        description = "Luigi",
+        avatar = R.drawable.character_luigi
     )
 
-    object GoldChar : Avatar(
-        description = "GOld Avatar",
-        avatar = R.drawable.goldchar
+    object Paulie : Avatar(
+        description = "Paulie",
+        avatar = R.drawable.character_paulie
     )
 
-    object GreenChar : Avatar(
-        description = "Green Avatar",
-        avatar = R.drawable.greenchar
+    object Salvator : Avatar(
+        description = "Salvator",
+        avatar = R.drawable.character_salvator
     )
 
-    object RedChar : Avatar(
-        description = "Red Avatar",
-        avatar = R.drawable.redchar
+    object Sylvia : Avatar(
+        description = "Sylvia",
+        avatar = R.drawable.character_sylvia
     )
 
-    object PinkChar : Avatar(
-        description = "Pink Avatar",
-        avatar = R.drawable.pinkchar
+    object Tony : Avatar(
+        description = "Tony",
+        avatar = R.drawable.character_tony
     )
 
     companion object {
         fun setAvatar(code: Int?): Avatar {
             return when (code) {
-                1 -> BlueChar
-                2 -> GreenChar
-                3 -> GoldChar
-                4 -> PinkChar
-                5 -> PurpleChar
-                6 -> RedChar
-                else -> PurpleChar
+                1 -> Luigi
+                2 -> Salvator
+                3 -> Paulie
+                4 -> Tony
+                5 -> Angela
+                6 -> Sylvia
+                else -> Angela
             }
         }
     }

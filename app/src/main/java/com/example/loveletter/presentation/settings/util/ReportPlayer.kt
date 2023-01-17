@@ -26,7 +26,7 @@ import com.example.loveletter.domain.Avatar
 import com.example.loveletter.domain.GameRoom
 import com.example.loveletter.domain.Player
 import com.example.loveletter.presentation.game.GameViewModel
-import com.example.loveletter.presentation.util.SteelButton
+import com.example.loveletter.presentation.util.OutlinedButton
 import com.example.loveletter.ui.theme.Steel
 
 @Composable
@@ -98,12 +98,12 @@ fun ReportPlayer(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
-                SteelButton(
+                OutlinedButton(
                     icon = Icons.Rounded.Close
                 ) {
                     onCancel()
                 }
-                SteelButton(
+                OutlinedButton(
                     icon = Icons.Rounded.CheckCircle
                 ) {
                     context.startActivity(shareIntent)

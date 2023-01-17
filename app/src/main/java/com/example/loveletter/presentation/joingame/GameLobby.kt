@@ -29,7 +29,7 @@ import com.example.loveletter.domain.GameRoom
 import com.example.loveletter.presentation.game.GameViewModel
 import com.example.loveletter.presentation.joingame.GameLobbyState
 import com.example.loveletter.presentation.joingame.GameLobbyViewModel
-import com.example.loveletter.ui.theme.DarkNavy
+import com.example.loveletter.ui.theme.Black
 import com.example.loveletter.ui.theme.Steel
 import com.example.loveletter.util.game.gamerules.gameserver.ConnectionRules
 import com.example.loveletter.util.user.HandleUser
@@ -100,7 +100,7 @@ private fun GameLobbyContent(
     val shareIntent = Intent.createChooser(sendIntent, null)
     val context = LocalContext.current
     Surface(
-        color = DarkNavy
+        color = Black
     ) {
         Box() {
 
@@ -140,9 +140,6 @@ private fun GameLobbyContent(
                         verticalAlignment = Alignment.CenterVertically) {
                         Text(gameRoom.roomCode, style = MaterialTheme.typography.h6, color = Color.White)
                         IconButton(onClick = {
-
-                            Log.d(TAG,
-                                "Value for room code: ${gameRoom.roomCode}")
                             context.startActivity(shareIntent)
 
                         }) {
@@ -190,15 +187,6 @@ private fun GameLobbyContent(
                     }
                 }
 
-            }
-            IconButton(modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .padding(4.dp),
-                onClick = { /*TODO*/ }) {
-                Icon(
-                    Icons.Rounded.Email,
-                    stringResource(R.string.open_chat)
-                )
             }
         }
     }
