@@ -39,10 +39,8 @@ fun PlayingCard(
     }
     Box(modifier = modifier
         .size(50.dp)
-        .clip(RoundedCornerShape(5.dp))
-        .border(1.dp, Color.Gray, RoundedCornerShape(5.dp))
-        .border(2.dp, Color.LightGray, RoundedCornerShape(5.dp))
-        .border(1.dp, Color.Gray, RoundedCornerShape(5.dp))
+        .clip(RoundedCornerShape(5.dp)),
+        contentAlignment = Alignment.Center
     ) {
         Box(
             Modifier

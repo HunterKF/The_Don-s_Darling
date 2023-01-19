@@ -6,6 +6,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 
 sealed class Screen(val route: String, val label: String, val vector: ImageVector) {
     object Home : Screen("home_screen", "Home", Icons.Rounded.PlayArrow)
+    object Welcome : Screen("welcome_screen", "Welcome", Icons.Rounded.PlayArrow)
     object CreateRoom : Screen("create_room", "Create Room", Icons.Rounded.Create)
     object HostPlayer : Screen("host_player", "Host Player", Icons.Rounded.Create)
     object JoinGame : Screen("join_game", "Join Game", Icons.Rounded.Create)

@@ -14,6 +14,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.loveletter.domain.GameRoom
 import com.example.loveletter.presentation.game.GameViewModel
+import com.example.loveletter.presentation.util.CustomTextButton
 import com.example.loveletter.presentation.util.Scoreboard
 import com.example.loveletter.util.game.gamerules.gameserver.GameServer
 
@@ -23,10 +24,9 @@ fun RoundEndedAlert(gameViewModel: GameViewModel, gameRoom: GameRoom) {
     Box(
         modifier = Modifier
             .fillMaxWidth(1f)
-            .fillMaxHeight(0.75f)
             .padding(16.dp)
             .clip(RoundedCornerShape(15.dp))
-            .border(2.dp, Color.Blue, RoundedCornerShape(15.dp))
+            .border(4.dp, MaterialTheme.colors.primary, RoundedCornerShape(15.dp))
             .background(Color.White),
         contentAlignment = Alignment.Center
     ) {
@@ -47,24 +47,27 @@ fun RoundEndedAlert(gameViewModel: GameViewModel, gameRoom: GameRoom) {
                 textAlign = TextAlign.Center
             )
 
-            Scoreboard(gameRoom = gameRoom)
+            Scoreboard(gameRoom = gameRoom, color = MaterialTheme.colors.primary)
             if (gameViewModel.isHost.value) {
-                Button(
+                CustomTextButton(
+                    enabled = true,
                     onClick = {
                         GameServer.startNewGame(gameRoom)
                         gameViewModel.endRoundAlert.value = false
                         gameViewModel.resultAlert.value = false
-                    }) {
-                    Text(
-                        text = "Start Next Round"
-                    )
-                }
+                    },
+                    text = "Start Next Round",
+                    backgroundColor = MaterialTheme.colors.primary,
+                    contentColor = MaterialTheme.colors.onPrimary
+                )
             } else {
-                Button(onClick = { gameViewModel.endRoundAlert.value = false }) {
-                    Text(
-                        text = "Okay"
-                    )
-                }
+                CustomTextButton(
+                    enabled = true,
+                    onClick = { gameViewModel.endRoundAlert.value = false },
+                    text = "Okay",
+                    backgroundColor = MaterialTheme.colors.primary,
+                    contentColor = MaterialTheme.colors.onPrimary
+                )
             }
 
         }

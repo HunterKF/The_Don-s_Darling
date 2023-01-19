@@ -21,7 +21,6 @@ fun ResultMessage(message: String, gameViewModel: GameViewModel) {
     Box(
         modifier = Modifier
             .fillMaxWidth(1f)
-            .fillMaxHeight(0.75f)
             .padding(16.dp)
             .clip(RoundedCornerShape(15.dp))
             .border(2.dp, Color.Blue, RoundedCornerShape(15.dp))

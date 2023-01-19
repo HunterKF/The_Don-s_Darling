@@ -293,17 +293,18 @@ fun JoinGameScreen(navController: NavHostController, gameLobbyViewModel: GameLob
                     .padding(16.dp)
                     .fillMaxWidth(),
                 enabled = gameLobbyViewModel.playerNickname.value != "" && gameLobbyViewModel.playerChar.value != 0 && gameLobbyViewModel.roomCode.value != "",
-                text = stringResource(id = R.string.join_game)
-            ) {
-                ConnectionRules.joinGame(
-                    roomCode = gameLobbyViewModel.roomCode.value,
-                    player = HandleUser.createGamePlayer(avatar = gameLobbyViewModel.playerChar.value,
-                        nickname = gameLobbyViewModel.playerNickname.value, isHost = false),
-                    context = context
-                ) {
-                    navController.navigate(Screen.GameLobby.route)
+                text = stringResource(id = R.string.join_game),
+                onClick = {
+                    ConnectionRules.joinGame(
+                        roomCode = gameLobbyViewModel.roomCode.value,
+                        player = HandleUser.createGamePlayer(avatar = gameLobbyViewModel.playerChar.value,
+                            nickname = gameLobbyViewModel.playerNickname.value, isHost = false),
+                        context = context
+                    ) {
+                        navController.navigate(Screen.GameLobby.route)
+                    }
                 }
-            }
+            )
         }
     }
 }

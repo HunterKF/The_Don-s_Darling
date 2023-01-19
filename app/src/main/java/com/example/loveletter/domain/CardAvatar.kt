@@ -1,9 +1,7 @@
 package com.example.loveletter.domain
 
-import android.util.Log
 import androidx.annotation.DrawableRes
 import com.example.loveletter.R
-import com.example.loveletter.TAG
 
 sealed class CardAvatar(
     val cardName: String,
@@ -14,74 +12,74 @@ sealed class CardAvatar(
     val numberInGame: Int,
 ) {
     object Guard : CardAvatar(
-        cardName = "Guard",
+        cardName = "Policeman",
         number = 1,
         avatar = R.drawable.icon_police_officer,
-        ruleDescription = R.string.rule_guard,
-        ruleShortDescription = R.string.short_rule_guard,
+        ruleDescription = R.string.rule_policeman,
+        ruleShortDescription = R.string.short_rule_policeman,
         numberInGame = 6
     )
 
     object Priest : CardAvatar(
-        cardName = "Priest",
+        cardName = "Private Eye",
         number = 2,
-        ruleDescription = R.string.rule_priest,
+        ruleDescription = R.string.rule_private_eye,
         avatar = R.drawable.icon_detective,
-        R.string.short_rule_priest,
+        R.string.short_rule_private_eye,
         2
     )
 
     object Baron : CardAvatar(
-        cardName = "Baron",
+        cardName = "Moneylender",
         number = 3,
-        ruleDescription = R.string.rule_baron,
+        ruleDescription = R.string.rule_moneylender,
         avatar = R.drawable.icon_loan_shark,
-        R.string.short_rule_baron,
+        R.string.short_rule_moneylender,
         2
     )
 
     object Handmaid : CardAvatar(
-        cardName = "Handmaid",
+        cardName = "Doctor",
         number = 4,
-        ruleDescription = R.string.rule_handmaid,
+        ruleDescription = R.string.rule_doctor,
         avatar = R.drawable.icon_doctor,
-        R.string.short_rule_handmaid,
+        R.string.short_rule_doctor,
         2
     )
 
     object Prince : CardAvatar(
-        cardName = "Prince",
+        cardName = "Wiseguy",
         number = 5,
-        ruleDescription = R.string.rule_prince,
+        ruleDescription = R.string.rule_wiseguy,
         avatar = R.drawable.icon_mobster,
-        R.string.short_rule_prince,
+        R.string.short_rule_wiseguy,
         2
     )
 
     object King : CardAvatar(
-        cardName = "King",
+        cardName = "The Don",
         number = 6,
-        ruleDescription = R.string.rule_king,
+        ruleDescription = R.string.rule_the_don,
         avatar = R.drawable.icon_godfather,
-        R.string.short_rule_king,
+        R.string.short_rule_the_don,
         1
     )
 
     object Countess : CardAvatar(
-        cardName = "Countess",
+        cardName = "Courtesan",
         number = 7,
-        ruleDescription =  R.string.rule_countess,
+        ruleDescription =  R.string.rule_courtesan,
         avatar = R.drawable.icon_courtesan,
-        R.string.short_rule_countess,
+        R.string.short_rule_courtesan,
         1
     )
 
     object Princess : CardAvatar(
-        cardName = "Princess",
+        cardName = "Darling",
         number = 8,
-        ruleDescription = R.string.rule_princess,
+        ruleDescription = R.string.rule_darling,
         avatar = R.drawable.icon_the_daughter,
-        R.string.short_rule_princess,
+        R.string.short_rule_darling,
         1
     )
 

@@ -22,12 +22,15 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.Layout
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.example.loveletter.TAG
 import com.example.loveletter.domain.CardAvatar
 import com.example.loveletter.domain.GameRoom
 import com.example.loveletter.presentation.game.GameViewModel
+import com.example.loveletter.presentation.util.CustomTextButton
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -42,8 +45,8 @@ fun GuessCard(gameRoom: GameRoom, guessCard: MutableState<Boolean>, gameViewMode
             .fillMaxHeight(0.75f)
             .padding(16.dp)
             .clip(RoundedCornerShape(15.dp))
-            .border(2.dp, Color.Blue, RoundedCornerShape(15.dp))
-            .background(Color.White),
+            .border(4.dp, MaterialTheme.colors.primary, RoundedCornerShape(15.dp))
+            .background(MaterialTheme.colors.onPrimary),
         contentAlignment = Alignment.Center
     ) {
         Column(
@@ -66,12 +69,57 @@ fun GuessCard(gameRoom: GameRoom, guessCard: MutableState<Boolean>, gameViewMode
                 8
             )
             val state = rememberLazyListState()
-            val context = LocalContext.current
-
             var selectedIndex by remember {
                 mutableStateOf(-1)
             }
-            BoxWithConstraints {
+
+
+            val itemSize: Dp =
+                ((LocalConfiguration.current.screenWidthDp.dp - 58.dp) / 4)
+            LazyVerticalGrid(
+                modifier = Modifier.padding(vertical = 16.dp).fillMaxHeight(0.8f),
+                cells = GridCells.Adaptive(itemSize),
+                horizontalArrangement = Arrangement.Center,
+                content = {
+                    itemsIndexed(cards) { index, item ->
+                        println("first visible item: ${state.firstVisibleItemIndex}")
+                        println("visible items info ${state.layoutInfo.visibleItemsInfo}")
+                        println("total items count: ${state.layoutInfo.totalItemsCount}")
+                        val scale by animateFloatAsState(targetValue = if (selectedIndex == index) 1.2f else 1f)
+
+
+                        val color by animateColorAsState(targetValue = if (selectedIndex == index) Color.Red else Color.Gray)
+                        val card = CardAvatar.setCardAvatar(item)
+                        PlayingCard(
+                            modifier = Modifier
+                                .selectable(
+                                    selected = selectedIndex == index,
+                                    onClick = {
+                                        if (selectedIndex != index) {
+                                            selectedIndex = index
+                                            Log.d(TAG, "selectedIndex: $selectedIndex")
+                                            guessedCard = item
+                                            Log.d(TAG,
+                                                "Player guessed: ${gameViewModel.guessCardAlert.value}")
+
+                                        } else {
+                                            selectedIndex = -1
+                                            Log.d(TAG, "selectedIndex: $selectedIndex")
+                                            guessedCard = -1
+                                            Log.d(TAG,
+                                                "Player guessed: ${gameViewModel.guessCardAlert.value}")
+
+                                        }
+                                    }
+                                )
+                                .scale(scale)
+                                .aspectRatio(1f),
+                            cardAvatar = card,
+                            color = color
+                        )
+                    }
+                })
+            /*BoxWithConstraints {
                 LazyRow(
                     state = state
                 ) {
@@ -134,7 +182,7 @@ fun GuessCard(gameRoom: GameRoom, guessCard: MutableState<Boolean>, gameViewMode
                         )
                     }
                 }
-            }
+            }*/
 
 
 
@@ -144,20 +192,19 @@ fun GuessCard(gameRoom: GameRoom, guessCard: MutableState<Boolean>, gameViewMode
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
 
-                Button(
-                    enabled = guessedCard != 0,
+                CustomTextButton(
+                    enabled = guessedCard != 0 && guessedCard != -1,
                     onClick = {
                         gameViewModel.onGuess(guessedCard, gameRoom = gameRoom)
                     },
                     modifier = Modifier
                         .weight(0.5f)
-                        .padding(horizontal = 16.dp)
-                        .shadow(4.dp, shape = RoundedCornerShape(15.dp))) {
-                    Icon(
-                        Icons.Rounded.Check,
-                        "Confirm"
-                    )
-                }
+                        .padding(horizontal = 16.dp),
+
+                    backgroundColor = MaterialTheme.colors.primary,
+                    contentColor = MaterialTheme.colors.onPrimary,
+                    text = "Guess!"
+                )
             }
         }
     }

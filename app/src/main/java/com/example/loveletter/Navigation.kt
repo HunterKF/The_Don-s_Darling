@@ -1,5 +1,6 @@
 package com.example.loveletter
 
+import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -14,6 +15,7 @@ import com.example.loveletter.presentation.game.GameViewModel
 import com.example.loveletter.presentation.joingame.GameLobbyViewModel
 import com.example.loveletter.presentation.joingame.JoinGameScreen
 import com.example.loveletter.presentation.mygames.MyGamesViewModel
+import com.example.loveletter.presentation.welcome.WelcomeScreen
 
 @Composable
 fun Navigation(
@@ -21,10 +23,16 @@ fun Navigation(
     gameViewModel: GameViewModel,
     createRoomViewModel: CreateRoomViewModel,
     gameLobbyViewModel: GameLobbyViewModel,
-    myGamesViewModel: MyGamesViewModel
+    myGamesViewModel: MyGamesViewModel,
+    startDestination: String
 ) {
 
-    NavHost(navController = navController, startDestination = Screen.Home.route) {
+    Log.d(TAG, "startDestion: $startDestination")
+
+    NavHost(
+        navController = navController,
+        startDestination = startDestination
+    ) {
         composable(Screen.Home.route) {
             HomeScreen(navController, myGamesViewModel, gameViewModel)
         }
@@ -42,6 +50,9 @@ fun Navigation(
         }
         composable(Screen.Game.route) {
             Game(navController, gameViewModel)
+        }
+        composable(Screen.Welcome.route) {
+            WelcomeScreen(navController = navController)
         }
     }
 }

@@ -29,6 +29,7 @@ import com.example.loveletter.domain.Avatar
 import com.example.loveletter.domain.GameRoom
 import com.example.loveletter.domain.Player
 import com.example.loveletter.presentation.game.GameViewModel
+import com.example.loveletter.presentation.util.CustomTextButton
 import com.example.loveletter.ui.theme.*
 
 @Composable
@@ -46,7 +47,7 @@ fun SelectPlayer(
             .padding(16.dp)
             .background(Color.White)
             .clip(RoundedCornerShape(15.dp))
-            .border(2.dp, Color.Blue, RoundedCornerShape(15.dp)),
+            .border(4.dp, MaterialTheme.colors.primary, RoundedCornerShape(15.dp)),
         contentAlignment = Alignment.Center
     ) {
         Column(
@@ -60,27 +61,32 @@ fun SelectPlayer(
             )
             Spacer(Modifier.height(24.dp))
             Row(
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth().fillMaxHeight(0.6f),
+                horizontalArrangement = Arrangement.SpaceEvenly,
+                verticalAlignment = Alignment.CenterVertically
             ) {
 
                 gameRoom.players.forEach {
 
                     if (it.uid != gameViewModel.currentUser!!.uid) {
                         val avatar = Avatar.setAvatar(it.avatar)
-                        val color by animateColorAsState(targetValue = if (it == selectedPlayer.value) Color.Blue.copy(
-                            1f)
-                        else Color.Red)
+                        val color by animateColorAsState(targetValue = if (it == selectedPlayer.value) MaterialTheme.colors.primary
+                        else WarmRed)
 
                         val dp by animateDpAsState(targetValue = if (it == selectedPlayer.value) 130.dp else 120.dp)
 
-                        Card(
+                        Box(
                             modifier = Modifier
                                 .height(dp)
                                 .weight(1f)
                                 .selectable(
                                     selected = it.uid == selectedPlayer.value.uid,
                                     onClick = {
-                                        selectedPlayer.value = it
+                                        if (selectedPlayer.value != it) {
+                                            selectedPlayer.value = it
+                                        } else {
+                                            selectedPlayer.value = Player()
+                                        }
                                         Toast
                                             .makeText(context,
                                                 "It has been selected. Player: ${selectedPlayer.value}",
@@ -89,6 +95,7 @@ fun SelectPlayer(
                                         Log.d(TAG, "It has been clicked.")
                                     }
                                 ),
+                            contentAlignment = Alignment.Center
                         ) {
                             Column(
                                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -111,7 +118,7 @@ fun SelectPlayer(
                                                 modifier = Modifier
                                                     .align(Alignment.Center)
                                                     .clip(CircleShape)
-                                                    .fillMaxSize()
+                                                    .fillMaxHeight()
                                                     .background(Black.copy(0.8f))
                                             )
                                             Icon(
@@ -129,7 +136,7 @@ fun SelectPlayer(
                                             modifier = Modifier
                                                 .zIndex(2f)
                                                 .align(Alignment.Center)
-                                                .fillMaxSize()
+                                                .fillMaxHeight()
                                                 .clip(CircleShape)
                                                 .background(Color.DarkGray.copy(0.8f))
                                         ) {
@@ -148,7 +155,7 @@ fun SelectPlayer(
                                         contentDescription = avatar.description,
                                         modifier = Modifier
                                             .clip(CircleShape)
-                                            .border(6.dp, color, CircleShape)
+                                            .border(4.dp, color, CircleShape)
                                     )
                                     Spacer(Modifier.padding(12.dp))
                                 }
@@ -163,30 +170,20 @@ fun SelectPlayer(
             }
             Spacer(Modifier.height(10.dp))
 
-            Button(
+            CustomTextButton(
                 enabled = selectedPlayer.value.uid != "",
                 modifier = Modifier
-                    .fillMaxWidth(0.4f)
+                    .fillMaxWidth()
                     .padding(16.dp)
                     .clip(RoundedCornerShape(15.dp)),
-                colors = ButtonDefaults.buttonColors(
-                    backgroundColor = WarmRed,
-                    contentColor = SoftYellow,
-                    disabledBackgroundColor = ColdRed,
-                    disabledContentColor = WarmRed
-                ),
                 onClick = {
                     gameViewModel.onSelectPlayer(selectedPlayer = selectedPlayer.value,
                         gameRoom = gameRoom)
                 },
-            ) {
-                Icon(
-                    Icons.Rounded.Check,
-                    "Select player",
-                    tint = Color.White,
-                    modifier = Modifier.padding(8.dp),
-                    )
-            }
+                text = "Select",
+                backgroundColor = MaterialTheme.colors.primary,
+                contentColor = MaterialTheme.colors.onPrimary
+            )
         }
     }
 }
