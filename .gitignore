@@ -13,3 +13,7 @@
 .externalNativeBuild
 .cxx
 local.properties
+*.trace
+Logcat - Pixel 3 - Receiver.pdf
+Logcat - Samsung - Host.pdf
+Logcat.pdf

@@ -1,4 +1,4 @@
-package com.example.loveletter.util.game.gamerules.gameserver
+package com.example.loveletter.util.game
 
 import android.util.Log
 import com.example.loveletter.TAG

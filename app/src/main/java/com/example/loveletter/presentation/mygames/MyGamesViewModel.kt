@@ -23,7 +23,6 @@ class MyGamesViewModel : ViewModel() {
             }.collect {
                 loadingState.emit(it)
             }
-
         }
     }
 }

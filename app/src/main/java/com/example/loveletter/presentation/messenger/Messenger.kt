@@ -38,7 +38,7 @@ import com.example.loveletter.ui.theme.Black
 import com.example.loveletter.ui.theme.Navy
 import com.example.loveletter.ui.theme.OffWhite
 import com.example.loveletter.ui.theme.Steel
-import com.example.loveletter.util.game.gamerules.gameserver.GameServer
+import com.example.loveletter.util.game.GameServer
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 
