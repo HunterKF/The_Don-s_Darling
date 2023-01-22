@@ -37,8 +37,8 @@ import com.example.loveletter.presentation.settings.util.EndGameAlert
 import com.example.loveletter.presentation.settings.util.ReportPlayer
 import com.example.loveletter.presentation.util.OutlinedButton
 import com.example.loveletter.ui.theme.*
+import com.example.loveletter.util.game.GameServer
 import com.example.loveletter.util.game.gamerules.gameserver.ConnectionRules
-import com.example.loveletter.util.game.gamerules.gameserver.GameServer
 import com.example.loveletter.util.user.HandleUser
 
 @Composable

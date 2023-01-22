@@ -13,7 +13,7 @@ import com.example.loveletter.domain.LogMessage
 import com.example.loveletter.domain.Player
 import com.example.loveletter.domain.Result
 import com.example.loveletter.util.Tools
-import com.example.loveletter.util.game.gamerules.gameserver.GameServer
+import com.example.loveletter.util.game.GameServer
 import com.example.loveletter.util.game.gamerules.CardRules.*
 import com.example.loveletter.util.game.gamerules.GameRules
 import com.google.firebase.auth.FirebaseUser

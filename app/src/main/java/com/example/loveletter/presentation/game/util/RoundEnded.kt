@@ -16,7 +16,7 @@ import com.example.loveletter.domain.GameRoom
 import com.example.loveletter.presentation.game.GameViewModel
 import com.example.loveletter.presentation.util.CustomTextButton
 import com.example.loveletter.presentation.util.Scoreboard
-import com.example.loveletter.util.game.gamerules.gameserver.GameServer
+import com.example.loveletter.util.game.GameServer
 
 @Composable
 fun RoundEndedAlert(gameViewModel: GameViewModel, gameRoom: GameRoom) {

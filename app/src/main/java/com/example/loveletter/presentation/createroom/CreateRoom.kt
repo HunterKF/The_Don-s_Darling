@@ -28,9 +28,8 @@ import com.example.loveletter.presentation.game.GameViewModel
 import com.example.loveletter.presentation.util.CustomTextButton
 import com.example.loveletter.presentation.util.ShadowDivider
 import com.example.loveletter.ui.theme.Black
-import com.example.loveletter.ui.theme.Navy
 import com.example.loveletter.util.Tools
-import com.example.loveletter.util.game.gamerules.gameserver.GameServer
+import com.example.loveletter.util.game.GameServer
 import com.example.loveletter.util.game.gamerules.gameserver.StartGame
 import com.example.loveletter.util.user.HandleUser
 

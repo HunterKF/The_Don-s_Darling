@@ -7,7 +7,7 @@ import com.example.loveletter.domain.GameRoom
 import com.example.loveletter.domain.LogMessage
 import com.example.loveletter.domain.Player
 import com.example.loveletter.util.Tools
-import com.example.loveletter.util.game.gamerules.gameserver.GameServer
+import com.example.loveletter.util.game.GameServer
 import com.example.loveletter.util.game.gamerules.CardRules.Handmaid
 
 val GAMERULES_TAG = "GameRules"
