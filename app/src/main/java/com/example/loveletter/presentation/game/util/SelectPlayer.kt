@@ -21,6 +21,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import com.example.loveletter.R
@@ -61,7 +62,9 @@ fun SelectPlayer(
             )
             Spacer(Modifier.height(24.dp))
             Row(
-                modifier = Modifier.fillMaxWidth().fillMaxHeight(0.6f),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .fillMaxHeight(0.6f),
                 horizontalArrangement = Arrangement.SpaceEvenly,
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -70,8 +73,8 @@ fun SelectPlayer(
 
                     if (it.uid != gameViewModel.currentUser!!.uid) {
                         val avatar = Avatar.setAvatar(it.avatar)
-                        val color by animateColorAsState(targetValue = if (it == selectedPlayer.value) MaterialTheme.colors.primary
-                        else WarmRed)
+                        val color by animateColorAsState(targetValue = if (it == selectedPlayer.value) WarmRed
+                        else MaterialTheme.colors.primary)
 
                         val dp by animateDpAsState(targetValue = if (it == selectedPlayer.value) 130.dp else 120.dp)
 
@@ -87,11 +90,6 @@ fun SelectPlayer(
                                         } else {
                                             selectedPlayer.value = Player()
                                         }
-                                        Toast
-                                            .makeText(context,
-                                                "It has been selected. Player: ${selectedPlayer.value}",
-                                                Toast.LENGTH_SHORT)
-                                            .show()
                                         Log.d(TAG, "It has been clicked.")
                                     }
                                 ),
@@ -116,15 +114,16 @@ fun SelectPlayer(
                                         ) {
                                             Box(
                                                 modifier = Modifier
+                                                    .size(55.dp)
+                                                    .zIndex(2f)
                                                     .align(Alignment.Center)
                                                     .clip(CircleShape)
-                                                    .fillMaxHeight()
-                                                    .background(Black.copy(0.8f))
+                                                    .background(Black.copy(0.5f))
                                             )
                                             Icon(
                                                 painterResource(id = R.drawable.shield),
                                                 null,
-                                                tint = Steel,
+                                                tint = MaterialTheme.colors.onPrimary,
                                                 modifier = Modifier
                                                     .zIndex(3f)
                                                     .align(Alignment.Center)
@@ -138,7 +137,7 @@ fun SelectPlayer(
                                                 .align(Alignment.Center)
                                                 .fillMaxHeight()
                                                 .clip(CircleShape)
-                                                .background(Color.DarkGray.copy(0.8f))
+                                                .background(WarmRed.copy(0.8f))
                                         ) {
                                             Icon(
                                                 painterResource(id = R.drawable.dead),
@@ -177,10 +176,12 @@ fun SelectPlayer(
                     .padding(16.dp)
                     .clip(RoundedCornerShape(15.dp)),
                 onClick = {
-                    gameViewModel.onSelectPlayer(selectedPlayer = selectedPlayer.value,
-                        gameRoom = gameRoom)
+                    gameViewModel.onSelectPlayer(
+                        selectedPlayer = selectedPlayer.value,
+                        gameRoom = gameRoom
+                    )
                 },
-                text = "Select",
+                text = stringResource(R.string.select),
                 backgroundColor = MaterialTheme.colors.primary,
                 contentColor = MaterialTheme.colors.onPrimary
             )

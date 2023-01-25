@@ -25,7 +25,13 @@ class CreateRoomViewModel : ViewModel() {
     var playerNickname = mutableStateOf("")
 
     fun assignCharNumber(index: Int): Int {
-        return index + 1
+        return index
+    }
+    fun clearRoomData() {
+        roomCode.value = ""
+        roomNickname.value = ""
+        playerNickname.value = ""
+        playerChar.value = 0
     }
     fun observeRoom() {
         viewModelScope.launch {

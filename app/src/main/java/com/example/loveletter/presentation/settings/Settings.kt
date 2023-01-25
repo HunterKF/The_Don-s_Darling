@@ -16,6 +16,7 @@ import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material.icons.rounded.Refresh
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.Center
 import androidx.compose.ui.Alignment.Companion.CenterStart
 import androidx.compose.ui.Alignment.Companion.CenterVertically
@@ -106,7 +107,7 @@ fun Settings(game: GameRoom, gameViewModel: GameViewModel, onExit: () -> Unit) {
                         modifier = Modifier.weight(1f)
                     )
                     OutlinedButton(icon = Icons.Rounded.Refresh) {
-                        GameServer.startNewGame(gameRoom = game)
+                        GameServer.startNewRound(gameRoom = game)
                     }
                 }
                 Spacer(modifier = Modifier.height(16.dp))
@@ -221,6 +222,36 @@ fun Settings(game: GameRoom, gameViewModel: GameViewModel, onExit: () -> Unit) {
 
             }
             Spacer(modifier = Modifier.height(6.dp))
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = "Card Guide",
+                    style = MaterialTheme.typography.h6,
+                    modifier = Modifier.weight(1f)
+                )
+                val checkedState =
+                    remember { mutableStateOf(gameViewModel.localPlayer.value.guide) }
+                Switch(
+                    checked = checkedState.value,
+                    colors = SwitchDefaults.colors(
+                        checkedThumbColor = WarmRed,
+                        checkedTrackColor = WarmRed.copy(alpha = 0.5f),
+                        uncheckedThumbColor = MaterialTheme.colors.onPrimary,
+                        uncheckedTrackColor = MaterialTheme.colors.onPrimary.copy(0.5f)
+                    ),
+                    onCheckedChange = {
+                        checkedState.value = it
+                        HandleUser.toggleCardGuideSetting(
+                            player = gameViewModel.localPlayer.value,
+                            gameRoom = game
+                        )
+                    }
+                )
+            }
+            Spacer(modifier = Modifier.height(6.dp))
 
             if (!gameViewModel.isHost.value) {
                 Row(
@@ -235,7 +266,15 @@ fun Settings(game: GameRoom, gameViewModel: GameViewModel, onExit: () -> Unit) {
                         modifier = Modifier.weight(1f)
                     )
                     OutlinedButton(drawable = R.drawable.exit) {
-                        ConnectionRules.leaveGame(game.roomCode, gameViewModel.localPlayer.value)
+                        ConnectionRules.leaveGame(
+                            roomCode = game.roomCode,
+                            player = gameViewModel.localPlayer.value
+                        )
+                        HandleUser.deleteUserGameRoomForLocal(
+                            roomCode = game.roomCode,
+                            roomNickname = game.roomNickname,
+                            player = gameViewModel.localPlayer.value
+                        )
                         onExit()
                     }
                 }
@@ -249,7 +288,7 @@ fun Settings(game: GameRoom, gameViewModel: GameViewModel, onExit: () -> Unit) {
                 EndGameAlert(
                     onCancel = { endGameAlert = false },
                     onClick = {
-                        HandleUser.deleteUserGameRoom(
+                        HandleUser.deleteUserGameRoomForAll(
                             roomCode = game.roomCode,
                             roomNickname = game.roomNickname,
                             players = game.players
@@ -273,6 +312,11 @@ fun Settings(game: GameRoom, gameViewModel: GameViewModel, onExit: () -> Unit) {
     BackHandler() {
         gameViewModel.settingsOpen.value = false
     }
+}
+
+@Composable
+private fun ToggleGuide() {
+
 }
 
 

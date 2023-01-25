@@ -13,20 +13,23 @@ data class GameRoom(
     var gameOver: Boolean,
     var showLogs: Boolean,
     var deleteRoom: Boolean,
+    var deckClear: Boolean,
     var gameLog: ArrayList<LogMessage>,
 ) {
+
     constructor() : this(Deck(),
-        0,
-        "",
-        "",
-        5,
-        listOf(Player(), Player()),
-        false,
-        "",
-        false,
-        false,
-        true,
-        false,
-        arrayListOf()
+        turn = 0,
+        roomCode = "",
+        roomNickname = "",
+        playLimit = 5,
+        players = listOf(Player(), Player()),
+        start = false,
+        host = "",
+        roundOver = false,
+        gameOver = false,
+        showLogs = true,
+        deleteRoom = false,
+        deckClear = false,
+        gameLog = arrayListOf()
     )
 }

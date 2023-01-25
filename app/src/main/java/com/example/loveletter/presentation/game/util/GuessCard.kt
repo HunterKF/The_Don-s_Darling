@@ -24,8 +24,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.example.loveletter.R
 import com.example.loveletter.TAG
 import com.example.loveletter.domain.CardAvatar
 import com.example.loveletter.domain.GameRoom
@@ -203,7 +205,7 @@ fun GuessCard(gameRoom: GameRoom, guessCard: MutableState<Boolean>, gameViewMode
 
                     backgroundColor = MaterialTheme.colors.primary,
                     contentColor = MaterialTheme.colors.onPrimary,
-                    text = "Guess!"
+                    text = stringResource(R.string.guess)
                 )
             }
         }

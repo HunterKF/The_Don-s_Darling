@@ -1,11 +1,10 @@
-package com.example.loveletter.presentation
+package com.example.loveletter.presentation.mygames
 
 import android.content.Context
 import android.util.Log
-import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -17,7 +16,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -34,45 +32,50 @@ import com.example.loveletter.TAG
 import com.example.loveletter.domain.FirestoreUser
 import com.example.loveletter.items
 import com.example.loveletter.presentation.game.GameViewModel
-import com.example.loveletter.presentation.mygames.JoinedGameCard
-import com.example.loveletter.presentation.mygames.MyGamesState
-import com.example.loveletter.presentation.mygames.MyGamesViewModel
 import com.example.loveletter.ui.theme.Black
-import com.example.loveletter.ui.theme.Navy
 import com.example.loveletter.ui.theme.WarmRed
-import com.example.loveletter.util.user.HandleUser
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 
 @Composable
-fun HomeScreen(
+fun MyGames(
+    myGamesViewModel: MyGamesViewModel,
     navHostController: NavHostController,
     gameViewModel: GameViewModel,
-
-    ) {
+) {
     val auth = Firebase.auth
     val currentUser = auth.currentUser
     val context = LocalContext.current
-    LaunchedEffect(key1 = Unit, block = {
-        if (currentUser != null) {
-            HandleUser.createUserPlayer()
+    val state by myGamesViewModel.state.collectAsState()
+    when (state) {
+        MyGamesState.Loading -> {
+            CircularProgressIndicator()
+            LaunchedEffect(key1 = Unit) {
+                myGamesViewModel.observeRoom()
+            }
         }
-    })
-    HomeContent(
-        navHostController = navHostController,
-        currentUser = currentUser,
-        gameViewModel = gameViewModel,
-        context = context,
-    )
+        is MyGamesState.Loaded -> {
+            val loaded = state as MyGamesState.Loaded
+
+            MyGamesContent(
+                navHostController = navHostController,
+                currentUser = currentUser,
+                context = context,
+                firestoreUser = loaded.firestoreUser,
+                gameViewModel = gameViewModel
+            )
+        }
+    }
 }
 
 @Composable
-private fun HomeContent(
+private fun MyGamesContent(
     navHostController: NavHostController,
     currentUser: FirebaseUser,
     gameViewModel: GameViewModel,
     context: Context,
+    firestoreUser: FirestoreUser,
 ) {
     val navBackStackEntry by navHostController.currentBackStackEntryAsState()
 
@@ -101,6 +104,7 @@ private fun HomeContent(
                                 contentDescription = null,
                                 tint = if (currentDestination?.route == screen.route) WarmRed else Color.White)
                         },
+
                         label = {
                             Text(
                                 text = screen.label,
@@ -129,76 +133,45 @@ private fun HomeContent(
             }
         }
     ) {
-        Column(Modifier
-            .padding(vertical = 8.dp, horizontal = 16.dp)
-            .fillMaxSize(),
+        LazyColumn(Modifier
+            .padding(vertical = 8.dp, horizontal = 16.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Top) {
-
-            Image(painter = painterResource(id = R.drawable._12_512_b), contentDescription = null)
-
-            HomeButton(modifier = Modifier.aspectRatio(3f),
-                text = stringResource(R.string.host),
-                icon = R.drawable.plus,
-                onClick = {
-                    navHostController.navigate(Screen.HostPlayer.route)
-                })
-
-            HomeButton(modifier = Modifier.aspectRatio(3f),
-                text = stringResource(R.string.join),
-                icon = R.drawable.enter,
-                onClick = {
-                    navHostController.navigate(Screen.JoinGame.route)
+            item {
+                Image(painter = painterResource(id = R.drawable._12_512_b),
+                    contentDescription = null)
+            }
+            item {
+                Text(
+                    text = stringResource(R.string.my_games),
+                    style = MaterialTheme.typography.h4,
+                    color = Color.White
+                )
+            }
+            items(firestoreUser.joinedGames) { game ->
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                ) {
+                    if (firestoreUser.joinedGames.isEmpty()) {
+                        Text(text = "Start playing today!", color = Color.White)
+                    }
+                    if (currentUser != null) {
+                        JoinedGameCard(game,
+                            modifier = Modifier
+                                .padding(vertical = 8.dp, horizontal = 16.dp)) {
+                            gameViewModel.roomCode.value = game.roomCode
+                            Log.d(TAG, game.roomCode)
+                            navHostController.navigate(Screen.Game.route) {
+                                this.popUpToId
+                            }
+                        }
+                    }
                 }
-            )
-            HomeButton(modifier = Modifier.aspectRatio(3f),
-                text = stringResource(R.string.rules),
-                icon = R.drawable.icon_rules,
-                onClick = {
-                    navHostController.navigate(Screen.Rules.route)
-                }
-            )
 
-
+            }
         }
 
     }
-}
 
-@Composable
-private fun HomeButton(
-    modifier: Modifier = Modifier,
-    text: String,
-    onClick: () -> Unit,
-    icon: Int,
-) {
-    Box(
-        modifier = modifier
-            .padding(8.dp)
-            .clip(RoundedCornerShape(25.dp))
-            .background(Navy)
-            .clickable {
-                onClick()
-            },
-        contentAlignment = Alignment.Center
-    ) {
-        Row(
-            modifier = Modifier
-                .padding(16.dp)
-                .fillMaxSize(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceAround
-        ) {
-            Text(
-                text = text,
-                style = MaterialTheme.typography.h6,
-                color = Black
-            )
-            Icon(
-                painter = painterResource(id = icon),
-                contentDescription = "Host game",
-                tint = Black
-            )
-        }
-    }
 }

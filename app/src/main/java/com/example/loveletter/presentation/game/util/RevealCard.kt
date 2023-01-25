@@ -23,17 +23,18 @@ fun RevealCard(gameViewModel: GameViewModel) {
     Box(
         modifier = Modifier
             .fillMaxWidth(1f)
-            .fillMaxHeight(0.75f)
+            .fillMaxHeight(0.5f)
             .padding(16.dp)
+            .background(Color.White)
             .clip(RoundedCornerShape(15.dp))
-            .border(2.dp, Color.Blue, RoundedCornerShape(15.dp))
-            .background(Color.White),
+            .border(4.dp, MaterialTheme.colors.primary, RoundedCornerShape(15.dp)),
         contentAlignment = Alignment.Center
     ) {
         Column(
             modifier = Modifier
                 .padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.SpaceAround
         ) {
             Text(
                 text = "Result",
@@ -41,8 +42,16 @@ fun RevealCard(gameViewModel: GameViewModel) {
             )
             Divider()
             Spacer(modifier = Modifier.height(22.dp))
-            Text(text = "You are looking at ${gameViewModel.selectedPlayer.value.nickName}'s card.", style = MaterialTheme.typography.h6, textAlign = TextAlign.Center)
-            PlayingCard(cardAvatar = card)
+            Column(
+                Modifier.fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(text = "You are looking at ${gameViewModel.selectedPlayer.value.nickName}'s card.", style = MaterialTheme.typography.h6, textAlign = TextAlign.Center)
+                Spacer(modifier = Modifier.height(12.dp))
+                PlayingCard(cardAvatar = card,
+                    modifier = Modifier)
+            }
+
             IconButton(onClick = { gameViewModel.revealCardAlert.value = false }) {
                 Icon(
                     Icons.Rounded.Check,

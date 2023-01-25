@@ -2,6 +2,7 @@ package com.example.loveletter.util.user
 
 import android.util.Log
 import com.example.loveletter.TAG
+import com.example.loveletter.dbGame
 import com.example.loveletter.dbPlayers
 import com.example.loveletter.domain.FirestoreUser
 import com.example.loveletter.domain.GameRoom
@@ -34,7 +35,8 @@ class HandleUser {
                 isAlive = true,
                 isWinner = false,
                 wins = 0,
-                unread = false
+                unread = false,
+                guide = true
             )
         }
 
@@ -54,7 +56,6 @@ class HandleUser {
 
                 }
         }
-
 
 
         fun addGameToPlayer(userId: String, gameRoom: GameRoom) {
@@ -79,7 +80,11 @@ class HandleUser {
             return currentUser
         }
 
-        fun deleteUserGameRoom(roomCode: String, roomNickname: String, players: List<Player>) {
+        fun deleteUserGameRoomForAll(
+            roomCode: String,
+            roomNickname: String,
+            players: List<Player>,
+        ) {
             val joinedGame = JoinedGame(roomCode = roomCode, roomNickname = roomNickname,
                 ready = true)
 
@@ -93,6 +98,19 @@ class HandleUser {
                     }
             }
 
+        }
+
+        fun deleteUserGameRoomForLocal(roomCode: String, roomNickname: String, player: Player) {
+            val joinedGame = JoinedGame(roomCode = roomCode, roomNickname = roomNickname,
+                ready = true)
+
+            dbPlayers.document(player.uid).update("joinedGames", FieldValue.arrayRemove(joinedGame))
+                .addOnSuccessListener {
+                    Log.d(TAG, "Successfully added game to user's joined game list.")
+                }
+                .addOnFailureListener {
+                    Log.d(TAG, "Failed to add game to user list. ${it.localizedMessage}")
+                }
         }
 
         fun observeMyGames(): Flow<FirestoreUser> {
@@ -140,6 +158,23 @@ class HandleUser {
             Log.d(TAG, "getCurrentUser is done.")
 
             return currentPlayer
+        }
+
+        fun toggleCardGuideSetting(player: Player, gameRoom: GameRoom) {
+            gameRoom.players.forEach {
+                if (it.uid == player.uid) {
+                    it.guide = !it.guide
+                }
+            }
+            val players = gameRoom.players
+            dbGame.document(gameRoom.roomCode)
+                .update("players", players)
+                .addOnSuccessListener {
+                    Log.d(TAG, "Successfully updated player's card guide status.")
+                }
+                .addOnFailureListener {
+                    Log.d(TAG, "Failed to update player's card guide status.")
+                }
         }
     }
 }

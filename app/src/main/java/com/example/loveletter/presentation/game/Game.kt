@@ -1,6 +1,7 @@
 package com.example.loveletter.presentation.game
 
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -86,11 +87,15 @@ fun GameContent(game: GameRoom, gameViewModel: GameViewModel, navController: Nav
     }
 
 
+    LaunchedEffect(key1 = game.gameLog) {
+        if (game.gameLog.last().type == "gameLog") {
+            Toast.makeText(context, game.gameLog.last().toastMessage, Toast.LENGTH_LONG).show()
+        }
+    }
     LaunchedEffect(key1 = game) {
 
         gameViewModel.declareIsHost(game)
         gameViewModel.localizeCurrentPlayer(game)
-        gameViewModel.checkRoundOver(game)
         Log.d("LaunchedEffect", "LaunchedEffect has been called. ")
         /*This constantly updates the player so you always have the player's current hand*/
         localPlayer = gameViewModel.getPlayerFromGameList(game)
@@ -100,14 +105,10 @@ fun GameContent(game: GameRoom, gameViewModel: GameViewModel, navController: Nav
         val alivePlayers = game.players.filter {
             it.isAlive
         }
-        /*This all ends the round. HOWEVER it should not update the game UNLESS they are the host.
-        * So I have to go through this and fix the code.*/
+
         gameViewModel.endRound(alivePlayers, game, context, playerIsPlaying)
 
-        //Why do I have this here....
         GameRules.launchOnTurn(game, localPlayer)
-
-
     }
     BackHandler(false) {
     }
@@ -206,13 +207,13 @@ fun GameContent(game: GameRoom, gameViewModel: GameViewModel, navController: Nav
                             gameViewModel = gameViewModel)
                     }
                 }
-                if (gameViewModel.resultAlert.value && !gameViewModel.endRoundAlert.value) {
+                /*if (gameViewModel.resultAlert.value && !gameViewModel.endRoundAlert.value) {
                     Popup(popupPositionProvider = WindowCenterOffsetPositionProvider(),
                         onDismissRequest = { gameViewModel.selectPlayerAlert.value = false }) {
                         ResultMessage(message = gameViewModel.resultMessage.value,
                             gameViewModel = gameViewModel)
                     }
-                }
+                }*/
                 if (gameViewModel.revealCardAlert.value) {
                     Popup(popupPositionProvider = WindowCenterOffsetPositionProvider(),
                         onDismissRequest = { gameViewModel.revealCardAlert.value = false }) {

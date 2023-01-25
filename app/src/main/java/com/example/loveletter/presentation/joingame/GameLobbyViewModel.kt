@@ -19,6 +19,11 @@ class GameLobbyViewModel : ViewModel() {
 
 
 
+    fun clearData() {
+       playerChar.value = -1
+       roomCode.value = ""
+       playerNickname.value = ""
+    }
     fun observeRoom() {
         viewModelScope.launch {
             StartGame.subscribeToRealtimeUpdates(roomCode.value).map { gameRoom ->
@@ -32,6 +37,6 @@ class GameLobbyViewModel : ViewModel() {
     }
 
     fun assignCharNumber(index: Int): Int {
-        return index + 1
+        return index
     }
 }

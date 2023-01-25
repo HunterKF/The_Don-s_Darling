@@ -158,7 +158,7 @@ fun FinishButton(
             CustomTextButton(
                 enabled = true,
                 onClick = onClick,
-                text = "Finish"
+                text = stringResource(R.string.finish)
             )
         }
     }

@@ -5,8 +5,6 @@ import android.widget.Toast
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -31,7 +29,7 @@ import com.example.loveletter.domain.GameRoom
 import com.example.loveletter.domain.Player
 import com.example.loveletter.presentation.game.GameViewModel
 import com.example.loveletter.ui.theme.*
-import com.example.loveletter.util.game.gamerules.CardRules.Countess
+import com.example.loveletter.util.game.gamerules.CardRules.Courtesan
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
@@ -59,10 +57,16 @@ fun BottomBar(
     var selectedIndex by remember {
         mutableStateOf(-1)
     }
+    var cardTitle by remember { mutableStateOf("") }
+    var cardDescription by remember { mutableStateOf("") }
     LaunchedEffect(key1 = game) {
         selectedIndex = -1
         currentCard = 0
+        cardTitle = ""
+        cardDescription = ""
+
     }
+
     val coroutineScope = rememberCoroutineScope()
     val borderStroke =
         if (player.turn) BorderStroke(2.dp, Color.Red) else BorderStroke(0.dp, Color.Transparent)
@@ -71,7 +75,8 @@ fun BottomBar(
         modifier = modifier
             .padding(vertical = 8.dp)
             .fillMaxWidth()
-            .background(color)
+            .background(color),
+        contentAlignment = Alignment.Center
     ) {
         Row(
             modifier = Modifier
@@ -145,11 +150,14 @@ fun BottomBar(
                     contentColor = SoftYellow
                 ),
                 onClick = {
+
                     gameViewModel.onPlay(
                         card = currentCard,
                         player = player,
                         gameRoom = game
                     )
+                    cardTitle = ""
+                    cardDescription = ""
                 }) {
                 Text(
                     text = if (player.turn) "Play" else "Wait"
@@ -219,14 +227,37 @@ fun BottomBar(
         }
         val offsetX = remember { Animatable(0f) }
 
-        LazyRow(
+        if (cardTitle != "" && player.guide) {
+            Box(
+                modifier = Modifier
+                    .offset(y = (-200).dp)
+                    .clip(RoundedCornerShape(15.dp))
+                    .background(MaterialTheme.colors.onPrimary)
+            ) {
+                Column(modifier = Modifier.padding(vertical = 6.dp,
+                    horizontal = 8.dp),
+                    horizontalAlignment = Alignment.Start) {
+                    Text(
+                        text = cardTitle,
+                        color = MaterialTheme.colors.primary
+                    )
+                    Spacer(modifier = Modifier.height(2.dp))
+                    Text(
+                        text = cardDescription,
+                        color = MaterialTheme.colors.primary
+                    )
+                }
+
+            }
+        }
+        Row(
             modifier = Modifier
-                .fillMaxWidth(0.5f)
-                .align(Alignment.Center)
+
+                .fillMaxWidth(0.8f)
                 .offset(y = (-100).dp),
             horizontalArrangement = Arrangement.Center
         ) {
-            itemsIndexed(currentPlayer.hand) { index, cardNumber ->
+            currentPlayer.hand.forEachIndexed() { index, cardNumber ->
                 if (currentPlayer.hand.size == 2) {
 
                     var hasCountess by remember {
@@ -234,27 +265,26 @@ fun BottomBar(
                     }
                     var notPlayable = false
                     hasCountess = currentPlayer.hand.contains(7)
-                    Log.d(TAG, "(before) hasCountess = $hasCountess")
 
-                    LaunchedEffect(key1 = game, block = {
-                        Log.d(TAG, "LaunchedEffect is starting. ")
-                        Log.d(TAG, "(before) notPlay = $notPlayable")
-                        notPlayable = Countess.checkCard(cardNumber)
-                        Log.d(TAG, "(after) notPlay = $notPlayable")
+                   /* LaunchedEffect(key1 = game, block = {
+                        notPlayable = Courtesan.checkCard(cardNumber)
 
-                    })
+                    })*/
 
                     if (hasCountess) {
-                        notPlayable = Countess.checkCard(cardNumber)
+                        notPlayable = Courtesan.checkCard(cardNumber)
                     }
                     val scale by animateDpAsState(targetValue = if (selectedIndex == index) 60.dp else 50.dp)
+                    val cardGuideX by animateDpAsState(targetValue = if (index == 0) (-0).dp else 0.dp)
                     val offset by animateDpAsState(targetValue = if (selectedIndex == index) (-30).dp else 0.dp)
+
+                    var card = CardAvatar.setCardAvatar(cardNumber)
 
                     Box(
                         modifier = Modifier.padding(horizontal = 4.dp),
                         contentAlignment = Alignment.Center) {
-                        PlayingCard(cardAvatar = CardAvatar.setCardAvatar(
-                            cardNumber),
+                        PlayingCard(
+                            cardAvatar = card,
                             notPlayable = notPlayable,
                             modifier = Modifier
                                 .size(if (notPlayable) 50.dp else scale)
@@ -271,10 +301,37 @@ fun BottomBar(
                                             } else {
                                                 index
                                             }
-                                        currentCard = if (selectedIndex == index && !notPlayable) {
-                                            cardNumber
+                                        if (selectedIndex == index && !notPlayable) {
+                                            currentCard = cardNumber
+                                            Toast
+                                                .makeText(context,
+                                                    "if $selectedIndex & $index & $currentCard",
+                                                    Toast.LENGTH_SHORT)
+                                                .show()
+                                            Log.d(TAG, "if $selectedIndex & $index & $currentCard")
+                                            Log.d(TAG, "if $notPlayable")
+
                                         } else {
-                                            0
+                                            currentCard = 0
+                                            Log.d(TAG,
+                                                "else $selectedIndex & $index & $currentCard")
+                                            Log.d(TAG, "else $notPlayable")
+
+                                            Toast
+                                                .makeText(context,
+                                                    "else $selectedIndex & $index & $currentCard",
+                                                    Toast.LENGTH_SHORT)
+                                                .show()
+
+                                        }
+                                        if (selectedIndex == index && !notPlayable) {
+                                            cardTitle = card.cardName
+                                            cardDescription =
+                                                context.getString(card.ruleShortDescription)
+
+                                        } else {
+                                            cardTitle = ""
+                                            cardDescription = ""
                                         }
                                         if (notPlayable) {
                                             coroutineScope.launch {
@@ -303,14 +360,23 @@ fun BottomBar(
                     }
                     val scale by animateFloatAsState(targetValue = if (selected) 0.8f else 0.6f)
                     Box(contentAlignment = Alignment.Center) {
+                        val card = CardAvatar.setCardAvatar(cardNumber)
                         PlayingCard(
                             modifier = Modifier
                                 .scale(scale)
                                 .clickable {
                                     selected = !selected
+                                    if (selected) {
+                                        cardTitle = card.cardName
+                                        cardDescription =
+                                            context.getString(card.ruleShortDescription)
+
+                                    } else {
+                                        cardTitle = ""
+                                        cardDescription = ""
+                                    }
                                 },
-                            cardAvatar = CardAvatar.setCardAvatar(
-                                cardNumber)
+                            cardAvatar = card
                         )
                     }
                 }

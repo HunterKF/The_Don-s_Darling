@@ -56,10 +56,6 @@ fun JoinGameScreen(navController: NavHostController, gameLobbyViewModel: GameLob
 
 
     Scaffold(
-        topBar = {
-
-
-        },
         backgroundColor = Black
     ) {
 
@@ -81,9 +77,7 @@ fun JoinGameScreen(navController: NavHostController, gameLobbyViewModel: GameLob
                 IconButton(
                     modifier = Modifier.align(Alignment.CenterStart),
                     onClick = {
-                        gameLobbyViewModel.playerChar.value = -1
-                        gameLobbyViewModel.roomCode.value = ""
-                        gameLobbyViewModel.playerNickname.value = ""
+                        gameLobbyViewModel.clearData()
                         navController.navigate(Screen.Home.route) {
                             popUpTo(Screen.JoinGame.route) {
                                 inclusive = true
@@ -98,7 +92,7 @@ fun JoinGameScreen(navController: NavHostController, gameLobbyViewModel: GameLob
 
                 }
                 Text(
-                    text = "Join Game",
+                    text = stringResource(id = R.string.join_game),
                     style = MaterialTheme.typography.h5,
                     color = MaterialTheme.colors.onPrimary,
                     textAlign = TextAlign.Center,
@@ -107,7 +101,7 @@ fun JoinGameScreen(navController: NavHostController, gameLobbyViewModel: GameLob
             }
             Column {
                 Text(
-                    text = "Room Code",
+                    text = stringResource(R.string.room_code),
                     style = MaterialTheme.typography.h5,
                     fontWeight = FontWeight.SemiBold,
                     color = MaterialTheme.colors.onPrimary

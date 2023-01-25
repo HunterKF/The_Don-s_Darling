@@ -14,7 +14,8 @@ data class Player(
     var isAlive: Boolean,
     var isWinner: Boolean,
     var wins: Int,
-    var unread: Boolean
+    var unread: Boolean,
+    var guide: Boolean,
 ) {
     constructor() : this(
         avatar = 0,
@@ -24,11 +25,14 @@ data class Player(
         protected = false,
         turn = false,
         turnInProgress = false,
-        turnOrder = 0, hand = arrayListOf(),
+        turnOrder = 0,
+        hand = arrayListOf(),
         isHost = false,
         isAlive = false,
         isWinner = false,
-        wins =0,
-        unread = false
-    )
+        wins = 0,
+        unread = false,
+        guide = true
+
+        )
 }

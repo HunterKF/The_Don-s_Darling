@@ -21,17 +21,20 @@ fun ResultMessage(message: String, gameViewModel: GameViewModel) {
     Box(
         modifier = Modifier
             .fillMaxWidth(1f)
+            .fillMaxHeight(0.4f)
             .padding(16.dp)
+            .background(Color.White)
             .clip(RoundedCornerShape(15.dp))
-            .border(2.dp, Color.Blue, RoundedCornerShape(15.dp))
-            .background(Color.White),
+            .border(4.dp, MaterialTheme.colors.primary, RoundedCornerShape(15.dp)),
         contentAlignment = Alignment.Center
     ) {
         Column(
             modifier = Modifier
                 .padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.SpaceBetween
         ) {
+
             Text(
                 text = "Result",
                 style = MaterialTheme.typography.h5

@@ -38,7 +38,6 @@ fun PlayingCard(
         mutableStateOf(false)
     }
     Box(modifier = modifier
-        .size(50.dp)
         .clip(RoundedCornerShape(5.dp)),
         contentAlignment = Alignment.Center
     ) {

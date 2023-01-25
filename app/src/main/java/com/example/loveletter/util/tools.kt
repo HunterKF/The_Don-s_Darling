@@ -11,7 +11,7 @@ class Tools {
         }
         fun checkCards(players: List<Player>): Boolean {
             val filterPlayed = players.filter { player ->
-                player.hand.size == 2
+                player.turnInProgress
             }
             return filterPlayed.isNotEmpty()
         }

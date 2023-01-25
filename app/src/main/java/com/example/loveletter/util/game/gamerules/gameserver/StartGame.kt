@@ -44,6 +44,7 @@ class StartGame() {
                 gameOver = false,
                 showLogs = true,
                 deleteRoom = false,
+                deckClear = false,
                 gameLog = arrayListOf()
             )
             try {
@@ -61,6 +62,7 @@ class StartGame() {
         ) {
             val logMessage = LogMessage.createLogMessage(
                 "The game has started.",
+                toastMessage = null,
                 null,
                 "serverMessage"
             )

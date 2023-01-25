@@ -8,7 +8,7 @@ import com.example.loveletter.domain.LogMessage
 import com.example.loveletter.domain.Player
 import com.example.loveletter.util.Tools
 import com.example.loveletter.util.game.GameServer
-import com.example.loveletter.util.game.gamerules.CardRules.Handmaid
+import com.example.loveletter.util.game.gamerules.CardRules.TheDoctor
 
 val GAMERULES_TAG = "GameRules"
 
@@ -41,7 +41,7 @@ class GameRules {
                 players.forEach {
                     if (it == player) {
                         if (it.protected) {
-                            it.protected = Handmaid.toggleProtection(it)
+                            it.protected = TheDoctor.toggleProtection(it)
                         }
                         it.hand.add(card)
                         it.turnInProgress = true
@@ -58,20 +58,24 @@ class GameRules {
 
         private fun changeGameTurn(turn: Int, size: Int, players: List<Player>): Int {
             Log.d(TAG, "changeGameTurn is being called")
-            var currentTurn = turn
-            currentTurn += 1
+            var currentTurn = turn //4
+            currentTurn += 1 //5
             if (currentTurn > size) {
-                currentTurn = 1
+                currentTurn = 1//1
             }
-            val sortedPlayers = players.sortedBy { it.turnOrder }.reversed()
+            //0,2,0,4
+            val sortedPlayers = players.filter { it.isAlive }.sortedBy { it.turnOrder }.reversed()
+            //2,4
             sortedPlayers.forEach {
-                if (it.turnOrder == currentTurn && !it.isAlive) {
+                if (it.turnOrder != currentTurn) {
                     currentTurn += 1
+
                     if (currentTurn > size) {
                         currentTurn = 1
                     }
                 }
             }
+
             Log.d(TAG, "Returning new turn: $currentTurn")
             Log.d(TAG, "changeGameTurn is done")
 
@@ -132,6 +136,7 @@ class GameRules {
             var remainingPlayers = arrayListOf<Player>()
             val logMessage = LogMessage.createLogMessage(
                 message = "",
+                toastMessage = null,
                 type = "winnerMessage",
                 uid = null
             )
@@ -258,7 +263,10 @@ class GameRules {
             Log.d(TAG, "onEnd is being called")
 
             gameRoom.players = endPlayerTurn(gameRoom = gameRoom)
-            if (!gameRoom.gameOver) {
+            if (gameRoom.deck.deck.isEmpty()) {
+                gameRoom.deckClear = true
+            }
+            if (!gameRoom.gameOver && !gameRoom.roundOver) {
                 val changedTurn = changeGameTurn(turn = gameRoom.turn,
                     size = gameRoom.players.size,
                     players = gameRoom.players)

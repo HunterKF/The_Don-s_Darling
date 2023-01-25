@@ -1,15 +1,17 @@
 package com.example.loveletter
 
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.*
-import androidx.compose.ui.graphics.vector.ImageVector
-
-sealed class Screen(val route: String, val label: String, val vector: ImageVector) {
-    object Home : Screen("home_screen", "Home", Icons.Rounded.PlayArrow)
-    object Welcome : Screen("welcome_screen", "Welcome", Icons.Rounded.PlayArrow)
-    object CreateRoom : Screen("create_room", "Create Room", Icons.Rounded.Create)
-    object HostPlayer : Screen("host_player", "Host Player", Icons.Rounded.Create)
-    object JoinGame : Screen("join_game", "Join Game", Icons.Rounded.Create)
-    object GameLobby : Screen("game_lobby", "Game Lobby", Icons.Rounded.AccountBox)
-    object Game : Screen("game", "Game", Icons.Rounded.ThumbUp)
+sealed class Screen(val route: String, val label: String, val vector: Int?) {
+    object Home : Screen("home_screen", "Home", R.drawable.icon_home)
+    object Welcome : Screen("welcome_screen", "Welcome", null)
+    object CreateRoom : Screen("create_room", "Create Room", null)
+    object HostPlayer : Screen("host_player", "Host Player", null)
+    object JoinGame : Screen("join_game", "Join Game", null)
+    object GameLobby : Screen("game_lobby", "Game Lobby", null)
+    object Game : Screen("game", "Game", null)
+    object MyGames : Screen("my_games", "My Games", R.drawable.icon_my_games)
+    object Rules : Screen("rules", "Rules", null)
 }
+val items = listOf(
+    Screen.Home,
+    Screen.MyGames
+)

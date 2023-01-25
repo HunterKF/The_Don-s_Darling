@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.*
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -13,12 +14,16 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardCapitalization
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
@@ -31,6 +36,10 @@ import com.example.loveletter.ui.theme.*
 
 @Composable
 fun HostPlayer(navController: NavHostController, createRoomViewModel: CreateRoomViewModel) {
+    LaunchedEffect(key1 = Unit) {
+        createRoomViewModel.clearRoomData()
+    }
+    val focusManager = LocalFocusManager.current
     Surface(
         color = Black
     ) {
@@ -60,6 +69,14 @@ fun HostPlayer(navController: NavHostController, createRoomViewModel: CreateRoom
                         null,
                     )
                 }
+
+                Text(
+                    text = stringResource(R.string.host_game),
+                    style = MaterialTheme.typography.h5,
+                    color = MaterialTheme.colors.onPrimary,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.align(Alignment.Center)
+                )
             }
             Column {
                 Text(
@@ -79,6 +96,11 @@ fun HostPlayer(navController: NavHostController, createRoomViewModel: CreateRoom
                     },
                     keyboardOptions = KeyboardOptions(
                         capitalization = KeyboardCapitalization.Words
+                    ),
+                    keyboardActions = KeyboardActions(
+                        onDone = {
+                            focusManager.moveFocus(focusDirection = FocusDirection.Down)
+                        }
                     ),
                     colors = TextFieldDefaults.textFieldColors(
                         textColor = MaterialTheme.colors.primary,
@@ -120,6 +142,11 @@ fun HostPlayer(navController: NavHostController, createRoomViewModel: CreateRoom
                     },
                     keyboardOptions = KeyboardOptions(
                         capitalization = KeyboardCapitalization.Words
+                    ),
+                    keyboardActions = KeyboardActions(
+                        onDone = {
+                            focusManager.clearFocus()
+                        }
                     ),
                     colors = TextFieldDefaults.textFieldColors(
                         textColor = MaterialTheme.colors.primary,
@@ -170,13 +197,15 @@ fun HostPlayer(navController: NavHostController, createRoomViewModel: CreateRoom
                                 .clickable {
                                     playLimit = number
                                     createRoomViewModel.playLimit.value = number
+                                    focusManager.clearFocus()
+
                                 },
                             contentAlignment = Alignment.Center
                         ) {
                             Text(
                                 text = "$number",
                                 style = MaterialTheme.typography.h6,
-                                color = if (number == playLimit)  Color.White else Black,
+                                color = if (number == playLimit) Color.White else Black,
                                 modifier = Modifier
                                     .padding(vertical = 4.dp)
                             )
@@ -214,6 +243,7 @@ fun HostPlayer(navController: NavHostController, createRoomViewModel: CreateRoom
                             .selectable(
                                 selected = selectedIndex == icon,
                                 onClick = {
+                                    focusManager.clearFocus()
                                     selectedIndex = icon
                                     createRoomViewModel.playerChar.value =
                                         createRoomViewModel.assignCharNumber(icon)
@@ -238,6 +268,7 @@ fun HostPlayer(navController: NavHostController, createRoomViewModel: CreateRoom
                             .selectable(
                                 selected = selectedIndex == icon,
                                 onClick = {
+                                    focusManager.clearFocus()
                                     selectedIndex = icon
                                     createRoomViewModel.playerChar.value =
                                         createRoomViewModel.assignCharNumber(icon)

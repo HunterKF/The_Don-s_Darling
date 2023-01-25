@@ -5,7 +5,6 @@ import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -14,21 +13,19 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.loveletter.R
 import com.example.loveletter.Screen
 import com.example.loveletter.TAG
-import com.example.loveletter.domain.Avatar
 import com.example.loveletter.domain.GameRoom
 import com.example.loveletter.presentation.game.GameViewModel
 import com.example.loveletter.presentation.joingame.GameLobbyState
 import com.example.loveletter.presentation.joingame.GameLobbyViewModel
+import com.example.loveletter.presentation.util.RoomPlayerList
 import com.example.loveletter.ui.theme.Black
 import com.example.loveletter.ui.theme.Steel
 import com.example.loveletter.util.game.gamerules.gameserver.ConnectionRules
@@ -67,10 +64,13 @@ fun GameLobby(
                     gameLobbyViewModel = gameLobbyViewModel,
                     gameRoom = loaded.gameRoom)
                 BackHandler() {
-                    ConnectionRules.leaveGame(gameLobbyViewModel.roomCode.value,
-                        HandleUser.createGamePlayer(gameLobbyViewModel.playerChar.value,
-                            gameLobbyViewModel.playerNickname.value, isHost = false))
-                    HandleUser.deleteUserGameRoom(
+                    ConnectionRules.leaveGame(
+                        gameLobbyViewModel.roomCode.value,
+                        HandleUser.createGamePlayer(
+                            gameLobbyViewModel.playerChar.value,
+                            gameLobbyViewModel.playerNickname.value, isHost = false),
+                    )
+                    HandleUser.deleteUserGameRoomForAll(
                         loaded.gameRoom.roomCode,
                         loaded.gameRoom.roomNickname,
                         loaded.gameRoom.players
@@ -121,7 +121,7 @@ private fun GameLobbyContent(
                                 HandleUser.createGamePlayer(avatar = 0,
                                     nickname = "",
                                     isHost = false))
-                            HandleUser.deleteUserGameRoom(
+                            HandleUser.deleteUserGameRoomForAll(
                                 gameRoom.roomCode,
                                 gameRoom.roomNickname,
                                 gameRoom.players
@@ -164,26 +164,13 @@ private fun GameLobbyContent(
                     .clip(RoundedCornerShape(25.dp))
                     .weight(1f)
                     .fillMaxWidth()
-                    .background(Steel)) {
+                    .background(MaterialTheme.colors.onPrimary)) {
 
-                    gameRoom.players.forEach { player ->
+                    gameRoom.players.forEachIndexed { index, player ->
 
-                        val avatar = Avatar.setAvatar(player.avatar)
-                        Row(Modifier
-                            .fillMaxWidth()
-                            .padding(8.dp),
-                            horizontalArrangement = Arrangement.Start,
-                            verticalAlignment = Alignment.CenterVertically) {
 
-                            Image(modifier = Modifier
-                                .scale(0.7f)
-                                .padding(4.dp)
-                                .clip(CircleShape),
-                                painter = painterResource(id = avatar.avatar),
-                                contentDescription = avatar.description)
+                    RoomPlayerList(player = player, index = index, gameRoom = gameRoom)
 
-                            Text(player.nickName, style = MaterialTheme.typography.h6)
-                        }
                     }
                 }
 

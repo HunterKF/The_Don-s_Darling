@@ -2,7 +2,7 @@ package com.example.loveletter.util.game.gamerules.CardRules
 
 import android.util.Log
 
-class Countess {
+class Courtesan {
     companion object {
         fun checkHand(hand: ArrayList<Int>): Boolean {
             Log.d("Countess", "(checkHand) Returning ${hand.contains(7)}")

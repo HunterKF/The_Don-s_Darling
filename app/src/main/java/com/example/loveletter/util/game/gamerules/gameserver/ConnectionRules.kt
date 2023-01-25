@@ -8,6 +8,7 @@ import com.example.loveletter.TAG
 import com.example.loveletter.dbGame
 import com.example.loveletter.domain.GameRoom
 import com.example.loveletter.domain.Player
+import com.example.loveletter.util.user.HandleUser
 import com.google.firebase.firestore.FieldValue
 
 class ConnectionRules {
@@ -73,11 +74,12 @@ class ConnectionRules {
             dbGame.document(roomCode)
                 .update("players", FieldValue.arrayRemove(player))
                 .addOnSuccessListener {
-                    Log.d(TAG, "Successfully added player!")
+                    Log.d(TAG, "Successfully left game!")
                 }
                 .addOnFailureListener {
-                    Log.d(TAG, "Failed to add player! ${it.localizedMessage}")
+                    Log.d(TAG, "Failed to leave game! ${it.localizedMessage}")
                 }
+
         }
     }
 

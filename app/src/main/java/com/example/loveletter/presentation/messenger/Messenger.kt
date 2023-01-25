@@ -76,7 +76,10 @@ fun Messenger(gameRoom: GameRoom, gameViewModel: GameViewModel) {
                             mutableStateOf(false)
                         }
                         Column(
-                            modifier = Modifier.fillMaxWidth().animateContentSize().background(MaterialTheme.colors.primary)
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .animateContentSize()
+                                .background(MaterialTheme.colors.primary)
                         ) {
                             Row(
                                 modifier = Modifier
@@ -214,6 +217,7 @@ fun Messenger(gameRoom: GameRoom, gameViewModel: GameViewModel) {
                         GameServer.sendMessage(gameRoom = gameRoom,
                             LogMessage.createLogMessage(
                                 message = message.value,
+                                toastMessage = null,
                                 uid = gameViewModel.localPlayer.value.uid,
                                 type = "userMessage"
                             )
@@ -236,6 +240,7 @@ fun Messenger(gameRoom: GameRoom, gameViewModel: GameViewModel) {
                         GameServer.sendMessage(gameRoom = gameRoom,
                             LogMessage.createLogMessage(
                                 message = message.value,
+                                toastMessage = null,
                                 uid = gameViewModel.localPlayer.value.uid,
                                 type = "userMessage"
                             )
@@ -256,12 +261,10 @@ fun Messenger(gameRoom: GameRoom, gameViewModel: GameViewModel) {
 }
 
 
-
 @Preview
 @Composable
 fun MessengerPreview() {
     val gameRoom = GameRoom()
-    val logMessage = LogMessage.createLogMessage("Hello", "", "userMessage")
 //    gameRoom.gameLog.add(logMessage)
     val gameViewModel = GameViewModel()
     Messenger(gameRoom = gameRoom, gameViewModel = gameViewModel)

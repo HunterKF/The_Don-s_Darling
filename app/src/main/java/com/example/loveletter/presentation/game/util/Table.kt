@@ -11,14 +11,13 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.CheckCircle
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -257,7 +256,7 @@ fun PlayerIconRight(
 }
 
 @Composable
-fun DeckPlace(deck: Deck, modifier: Modifier = Modifier) {
+fun DeckPlace(deck: Deck, modifier: Modifier = Modifier, roundOver: Boolean) {
     Box(modifier = modifier,
         contentAlignment = Alignment.Center
     ) {
@@ -268,32 +267,51 @@ fun DeckPlace(deck: Deck, modifier: Modifier = Modifier) {
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center
         ) {
-            Box(
-                modifier = Modifier,
-                contentAlignment = Alignment.Center
-            ) {
-                deck.deck.forEach { _ ->
-                    Image(
+            if (!roundOver) {
+                Box(
+                    modifier = Modifier,
+                    contentAlignment = Alignment.Center
+                ) {
+                    deck.deck.forEach { _ ->
+                        Image(
+                            modifier = Modifier
+                                .border(2.dp, Color.White, RoundedCornerShape(10.dp))
+                                .size(90.dp),
+                            painter = painterResource(id = R.drawable._12_512_b),
+                            contentDescription = null,
+                        )
+                    }
+                    Text(
+                        text = deck.deck.size.toString(),
+                        color = MaterialTheme.colors.onPrimary.copy(0.6f),
                         modifier = Modifier
-                            .border(2.dp, Color.White, RoundedCornerShape(10.dp))
-                            .size(90.dp),
-                        painter = painterResource(id = R.drawable._12_512_b),
-                        contentDescription = null,
+                            .padding(bottom = 4.dp)
+                            .align(Alignment.BottomCenter)
                     )
                 }
-            }
-            Spacer(modifier = Modifier.width(20.dp))
-            Box(
-                modifier = Modifier.size(90.dp),
-                contentAlignment = Alignment.Center
+                Spacer(modifier = Modifier.width(20.dp))
+                Box(
+                    modifier = Modifier.size(90.dp),
+                    contentAlignment = Alignment.Center
 
-            ) {
-                if (deck.discardDeck.isNotEmpty()) {
-                    deck.discardDeck.forEach {
-                        PlayingCard(cardAvatar = CardAvatar.setCardAvatar(it),
-                            modifier = Modifier.size(90.dp))
+                ) {
+                    if (deck.discardDeck.isNotEmpty()) {
+                        deck.discardDeck.forEach {
+                            PlayingCard(cardAvatar = CardAvatar.setCardAvatar(it),
+                                modifier = Modifier.size(90.dp))
 
+                        }
                     }
+                }
+            } else {
+                Box(
+                    modifier = Modifier.fillMaxWidth(0.6f)
+                ) {
+                    Text(
+                        text = stringResource(R.string.wait_for_host),
+                        color = MaterialTheme.colors.onPrimary.copy(0.8f),
+                        style = MaterialTheme.typography.h5
+                    )
                 }
             }
         }
@@ -375,9 +393,12 @@ fun PlayingTable(
                     }
                 }
             }
-            DeckPlace(deck = game.deck, modifier = Modifier
-                .zIndex(1f)
-                .weight(0.8f))
+            DeckPlace(
+                deck = game.deck,
+                roundOver = game.roundOver,
+                modifier = Modifier
+                    .zIndex(1f)
+                    .weight(0.8f))
             Row(
                 modifier = Modifier
                     .weight(1f)

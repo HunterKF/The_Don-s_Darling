@@ -4,7 +4,6 @@ import android.content.Intent
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -13,20 +12,18 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.loveletter.R
 import com.example.loveletter.Screen
-import com.example.loveletter.domain.Avatar
 import com.example.loveletter.domain.GameRoom
 import com.example.loveletter.presentation.game.GameViewModel
 import com.example.loveletter.presentation.util.CustomTextButton
-import com.example.loveletter.presentation.util.ShadowDivider
+import com.example.loveletter.presentation.util.RoomPlayerList
 import com.example.loveletter.ui.theme.Black
 import com.example.loveletter.util.Tools
 import com.example.loveletter.util.game.GameServer
@@ -63,7 +60,7 @@ fun CreateRoom(
             )
             BackHandler() {
                 GameServer.deleteRoom(loaded.gameRoom)
-                HandleUser.deleteUserGameRoom(
+                HandleUser.deleteUserGameRoomForAll(
                     loaded.gameRoom.roomCode,
                     loaded.gameRoom.roomNickname,
                     loaded.gameRoom.players
@@ -115,7 +112,7 @@ private fun CreateRoomContent(
                         onClick = {
                             navController.popBackStack()
                             GameServer.deleteRoom(game = gameRoom)
-                            HandleUser.deleteUserGameRoom(
+                            HandleUser.deleteUserGameRoomForAll(
                                 gameRoom.roomCode,
                                 gameRoom.roomNickname,
                                 gameRoom.players
@@ -164,38 +161,11 @@ private fun CreateRoomContent(
 
                     gameRoom.players.forEachIndexed { index, player ->
 
-                        val avatar = Avatar.setAvatar(player.avatar)
-                        Row(Modifier
-                            .fillMaxWidth()
-                            .padding(8.dp),
-                            horizontalArrangement = Arrangement.Start,
-                            verticalAlignment = Alignment.CenterVertically) {
-
-                            Image(modifier = Modifier
-                                .size(70.dp)
-                                .padding(4.dp)
-                                .clip(CircleShape),
-                                painter = painterResource(id = avatar.avatar),
-                                contentDescription = avatar.description)
-                            Spacer(modifier = Modifier.width(6.dp))
-
-                            Text(
-                                text = player.nickName,
-                                style = MaterialTheme.typography.h6,
-                                modifier = Modifier.weight(1f),
-                                color = Black
-                            )
-                        }
-                        Box(
-                            modifier = Modifier.fillMaxWidth(),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            if (index != gameRoom.players.size) {
-                                ShadowDivider(
-                                    modifier = Modifier.fillMaxWidth(0.8f)
-                                )
-                            }
-                        }
+                        RoomPlayerList(
+                            player = player,
+                            index = index,
+                            gameRoom = gameRoom
+                        )
 
                     }
                 }
@@ -255,4 +225,6 @@ private fun CreateRoomContent(
         }
     }
 }
+
+
 
