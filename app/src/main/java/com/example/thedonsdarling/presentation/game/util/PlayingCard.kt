@@ -28,9 +28,6 @@ fun PlayingCard(
     color: Color = Color.White,
     notPlayable: Boolean = false,
 ) {
-    var infoWindow by remember {
-        mutableStateOf(false)
-    }
     Box(modifier = modifier
         .clip(RoundedCornerShape(5.dp)),
         contentAlignment = Alignment.Center
