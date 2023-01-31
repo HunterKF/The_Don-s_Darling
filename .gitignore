@@ -17,3 +17,6 @@ local.properties
 Logcat - Pixel 3 - Receiver.pdf
 Logcat - Samsung - Host.pdf
 Logcat.pdf
+*.trace
+cpu-art-20230103T061652.trace
+cpu-art-20230103T063301.trace
