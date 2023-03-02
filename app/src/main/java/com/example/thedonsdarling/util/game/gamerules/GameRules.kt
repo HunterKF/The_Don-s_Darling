@@ -336,7 +336,6 @@ class GameRules {
             gameRoom.players.forEach {
                 if (it.turnOrder == changedTurn && it.isAlive) {
                     it.turn = true
-
                 }
             }
             Log.d(TAG, "changePlayerTurn is done")

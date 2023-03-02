@@ -1,5 +1,7 @@
 package com.example.thedonsdarling
 
+import android.util.Log
+import androidx.activity.compose.BackHandler
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -48,6 +50,9 @@ fun Navigation(
             GameLobby(navController, gameLobbyViewModel, gameViewModel)
         }
         composable(Screen.Game.route) {
+            BackHandler(true) {
+                Log.d(TAG, "Back handler swiped.")
+            }
             Game(navController, gameViewModel)
         }
         composable(Screen.Welcome.route) {

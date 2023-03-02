@@ -8,10 +8,11 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Home
+import androidx.compose.material.icons.rounded.Menu
+import androidx.compose.material.icons.rounded.Notifications
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -19,6 +20,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
@@ -34,7 +36,7 @@ import com.example.thedonsdarling.ui.theme.WarmRed
 
 @Composable
 fun MyGames(
-    myGamesViewModel: MyGamesViewModel,
+    myGamesViewModel: MyGamesViewModel = hiltViewModel(),
     navHostController: NavHostController,
     gameViewModel: GameViewModel,
 ) {
@@ -77,6 +79,44 @@ private fun MyGamesContent(
                     .shadow(12.dp, RoundedCornerShape(0.dp)),
                 backgroundColor = Color.White
             ) {
+                var tabIndex by remember {
+                    mutableStateOf(0)
+                }
+                TabRow(
+                    selectedTabIndex = tabIndex,
+                    backgroundColor = Color.Transparent,
+                    contentColor = MaterialTheme.colors.primary
+                ) {
+                    items.forEachIndexed { i, item ->
+                        Tab(
+                            selected = tabIndex == i,
+                            onClick = { tabIndex = i },
+                            modifier = Modifier.heightIn(48.dp)
+                        ) {
+                            item.vector?.let {
+                                Column() {
+                                    Icon(
+                                        painter = painterResource(id = item.vector),
+                                        contentDescription = item.label,
+                                        tint = if (i == tabIndex) {
+                                            MaterialTheme.colors.primary
+                                        } else {
+                                            MaterialTheme.colors.onSurface.copy(alpha = 0.44f)
+                                        }
+                                    )
+
+                                    Text(
+                                        text = item.label,
+                                        color = if (currentDestination?.route == item.route) WarmRed else Color.White
+
+                                    )
+                                }
+                            }
+
+                        }
+                    }
+                }
+
                 items.forEach { screen ->
                     var vector = R.drawable.icon_end_game
                     screen.vector?.let {
@@ -91,7 +131,6 @@ private fun MyGamesContent(
                                 contentDescription = null,
                                 tint = if (currentDestination?.route == screen.route) WarmRed else Color.White)
                         },
-
                         label = {
                             Text(
                                 text = screen.label,
@@ -114,8 +153,11 @@ private fun MyGamesContent(
             }
         }
     ) {
+
+
         LazyColumn(Modifier
-            .padding(vertical = it.calculateBottomPadding(), horizontal = 16.dp),
+            .fillMaxSize()
+            .padding(bottom = it.calculateBottomPadding(), start = 16.dp, end = 16.dp, top = 8.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Top) {
             item {
@@ -135,7 +177,8 @@ private fun MyGamesContent(
                         .fillMaxSize()
                 ) {
                     if (firestoreUser.joinedGames.isEmpty()) {
-                        Text(text = stringResource(R.string.my_games_empty_game_message), color = Color.White)
+                        Text(text = stringResource(R.string.my_games_empty_game_message),
+                            color = Color.White)
                     }
                     JoinedGameCard(game,
                         modifier = Modifier

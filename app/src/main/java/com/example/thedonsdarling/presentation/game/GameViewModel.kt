@@ -350,7 +350,10 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
 
     /*LaunchedEffect functions*/
     fun declareIsHost(gameRoom: GameRoom) {
-        isHost.value = Tools.getHost(gameRoom.players, currentUser)
+        val currentUser: FirebaseUser? = Firebase.auth.currentUser
+        currentUser?.let {
+            isHost.value = Tools.getHost(gameRoom.players, currentUser)
+        }
     }
 
     fun localizeCurrentPlayer(

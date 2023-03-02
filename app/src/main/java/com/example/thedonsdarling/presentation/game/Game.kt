@@ -18,6 +18,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Popup
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.thedonsdarling.Screen
 import com.example.thedonsdarling.TAG
@@ -32,7 +33,10 @@ import com.example.thedonsdarling.util.user.HandleUser
 import kotlinx.coroutines.launch
 
 @Composable
-fun Game(navController: NavController, gameViewModel: GameViewModel) {
+fun Game(
+    navController: NavController,
+    gameViewModel: GameViewModel
+) {
 
     val state by gameViewModel.state.collectAsState()
     LaunchedEffect(key1 = Unit, block = {
@@ -125,8 +129,6 @@ fun GameContent(game: GameRoom, gameViewModel: GameViewModel, navController: Nav
             localPlayer = localPlayer,
             isHost = gameViewModel.isHost.value
         )*/
-    }
-    BackHandler(false) {
     }
 
     Scaffold {
@@ -250,8 +252,8 @@ fun GameContent(game: GameRoom, gameViewModel: GameViewModel, navController: Nav
                     modifier = Modifier.height(100.dp),
                     player = localPlayer,
                     game = game,
-                    gameViewModel = gameViewModel,
-                    hand = localPlayer.hand) { scope.launch { drawerState.open() } }
+                    gameViewModel = gameViewModel
+                ) { scope.launch { drawerState.open() } }
             }
         }
     }

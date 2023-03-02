@@ -38,7 +38,6 @@ import kotlinx.coroutines.launch
 fun BottomBar(
     modifier: Modifier = Modifier,
     player: Player,
-    hand: List<Int>,
     color: Color = MaterialTheme.colors.primary,
     game: GameRoom,
     gameViewModel: GameViewModel,

@@ -21,6 +21,7 @@ class Tools {
             }
             return host.first().uid == currentUser!!.uid
         }
+
         fun getPlayer(players: List<Player>, currentUser: FirebaseUser?): Player {
             val player = players.filter {
                 it.uid == currentUser!!.uid
