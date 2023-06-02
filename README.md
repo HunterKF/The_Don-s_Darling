@@ -1,4 +1,4 @@
-# The_Don-s_Darling
+# The Don's Darling
 
 ## Table of contents
 * [General info](#general-info)
