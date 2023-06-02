@@ -53,15 +53,15 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
 
 
     val listOfPlayers = mutableStateOf(listOf(Player()))
-    fun getSomeString(string: Int, variableString1: String?, variableString2: String?, ): String {
+    fun getSomeString(string: Int, variableString1: String?, variableString2: String?): String {
         var returningString = ""
-            if (variableString1 != null && variableString2 == null) {
-                returningString = getApplication<Application>().resources.getString(string)
-            } else if (variableString1 != null && variableString2 != null) {
-                returningString = getApplication<Application>().resources.getString(string)
-            } else {
-                getApplication<Application>().resources.getString(string)
-            }
+        if (variableString1 != null && variableString2 == null) {
+            returningString = getApplication<Application>().resources.getString(string)
+        } else if (variableString1 != null && variableString2 != null) {
+            returningString = getApplication<Application>().resources.getString(string)
+        } else {
+            getApplication<Application>().resources.getString(string)
+        }
         return returningString
     }
 
@@ -104,14 +104,17 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
                     if (it.uid == localPlayer.value.uid) {
                         it.protected = TheDoctor.toggleProtection(it)
                         message = context.getString(R.string.card_doctor_message, it.nickName)
-                        toastMessage = context.getString(R.string.card_doctor_toast_message, it.nickName)
+                        toastMessage =
+                            context.getString(R.string.card_doctor_toast_message, it.nickName)
                     }
                 }
                 val logMessage =
-                    LogMessage.createLogMessage(message = message,
+                    LogMessage.createLogMessage(
+                        message = message,
                         toastMessage = toastMessage,
                         type = "gameLog",
-                        uid = null)
+                        uid = null
+                    )
 
                 GameRules.onEnd(gameRoom = gameRoom, logMessage = logMessage)
             }
@@ -139,10 +142,17 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
                 )
                 val logMessage =
                     LogMessage.createLogMessage(
-                        message = context.getString(R.string.card_courtesan_message, localPlayer.value.nickName),
-                        toastMessage = context.getString(R.string.card_courtesan_toast_message, localPlayer.value.nickName),
+                        message = context.getString(
+                            R.string.card_courtesan_message,
+                            localPlayer.value.nickName
+                        ),
+                        toastMessage = context.getString(
+                            R.string.card_courtesan_toast_message,
+                            localPlayer.value.nickName
+                        ),
                         type = "gameLog",
-                        uid = null)
+                        uid = null
+                    )
                 GameRules.onEnd(gameRoom = gameRoom, logMessage = logMessage)
             }
             8 -> {
@@ -157,10 +167,12 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
                 )
                 val result = Darling.eliminatePlayer(gameRoom, player, context)
                 val logMessage =
-                    LogMessage.createLogMessage(result.message,
+                    LogMessage.createLogMessage(
+                        result.message,
                         toastMessage = result.message,
                         type = "gameLog",
-                        uid = null)
+                        uid = null
+                    )
                 result.game?.let { GameRules.onEnd(gameRoom = it, logMessage) }
 
             }
@@ -184,12 +196,18 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
                 2 -> {
                     revealCardAlert.value = true
                     emptyCard.value = selectedPlayer.hand.first()
-                    val privateEyeMessage = context.getString(R.string.card_private_eye_message, localPlayer.value.nickName, selectedPlayer.nickName)
+                    val privateEyeMessage = context.getString(
+                        R.string.card_private_eye_message,
+                        localPlayer.value.nickName,
+                        selectedPlayer.nickName
+                    )
                     val logMessage =
-                        LogMessage.createLogMessage(message = privateEyeMessage,
+                        LogMessage.createLogMessage(
+                            message = privateEyeMessage,
                             toastMessage = privateEyeMessage,
                             type = "gameLog",
-                            uid = null)
+                            uid = null
+                        )
 
                     GameRules.onEnd(gameRoom = gameRoom, logMessage = logMessage)
 
@@ -211,10 +229,12 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
                         gameRoom.players = result.players!!
                     }
                     val logMessage =
-                        LogMessage.createLogMessage(result.message,
+                        LogMessage.createLogMessage(
+                            result.message,
                             toastMessage = result.toastMessage,
                             type = "gameLog",
-                            uid = null)
+                            uid = null
+                        )
 
                     updateResult(result)
 
@@ -228,10 +248,12 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
                         context = context
                     )
                     val logMessage =
-                        LogMessage.createLogMessage(result.message,
+                        LogMessage.createLogMessage(
+                            result.message,
                             toastMessage = result.toastMessage,
                             type = "gameLog",
-                            uid = null)
+                            uid = null
+                        )
 
                     val updatedGame = result.game
 
@@ -266,13 +288,24 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
         } else {
             Log.d("Handmaid", "Selected player was protected.")
             val cardName = context.getString(card.cardName)
-            var message = context.getString(R.string.card_doctor_protection_message, localPlayer.value.nickName, cardName, selectedPlayer.nickName)
-            var toastMessage = context.getString(R.string.card_doctor_protection_toast_message, localPlayer.value.nickName, cardName, selectedPlayer.nickName)
+            var message = context.getString(
+                R.string.card_doctor_protection_message,
+                localPlayer.value.nickName,
+                cardName,
+                selectedPlayer.nickName
+            )
+            var toastMessage = context.getString(
+                R.string.card_doctor_protection_toast_message,
+                localPlayer.value.nickName,
+                cardName,
+                selectedPlayer.nickName
+            )
             val logMessage = LogMessage.createLogMessage(
                 message = message,
                 toastMessage = toastMessage,
                 type = "gameLog",
-                uid = null)
+                uid = null
+            )
 
             GameRules.onEnd(gameRoom = gameRoom, logMessage = logMessage)
         }
@@ -299,7 +332,8 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
             message = result.message,
             toastMessage = result.toastMessage,
             type = "gameLog",
-            uid = null)
+            uid = null
+        )
 
         updateResult(result)
 
