@@ -9,7 +9,7 @@ import com.example.thedonsdarling.domain.Result
 
 class TheDon {
     companion object {
-        fun swapCards(player1: Player, player2: Player, gameRoom: GameRoom, context: Context): Result {
+        fun swapCards(player1: Player, player2: Player, gameRoom: GameRoom): Result {
 
             val player1Card = player1.hand.first()
             val player2Card = player2.hand.first()
@@ -32,8 +32,8 @@ class TheDon {
             }
 
             return Result(
-                message = context.getString(R.string.card_the_don_message,player1.nickName, player2.nickName),
-                toastMessage = context.getString(R.string.card_the_don_toast_message,player1.nickName, player2.nickName),
+                cardResult = null,
+                message = "",
                 player1 = null,
                 player2 = null,
                 players = gameRoom.players,

@@ -165,11 +165,14 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
                     player = player,
                     gameRoom = updatedGameRoom
                 )
-                val result = Darling.eliminatePlayer(gameRoom, player, context)
+                val result = Darling.eliminatePlayer(gameRoom, player)
                 val logMessage =
                     LogMessage.createLogMessage(
-                        result.message,
-                        toastMessage = result.message,
+                        message = context.getString(R.string.card_darling_message, player.nickName),
+                        toastMessage = context.getString(
+                            R.string.card_darling_toast_message,
+                            player.nickName
+                        ),
                         type = "gameLog",
                         uid = null
                     )
@@ -222,9 +225,47 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
                         player1 = localPlayer.value,
                         player2 = selectedPlayer,
                         players = players,
-                        game = gameRoom,
-                        context = context
+                        game = gameRoom
                     )
+                    when (result.cardResult) {
+                        is Moneylender.Player1Wins -> {
+                            result.message = context.getString(
+                                R.string.card_moneylender_message_win,
+                                localPlayer.value.nickName,
+                                selectedPlayer.nickName
+                            )
+                            result.toastMessage = context.getString(
+                                R.string.card_moneylender_toast_message_win,
+                                localPlayer.value.nickName,
+                                selectedPlayer.nickName
+                            )
+
+                        }
+                        is Moneylender.Player2Wins -> {
+                            result.message = context.getString(
+                                R.string.card_moneylender_message_lose,
+                                localPlayer.value.nickName,
+                                selectedPlayer.nickName
+                            )
+                            result.toastMessage = context.getString(
+                                R.string.card_moneylender_toast_message_lose,
+                                localPlayer.value.nickName,
+                                selectedPlayer.nickName
+                            )
+                        }
+                        is Moneylender.Draw -> {
+                            result.message = context.getString(
+                                R.string.card_moneylender_message_tie,
+                                localPlayer.value.nickName,
+                                selectedPlayer.nickName
+                            )
+                            result.toastMessage = context.getString(
+                                R.string.card_moneylender_toast_message_tie,
+                                localPlayer.value.nickName,
+                                selectedPlayer.nickName
+                            )
+                        }
+                    }
                     result.players?.let {
                         gameRoom.players = result.players!!
                     }
@@ -245,8 +286,53 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
                         player1 = localPlayer.value,
                         player2 = selectedPlayer,
                         gameRoom = gameRoom,
-                        context = context
                     )
+                    var player2Card =
+                        context.getString(CardAvatar.setCardAvatar(selectedPlayer.hand.first()).cardName)
+
+                    when (result.cardResult) {
+                        is Wiseguy.ForcedToDiscard -> {
+                            result.message = context.getString(
+                                R.string.card_wiseguy_message,
+                                localPlayer.value.nickName,
+                                selectedPlayer.nickName,
+                                player2Card
+                            )
+                            result.toastMessage = context.getString(
+                                R.string.card_wiseguy_toast_message,
+                                localPlayer.value.nickName,
+                                selectedPlayer.nickName,
+                                player2Card
+                            )
+
+                        }
+                        is Wiseguy.ForcedToDiscardDarling -> {
+                            result.message = context.getString(
+                                R.string.card_darling_forced_message,
+                                localPlayer.value.nickName,
+                                selectedPlayer.nickName,
+                            )
+                            result.toastMessage = context.getString(
+                                R.string.card_darling_forced_toast_message,
+                                localPlayer.value.nickName,
+                                selectedPlayer.nickName,
+                            )
+                        }
+                        is Wiseguy.ForcedToDiscardAndEmptyDeck -> {
+                            result.message = context.getString(
+                                R.string.card_wiseguy_message_empty_deck,
+                                localPlayer.value.nickName,
+                                selectedPlayer.nickName,
+                                player2Card
+                            )
+                            result.toastMessage = context.getString(
+                                R.string.card_wiseguy_toast_message_empty_deck,
+                                localPlayer.value.nickName,
+                                selectedPlayer.nickName,
+                                player2Card
+                            )
+                        }
+                    }
                     val logMessage =
                         LogMessage.createLogMessage(
                             result.message,
@@ -267,9 +353,19 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
                     val result = TheDon.swapCards(
                         player1 = localPlayer.value,
                         player2 = selectedPlayer,
-                        gameRoom = gameRoom,
-                        context = context
+                        gameRoom = gameRoom
                     )
+                    result.message = context.getString(
+                        R.string.card_the_don_message,
+                        localPlayer.value.nickName,
+                        selectedPlayer.nickName
+                    )
+                    result.toastMessage = context.getString(
+                        R.string.card_the_don_toast_message,
+                        localPlayer.value.nickName,
+                        selectedPlayer.nickName
+                    )
+
                     val logMessage =
                         LogMessage.createLogMessage(
                             message = result.message,
@@ -319,13 +415,43 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
             player1 = localPlayer.value,
             player2 = selectedPlayer.value,
             guessedCard = card,
-            gameRoom = gameRoom,
-            context = context
+            gameRoom = gameRoom
         )
         var updatedGameRoom = gameRoom
         updatedGameRoom.players.forEach {
             if (result.player2?.uid == it.uid) {
                 it.isAlive = result.player2.isAlive
+            }
+        }
+        val cardName = context.getString(CardAvatar.setCardAvatar(card).cardName)
+        when (result.cardResult) {
+            is Policeman.GoodGuess -> {
+                result.message = context.getString(
+                    R.string.card_policemen_message_correct,
+                    localPlayer.value.nickName,
+                    selectedPlayer.value.nickName,
+                    cardName
+                )
+                result.toastMessage = context.getString(
+                    R.string.card_policemen_toast_message_correct,
+                    localPlayer.value.nickName,
+                    selectedPlayer.value.nickName,
+                    cardName
+                )
+            }
+            is Policeman.WrongGuess -> {
+                result.message = context.getString(
+                    R.string.card_policemen_message_incorrect,
+                    localPlayer.value.nickName,
+                    selectedPlayer.value.nickName,
+                    context.getString(CardAvatar.setCardAvatar(card).cardName)
+                )
+                result.toastMessage = context.getString(
+                    R.string.card_policemen_toast_message_incorrect,
+                    localPlayer.value.nickName,
+                    selectedPlayer.value.nickName,
+                    cardName
+                )
             }
         }
         val logMessage = LogMessage.createLogMessage(

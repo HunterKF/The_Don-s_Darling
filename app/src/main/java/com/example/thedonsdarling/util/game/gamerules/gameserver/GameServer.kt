@@ -19,7 +19,7 @@ class GameServer {
         suspend fun subscribeToRealtimeUpdates(roomCode: String): Flow<GameRoom> {
             return callbackFlow {
                 var room = GameRoom()
-                Log.d(TAG, "RoomCode is: $roomCode")
+//                Log.d(TAG, "RoomCode is: $roomCode")
                 val listener = dbGame.document(roomCode)
                     .addSnapshotListener { querySnapshot, exception ->
                         exception?.let {
@@ -44,25 +44,25 @@ class GameServer {
             logs: ArrayList<LogMessage>,
             logMessage: LogMessage,
         ): ArrayList<LogMessage> {
-            Log.d(TAG, "updateGameLog is being called")
+//            Log.d(TAG, "updateGameLog is being called")
             logs.add(logMessage)
-            Log.d(TAG, "updateGameLog is done")
+//            Log.d(TAG, "updateGameLog is done")
 
             return logs
         }
 
         fun sendMessage(gameRoom: GameRoom, logMessage: LogMessage) {
-            Log.d(TAG, "sendMessage is being called")
+//            Log.d(TAG, "sendMessage is being called")
             dbGame.document(gameRoom.roomCode)
                 .update("gameLog", FieldValue.arrayUnion(logMessage))
                 .addOnSuccessListener {
-                    Log.d(TAG, "Successfully added player!")
+//                    Log.d(TAG, "Successfully added player!")
                     logMessage.uid?.let { uid -> updateUnreadStatusForAll(gameRoom = gameRoom, uid = uid) }
                 }
                 .addOnFailureListener {
-                    Log.d(TAG, "Failed to add player! ${it.localizedMessage}")
+//                    Log.d(TAG, "Failed to add player! ${it.localizedMessage}")
                 }
-            Log.d(TAG, "sendMessage is done")
+//            Log.d(TAG, "sendMessage is done")
 
         }
         private fun updateUnreadStatusForAll(gameRoom: GameRoom, uid: String) {
@@ -74,10 +74,10 @@ class GameServer {
             dbGame.document(gameRoom.roomCode)
                 .update("players", gameRoom.players)
                 .addOnSuccessListener {
-                    Log.d(TAG, "Successfully updated player's unread status")
+//                    Log.d(TAG, "Successfully updated player's unread status")
                 }
                 .addOnFailureListener {
-                    Log.d(TAG, "Failed to update player's unread status. ${it.localizedMessage}")
+//                    Log.d(TAG, "Failed to update player's unread status. ${it.localizedMessage}")
 
                 }
         }
@@ -90,10 +90,10 @@ class GameServer {
             dbGame.document(gameRoom.roomCode)
                 .update("players", gameRoom.players)
                 .addOnSuccessListener {
-                    Log.d(TAG, "Successfully updated player's unread status")
+//                    Log.d(TAG, "Successfully updated player's unread status")
                 }
                 .addOnFailureListener {
-                    Log.d(TAG, "Failed to update player's unread status. ${it.localizedMessage}")
+//                    Log.d(TAG, "Failed to update player's unread status. ${it.localizedMessage}")
 
                 }
         }
@@ -110,7 +110,7 @@ class GameServer {
                 }
         }
         fun startNewRound(gameRoom: GameRoom) {
-            Log.d(TAG, "startNewGame is being called")
+//            Log.d(TAG, "startNewGame is being called")
 
             val turn = (1..gameRoom.players.size).shuffled().random()
             gameRoom.players.forEach {
@@ -150,11 +150,11 @@ class GameServer {
             game.turn = turn
             game = GameRules.dealCards(game)
             updateGame(game)
-            Log.d(TAG, "startNewGame is done")
+//            Log.d(TAG, "startNewGame is done")
 
         }
         fun startNewGame(gameRoom: GameRoom) {
-            Log.d(TAG, "startNewGame is being called")
+//            Log.d(TAG, "startNewGame is being called")
 
             val turn = (1..gameRoom.players.size).shuffled().random()
             gameRoom.players.forEach {
@@ -195,12 +195,12 @@ class GameServer {
             game.turn = turn
             game = GameRules.dealCards(game)
             updateGame(game)
-            Log.d(TAG, "startNewGame is done")
+//            Log.d(TAG, "startNewGame is done")
 
         }
          fun updateGame(gameRoom: GameRoom) {
-            Log.d(TAG, "updateGame is being called")
-            Log.d(TAG, "updateGame is done")
+//            Log.d(TAG, "updateGame is being called")
+//            Log.d(TAG, "updateGame is done")
 
 
             dbGame.document(gameRoom.roomCode).set(gameRoom)
@@ -210,7 +210,7 @@ class GameServer {
                 .addOnFailureListener {
                     Log.d(GAMERULES_TAG, "Failed to update room: ${it.localizedMessage}")
                 }
-            Log.d(TAG, "updateGame is done")
+//            Log.d(TAG, "updateGame is done")
 
         }
 

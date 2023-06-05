@@ -17,7 +17,8 @@ data class GameRoom(
     var gameLog: ArrayList<LogMessage>,
 ) {
 
-    constructor() : this(Deck(),
+    constructor() : this(
+        Deck(),
         turn = 0,
         roomCode = "",
         roomNickname = "",

@@ -7,38 +7,33 @@ import com.example.thedonsdarling.domain.Player
 import com.example.thedonsdarling.domain.Result
 import com.example.thedonsdarling.util.game.gamerules.GameRules
 
-class Moneylender {
+sealed class Moneylender {
+    object Player1Wins : Moneylender()
+    object Player2Wins : Moneylender()
+    object Draw : Moneylender()
     companion object {
         fun compareCards(
             player1: Player,
             player2: Player,
             players: List<Player>,
-            game: GameRoom,
-            context: Context
+            game: GameRoom
         ): Result {
             val player1Card = player1.hand.first()
             val player2Card = player2.hand.first()
-            var message = ""
-            var toastMessage = ""
             var updatedGameRoom = game
+
+            var comparisonResult: Moneylender = Draw
             when {
                 player1Card > player2Card -> {
+                    comparisonResult = Player1Wins
                     updatedGameRoom = GameRules.eliminatePlayer(updatedGameRoom, player2)
-                    message = context.getString(R.string.card_moneylender_message, player1.nickName, player2.nickName)
-                    toastMessage = context.getString(R.string.card_moneylender_toast_message_win, player1.nickName, player2.nickName)
                 }
                 player1Card < player2Card -> {
+                    comparisonResult = Player2Wins
                     updatedGameRoom = GameRules.eliminatePlayer(updatedGameRoom, player1)
-
-                    message = context.getString(R.string.card_moneylender_message, player1.nickName, player2.nickName)
-                    toastMessage = context.getString(R.string.card_moneylender_toast_message_lose, player1.nickName, player2.nickName)
-
-
                 }
                 player1Card == player2Card -> {
-                    message = context.getString(R.string.card_moneylender_message_tie, player1.nickName, player2.nickName)
-                    toastMessage = context.getString(R.string.card_moneylender_toast_message_tie, player1.nickName, player2.nickName)
-
+                    comparisonResult = Draw
                 }
             }
             updatedGameRoom.players.forEach {
@@ -48,8 +43,8 @@ class Moneylender {
                 }
             }
             return Result(
-                message = message,
-                toastMessage = toastMessage,
+                cardResult = comparisonResult,
+                message = "",
                 player1 = player1,
                 player2 = player2,
                 players = players,

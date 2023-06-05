@@ -87,7 +87,8 @@
     <string name="card_policemen_message_incorrect"> %1$s played the Policeman. They guessed %2$s has a %3$s. %1$s was wrong!</string>
     <string name="card_policemen_toast_message_incorrect"> %1$s guessed incorrectly that %2$s has a %3$s.</string>
     <string name="card_private_eye_message"> %1$s looked at %2$s\'s card.</string>
-    <string name="card_moneylender_message"> %1$s compared hands with %2$s using the Moneylender!%1$s\'s hand was better. %2$s was eliminated.</string>
+    <string name="card_moneylender_message_win"> %1$s compared hands with %2$s using the Moneylender!%1$s\'s hand was better. %2$s was eliminated.</string>
+    <string name="card_moneylender_message_lose"> %1$s compared hands with %2$s using the Moneylender!%2$s\'s hand was better. %1$s was eliminated.</string>
     <string name="card_moneylender_toast_message_win"> %1$s used the Moneylender and eliminated %2$s.</string>
     <string name="card_moneylender_toast_message_lose"> %1$s used the Moneylender but was eliminated by %2$s.</string>
     <string name="card_moneylender_message_tie">%1$s used the Moneylender to compare hands with %2$s. But no one died? %1$s and %2$s live to tell another tale.</string>
