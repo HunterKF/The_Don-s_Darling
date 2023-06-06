@@ -6,7 +6,7 @@ import com.example.thedonsdarling.domain.Result
 import com.example.thedonsdarling.util.game.gamerules.GameRules
 
 sealed class Policeman {
-    object GoodGuess : Policeman()
+    object CorrectGuess : Policeman()
     object WrongGuess : Policeman()
     companion object {
         fun returnResult(
@@ -16,14 +16,13 @@ sealed class Policeman {
             gameRoom: GameRoom,
         ): Result {
             var updatedGameRoom = gameRoom
-            var guessResult = Policeman
             if (player2.hand.first() == guessedCard) {
                 updatedGameRoom = GameRules.eliminatePlayer(
                     gameRoom = gameRoom,
                     player = player2
                 )
                 return Result(
-                    cardResult = GoodGuess,
+                    cardResult = CorrectGuess,
                     message = "",
                     player1 = player1,
                     player2 = player2,
@@ -32,10 +31,8 @@ sealed class Policeman {
                 )
             } else {
                 return Result(
-                    cardResult = guessResult,
+                    cardResult = WrongGuess,
                     message = "",
-                    /*message = message,
-                    toastMessage = toastMessage,*/
                     player1 = player1,
                     player2 = player2,
                     players = null,

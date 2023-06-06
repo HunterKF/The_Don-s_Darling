@@ -1,14 +1,14 @@
 package com.example.thedonsdarling.util.game.gamerules.CardRules
 
 import com.example.thedonsdarling.domain.GameRoom
-import com.example.thedonsdarling.domain.Player
-import org.junit.Assert.*
+import com.example.thedonsdarling.util.game.gamerules.testPlayer1
+import com.example.thedonsdarling.util.game.gamerules.testPlayer2
+import com.google.common.truth.Truth
 import org.junit.Before
+import org.junit.Test
 
 class TheDonTest {
     private lateinit var gameRoom: GameRoom
-    private lateinit var player1: Player
-    private lateinit var player2: Player
 
 
     @Before
@@ -20,40 +20,8 @@ class TheDonTest {
             roomNickname = "QRST",
             playLimit = 5,
             players = listOf(
-                Player().copy(
-                    avatar = 1,
-                    nickName = "Apple",
-                    uid = "apple_uid",
-                    ready = true,
-                    protected = false,
-                    turn = true,
-                    turnInProgress = true,
-                    turnOrder = 1,
-                    hand = arrayListOf(1, 2),
-                    isHost = true,
-                    isAlive = true,
-                    isWinner = false,
-                    wins = 0,
-                    unread = false,
-                    guide = true
-                ),
-                Player().copy(
-                    avatar = 1,
-                    nickName = "Bear",
-                    uid = "bear_uid",
-                    ready = true,
-                    protected = false,
-                    turn = false,
-                    turnInProgress = false,
-                    turnOrder = 1,
-                    hand = arrayListOf(1),
-                    isHost = false,
-                    isAlive = true,
-                    isWinner = false,
-                    wins = 0,
-                    unread = false,
-                    guide = true
-                )
+                testPlayer1,
+                testPlayer2
             ),
             start = true,
             host = "apple_uid",
@@ -64,40 +32,28 @@ class TheDonTest {
             deckClear = false,
             gameLog = arrayListOf()
         )
-        player1 = Player().copy(
-            avatar = 1,
-            nickName = "Apple",
-            uid = "apple_uid",
-            ready = true,
-            protected = false,
-            turn = true,
-            turnInProgress = true,
-            turnOrder = 1,
-            hand = arrayListOf(1, 2),
-            isHost = true,
-            isAlive = true,
-            isWinner = false,
-            wins = 0,
-            unread = false,
-            guide = true
-        )
-        player2 =
-            Player().copy(
-                avatar = 1,
-                nickName = "Bear",
-                uid = "bear_uid",
-                ready = true,
-                protected = false,
-                turn = false,
-                turnInProgress = false,
-                turnOrder = 1,
-                hand = arrayListOf(1),
-                isHost = false,
-                isAlive = true,
-                isWinner = false,
-                wins = 0,
-                unread = false,
-                guide = true
-            )
+    }
+
+    @Test
+    fun `Swap cards, 1 to 8, return swapped player cards`() {
+        for (i in 1..8) {
+            val localPlayerOne = gameRoom.players.first { it.uid == testPlayer1.uid }
+            localPlayerOne.hand = arrayListOf(i)
+            val localPlayerOneCard = gameRoom.players.first { it.uid == testPlayer1.uid }.hand.first()
+            val localPlayerTwo = gameRoom.players.first { it.uid == testPlayer2.uid }
+            var offsetI = i - 1
+            if (offsetI == 0 ) {
+                offsetI = 1
+            }
+            localPlayerTwo.hand = arrayListOf(offsetI)
+            val localPlayerTwoCard = gameRoom.players.first { it.uid == testPlayer2.uid }.hand.first()
+
+            val result = TheDon.swapCards(localPlayerOne, localPlayerTwo, gameRoom)
+            val newPlayerOne = result.players!!.first { it.uid == localPlayerOne.uid }
+            val newPlayerTwo = result.players!!.first { it.uid == localPlayerTwo.uid }
+
+            Truth.assertThat(newPlayerOne.hand.first()).isEqualTo(localPlayerTwoCard)
+            Truth.assertThat(newPlayerTwo.hand.first()).isEqualTo(localPlayerOneCard)
+        }
     }
 }

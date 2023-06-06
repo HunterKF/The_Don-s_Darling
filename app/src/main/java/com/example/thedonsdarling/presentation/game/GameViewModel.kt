@@ -425,7 +425,7 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
         }
         val cardName = context.getString(CardAvatar.setCardAvatar(card).cardName)
         when (result.cardResult) {
-            is Policeman.GoodGuess -> {
+            is Policeman.CorrectGuess -> {
                 result.message = context.getString(
                     R.string.card_policemen_message_correct,
                     localPlayer.value.nickName,

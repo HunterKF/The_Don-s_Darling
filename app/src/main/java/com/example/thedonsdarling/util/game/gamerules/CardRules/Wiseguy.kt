@@ -45,7 +45,7 @@ sealed class Wiseguy {
                         }
                     }
                 }
-            } else {
+            } else if (wiseGuyMessage != ForcedToDiscardDarling) {
                 val players = gameRoom.players
                 players.forEach {
                     if (it == player2) {

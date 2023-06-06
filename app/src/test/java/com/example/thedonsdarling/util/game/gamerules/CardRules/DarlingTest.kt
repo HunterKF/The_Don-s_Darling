@@ -2,6 +2,7 @@ package com.example.thedonsdarling.util.game.gamerules.CardRules
 
 import com.example.thedonsdarling.domain.GameRoom
 import com.example.thedonsdarling.domain.Player
+import com.example.thedonsdarling.util.game.gamerules.testGameRoom
 import com.google.common.truth.Truth
 import org.junit.Assert.*
 import org.junit.Before
@@ -21,12 +22,8 @@ class DarlingTest {
 
     @Before
     fun setUp() {
-        gameRoom = GameRoom()
+        gameRoom = testGameRoom
         gameRoom = gameRoom.copy(
-            turn = 1,
-            roomCode = "ABCD",
-            roomNickname = "QRST",
-            playLimit = 5,
             players = listOf(
                 Player().copy(
                     avatar = 1,
@@ -63,14 +60,6 @@ class DarlingTest {
                     guide = true
                 )
             ),
-            start = true,
-            host = "apple_uid",
-            roundOver = false,
-            gameOver = false,
-            showLogs = true,
-            deleteRoom = false,
-            deckClear = false,
-            gameLog = arrayListOf()
         )
         player1 = Player().copy(
             avatar = 1,
