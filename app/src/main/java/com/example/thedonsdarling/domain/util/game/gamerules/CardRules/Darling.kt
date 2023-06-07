@@ -1,23 +1,21 @@
-package com.example.thedonsdarling.util.game.gamerules.CardRules
+package com.example.thedonsdarling.domain.util.game.gamerules.CardRules
 
-import android.content.Context
-import com.example.thedonsdarling.R
 import com.example.thedonsdarling.domain.GameRoom
 import com.example.thedonsdarling.domain.Player
-import com.example.thedonsdarling.domain.Result
-import com.example.thedonsdarling.util.game.gamerules.GameRules
+import com.example.thedonsdarling.domain.CardResult
+import com.example.thedonsdarling.domain.util.game.gamerules.GameRules
 
 sealed class Darling {
     object PlayerSafe : Darling()
     object PlayerEliminated : Darling()
     companion object {
-        fun eliminatePlayer(gameRoom: GameRoom, player: Player): Result {
+        fun eliminatePlayer(gameRoom: GameRoom, player: Player): CardResult {
             gameRoom.players.forEach {
                 if (it.uid == player.uid) {
                     it.isAlive = false
                 }
             }
-            return Result(
+            return CardResult(
                 cardResult = PlayerEliminated,
                 message = "",
                 player1 = player,
@@ -32,11 +30,11 @@ sealed class Darling {
             player1: Player,
             player2: Player,
             gameRoom: GameRoom,
-        ): Result {
+        ): CardResult {
             var message = ""
             var toastMessage = ""
             if (card == 8) {
-                return Result(
+                return CardResult(
                     cardResult = PlayerEliminated,
                     message = "",
                     player1 = player1,
@@ -45,7 +43,7 @@ sealed class Darling {
                     game = GameRules.eliminatePlayer(gameRoom = gameRoom, player = player2)
                 )
             } else {
-                return Result(
+                return CardResult(
                     cardResult = PlayerSafe,
                     message = message,
                     toastMessage = toastMessage,

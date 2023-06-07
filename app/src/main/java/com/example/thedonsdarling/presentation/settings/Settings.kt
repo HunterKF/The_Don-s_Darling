@@ -39,8 +39,8 @@ import com.example.thedonsdarling.presentation.settings.util.ReportPlayer
 import com.example.thedonsdarling.presentation.util.OutlinedButton
 import com.example.thedonsdarling.ui.theme.*
 import com.example.thedonsdarling.util.game.GameServer
-import com.example.thedonsdarling.util.game.gamerules.gameserver.ConnectionRules
-import com.example.thedonsdarling.util.user.HandleUser
+import com.example.thedonsdarling.data.gameserver.ConnectionRules
+import com.example.thedonsdarling.domain.util.user.HandleUser
 
 @Composable
 fun Settings(game: GameRoom, gameViewModel: GameViewModel, onExit: () -> Unit) {

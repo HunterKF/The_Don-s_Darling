@@ -1,4 +1,4 @@
-package com.example.thedonsdarling.util.game.gamerules.CardRules
+package com.example.thedonsdarling.domain.util.game.gamerules.CardRules
 
 import android.util.Log
 

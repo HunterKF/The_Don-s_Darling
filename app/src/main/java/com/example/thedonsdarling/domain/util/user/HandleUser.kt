@@ -1,4 +1,4 @@
-package com.example.thedonsdarling.util.user
+package com.example.thedonsdarling.domain.util.user
 
 import android.util.Log
 import com.example.thedonsdarling.TAG
@@ -59,9 +59,11 @@ class HandleUser {
 
         fun addGameToPlayer(userId: String, gameRoom: GameRoom) {
             val joinedGame =
-                JoinedGame(roomCode = gameRoom.roomCode,
+                JoinedGame(
+                    roomCode = gameRoom.roomCode,
                     roomNickname = gameRoom.roomNickname,
-                    ready = false)
+                    ready = false
+                )
 
             joinedGame.ready = true
             dbPlayers.document(userId)
@@ -84,8 +86,10 @@ class HandleUser {
             roomNickname: String,
             players: List<Player>,
         ) {
-            val joinedGame = JoinedGame(roomCode = roomCode, roomNickname = roomNickname,
-                ready = true)
+            val joinedGame = JoinedGame(
+                roomCode = roomCode, roomNickname = roomNickname,
+                ready = true
+            )
 
             players.forEach {
                 dbPlayers.document(it.uid).update("joinedGames", FieldValue.arrayRemove(joinedGame))
@@ -100,8 +104,10 @@ class HandleUser {
         }
 
         fun deleteUserGameRoomForLocal(roomCode: String, roomNickname: String, player: Player) {
-            val joinedGame = JoinedGame(roomCode = roomCode, roomNickname = roomNickname,
-                ready = true)
+            val joinedGame = JoinedGame(
+                roomCode = roomCode, roomNickname = roomNickname,
+                ready = true
+            )
 
             dbPlayers.document(player.uid).update("joinedGames", FieldValue.arrayRemove(joinedGame))
                 .addOnSuccessListener {
@@ -122,8 +128,10 @@ class HandleUser {
                     val listener = dbPlayers.document(currentUser.uid)
                         .addSnapshotListener { documentSnapshot, exception ->
                             exception?.let {
-                                Log.d(TAG,
-                                    "An error has occurred trying to observe my games: $exception")
+                                Log.d(
+                                    TAG,
+                                    "An error has occurred trying to observe my games: $exception"
+                                )
                                 return@addSnapshotListener
                             }
                             Log.d(TAG, "Attempting to get the document")

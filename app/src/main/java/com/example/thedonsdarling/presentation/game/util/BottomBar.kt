@@ -30,7 +30,7 @@ import com.example.thedonsdarling.domain.GameRoom
 import com.example.thedonsdarling.domain.Player
 import com.example.thedonsdarling.presentation.game.GameViewModel
 import com.example.thedonsdarling.ui.theme.*
-import com.example.thedonsdarling.util.game.gamerules.CardRules.Courtesan
+import com.example.thedonsdarling.domain.util.game.gamerules.CardRules.Courtesan
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 

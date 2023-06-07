@@ -1,15 +1,12 @@
-package com.example.thedonsdarling.util.game.gamerules.CardRules
+package com.example.thedonsdarling.domain.util.game.gamerules.CardRules
 
-import android.content.Context
-import android.util.Log
-import com.example.thedonsdarling.R
 import com.example.thedonsdarling.domain.GameRoom
 import com.example.thedonsdarling.domain.Player
-import com.example.thedonsdarling.domain.Result
+import com.example.thedonsdarling.domain.CardResult
 
 class TheDon {
     companion object {
-        fun swapCards(player1: Player, player2: Player, gameRoom: GameRoom): Result {
+        fun swapCards(player1: Player, player2: Player, gameRoom: GameRoom): CardResult {
 
             val player1Card = player1.hand.first()
             val player2Card = player2.hand.first()
@@ -31,7 +28,7 @@ class TheDon {
                 }
             }
 
-            return Result(
+            return CardResult(
                 cardResult = null,
                 message = "",
                 player1 = null,

@@ -10,10 +10,11 @@ import com.example.thedonsdarling.R
 import com.example.thedonsdarling.Screen
 import com.example.thedonsdarling.TAG
 import com.example.thedonsdarling.domain.*
-import com.example.thedonsdarling.util.Tools
+import com.example.thedonsdarling.domain.util.game.gamerules.CardRules.*
+import com.example.thedonsdarling.domain.util.Tools
 import com.example.thedonsdarling.util.game.GameServer
-import com.example.thedonsdarling.util.game.gamerules.CardRules.*
-import com.example.thedonsdarling.util.game.gamerules.GameRules
+import com.example.thedonsdarling.domain.util.game.gamerules.EndRoundResult
+import com.example.thedonsdarling.domain.util.game.gamerules.GameRules
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
@@ -467,7 +468,7 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
 
     }
 
-    private fun updateResult(result: Result) {
+    private fun updateResult(result: CardResult) {
         resultMessage.value = result.message
         resultAlert.value = true
     }
@@ -548,20 +549,31 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
     ) {
         if (alivePlayers.size == 1 && !game.roundOver && !playerIsPlaying) {
             Log.d(TAG, "(if) ending game")
-            GameRules.endRound(gameRoom = game, context = context)
-
-            game.players.forEach {
+            val endGame = GameRules.endRound(gameRoom = game)
+            val logMessage = LogMessage.createLogMessage(
+                message = "",
+                toastMessage = null,
+                type = "winnerMessage",
+                uid = null
+            )
+            endGame.gameRoom.players.forEach {
                 if (it.isWinner) {
                     winner.value = it
                 }
             }
             endRoundAlert.value = true
-
-
+            logMessage.message = updateLogMessageFromEndGame(endGame, logMessage)
+            endGame.gameRoom.gameLog.add(logMessage)
+            GameServer.updateGame(endGame.gameRoom)
         } else if (game.deck.deck.isEmpty() && !playerIsPlaying && !game.roundOver && game.deckClear) {
             Log.d(TAG, "(else-if) ending game")
-            GameRules.endRound(gameRoom = game, context = context)
-
+            val endGame = GameRules.endRound(gameRoom = game)
+            val logMessage = LogMessage.createLogMessage(
+                message = "",
+                toastMessage = null,
+                type = "winnerMessage",
+                uid = null
+            )
             var winner = Player()
             game.players.forEach {
                 if (it.isWinner) {
@@ -569,8 +581,36 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
                 }
             }
             endRoundAlert.value = true
+            logMessage.message = updateLogMessageFromEndGame(endGame, logMessage)
 
+            endGame.gameRoom.gameLog.add(logMessage)
+            GameServer.updateGame(endGame.gameRoom)
         }
+    }
+
+    private fun updateLogMessageFromEndGame(
+        endGame: EndRoundResult.FinalResult,
+        logMessage: LogMessage,
+    ): String {
+        when (endGame.type) {
+            is EndRoundResult.RoundIsOverWinner -> {
+                logMessage.message =
+                    context.getString(R.string.round_over_winner_message, winner.value.nickName)
+            }
+            is EndRoundResult.RoundIsOverTie -> {
+                var message = context.getString(R.string.game_tie_message)
+                for (player in endGame.remainingPlayers) {
+                    message += context.getString(R.string.round_over_tie_winner_message)
+                }
+                message = message.substring(0, message.length - 5) + "."
+                logMessage.message = message
+            }
+            is EndRoundResult.GameIsOver -> {
+                logMessage.message =
+                    context.getString(R.string.game_over_winner_message, winner.value.nickName)
+            }
+        }
+        return logMessage.message
     }
 
     fun handleDeletedRoom(

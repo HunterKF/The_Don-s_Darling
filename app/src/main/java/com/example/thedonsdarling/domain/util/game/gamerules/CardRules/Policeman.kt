@@ -1,9 +1,9 @@
-package com.example.thedonsdarling.util.game.gamerules.CardRules
+package com.example.thedonsdarling.domain.util.game.gamerules.CardRules
 
 import com.example.thedonsdarling.domain.GameRoom
 import com.example.thedonsdarling.domain.Player
-import com.example.thedonsdarling.domain.Result
-import com.example.thedonsdarling.util.game.gamerules.GameRules
+import com.example.thedonsdarling.domain.CardResult
+import com.example.thedonsdarling.domain.util.game.gamerules.GameRules
 
 sealed class Policeman {
     object CorrectGuess : Policeman()
@@ -14,14 +14,14 @@ sealed class Policeman {
             player2: Player,
             guessedCard: Int,
             gameRoom: GameRoom,
-        ): Result {
+        ): CardResult {
             var updatedGameRoom = gameRoom
             if (player2.hand.first() == guessedCard) {
                 updatedGameRoom = GameRules.eliminatePlayer(
                     gameRoom = gameRoom,
                     player = player2
                 )
-                return Result(
+                return CardResult(
                     cardResult = CorrectGuess,
                     message = "",
                     player1 = player1,
@@ -30,7 +30,7 @@ sealed class Policeman {
                     game = updatedGameRoom
                 )
             } else {
-                return Result(
+                return CardResult(
                     cardResult = WrongGuess,
                     message = "",
                     player1 = player1,

@@ -1,4 +1,4 @@
-package com.example.thedonsdarling.util
+package com.example.thedonsdarling.domain.util
 
 import com.example.thedonsdarling.domain.Player
 import com.google.firebase.auth.FirebaseUser

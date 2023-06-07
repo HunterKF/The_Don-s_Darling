@@ -1,5 +1,6 @@
 package com.example.thedonsdarling.util.game.gamerules.CardRules
 
+import com.example.thedonsdarling.domain.util.game.gamerules.CardRules.Courtesan
 import com.google.common.truth.Truth
 import org.junit.Assert.*
 import org.junit.Before

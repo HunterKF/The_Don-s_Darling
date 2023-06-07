@@ -3,8 +3,8 @@ package com.example.thedonsdarling.presentation.createroom
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.thedonsdarling.util.user.HandleUser
-import com.example.thedonsdarling.util.game.gamerules.gameserver.StartGame
+import com.example.thedonsdarling.domain.util.user.HandleUser
+import com.example.thedonsdarling.data.gameserver.StartGame
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
@@ -37,7 +37,8 @@ class CreateRoomViewModel : ViewModel() {
         viewModelScope.launch {
             StartGame.createRoom(roomNickname = roomNickname.value,
                 playLimit.value,
-                listOf(HandleUser.createGamePlayer(
+                listOf(
+                    HandleUser.createGamePlayer(
                     avatar = playerChar.value,
                     nickname = playerNickname.value,
                     isHost = true)),

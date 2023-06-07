@@ -1,11 +1,9 @@
-package com.example.thedonsdarling.util.game.gamerules.CardRules
+package com.example.thedonsdarling.domain.util.game.gamerules.CardRules
 
-import android.content.Context
-import com.example.thedonsdarling.R
 import com.example.thedonsdarling.domain.GameRoom
 import com.example.thedonsdarling.domain.Player
-import com.example.thedonsdarling.domain.Result
-import com.example.thedonsdarling.util.game.gamerules.GameRules
+import com.example.thedonsdarling.domain.CardResult
+import com.example.thedonsdarling.domain.util.game.gamerules.GameRules
 
 sealed class Moneylender {
     object Player1Wins : Moneylender()
@@ -17,7 +15,7 @@ sealed class Moneylender {
             player2: Player,
             players: List<Player>,
             game: GameRoom
-        ): Result {
+        ): CardResult {
             val player1Card = player1.hand.first()
             val player2Card = player2.hand.first()
             var updatedGameRoom = game
@@ -42,7 +40,7 @@ sealed class Moneylender {
                     player2.uid -> it.isAlive = player2.isAlive
                 }
             }
-            return Result(
+            return CardResult(
                 cardResult = comparisonResult,
                 message = "",
                 player1 = player1,

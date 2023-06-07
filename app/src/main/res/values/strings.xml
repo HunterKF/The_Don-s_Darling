@@ -142,4 +142,6 @@
     <string name="report_player_email_message">User %1$s (%2$s) is being reported. (Please write down what happened.)</string>
     <string name="report_player_email_title">Reporting player: %1$s</string>
     <string name="settings_title">Settings</string>
+    <string name="enter_room_name">Enter room name.</string>
+    <string name="game_tie_message">Appears to have been a tie.</string>
 </resources>

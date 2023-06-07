@@ -1,6 +1,7 @@
 package com.example.thedonsdarling.util.game.gamerules.CardRules
 
 import com.example.thedonsdarling.domain.GameRoom
+import com.example.thedonsdarling.domain.util.game.gamerules.CardRules.Wiseguy
 import com.example.thedonsdarling.util.game.gamerules.testGameRoom
 import com.example.thedonsdarling.util.game.gamerules.testPlayer1
 import com.example.thedonsdarling.util.game.gamerules.testPlayer2

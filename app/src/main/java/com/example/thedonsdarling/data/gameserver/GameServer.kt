@@ -5,8 +5,8 @@ import com.example.thedonsdarling.TAG
 import com.example.thedonsdarling.dbGame
 import com.example.thedonsdarling.domain.GameRoom
 import com.example.thedonsdarling.domain.LogMessage
-import com.example.thedonsdarling.util.game.gamerules.GAMERULES_TAG
-import com.example.thedonsdarling.util.game.gamerules.GameRules
+import com.example.thedonsdarling.domain.util.game.gamerules.GAMERULES_TAG
+import com.example.thedonsdarling.domain.util.game.gamerules.GameRules
 import com.google.firebase.firestore.FieldValue
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
@@ -205,10 +205,10 @@ class GameServer {
 
             dbGame.document(gameRoom.roomCode).set(gameRoom)
                 .addOnSuccessListener {
-                    Log.d(GAMERULES_TAG, "Successfully updated game room")
+//                    Log.d(GAMERULES_TAG, "Successfully updated game room")
                 }
                 .addOnFailureListener {
-                    Log.d(GAMERULES_TAG, "Failed to update room: ${it.localizedMessage}")
+//                    Log.d(GAMERULES_TAG, "Failed to update room: ${it.localizedMessage}")
                 }
 //            Log.d(TAG, "updateGame is done")
 

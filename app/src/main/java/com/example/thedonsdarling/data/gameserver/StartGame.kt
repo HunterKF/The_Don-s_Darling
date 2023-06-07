@@ -1,4 +1,4 @@
-package com.example.thedonsdarling.util.game.gamerules.gameserver
+package com.example.thedonsdarling.data.gameserver
 
 import android.content.Context
 import android.util.Log
@@ -10,8 +10,8 @@ import com.example.thedonsdarling.domain.Deck
 import com.example.thedonsdarling.domain.GameRoom
 import com.example.thedonsdarling.domain.LogMessage
 import com.example.thedonsdarling.domain.Player
-import com.example.thedonsdarling.util.game.gamerules.GameRules
-import com.example.thedonsdarling.util.user.HandleUser
+import com.example.thedonsdarling.domain.util.game.gamerules.GameRules
+import com.example.thedonsdarling.domain.util.user.HandleUser
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.*

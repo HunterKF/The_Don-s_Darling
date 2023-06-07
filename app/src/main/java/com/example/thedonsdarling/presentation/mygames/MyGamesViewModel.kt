@@ -2,7 +2,7 @@ package com.example.thedonsdarling.presentation.mygames
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.thedonsdarling.util.user.HandleUser
+import com.example.thedonsdarling.domain.util.user.HandleUser
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow

@@ -1,4 +1,4 @@
-package com.example.thedonsdarling.util.game.gamerules.gameserver
+package com.example.thedonsdarling.data.gameserver
 
 import android.content.Context
 import android.util.Log

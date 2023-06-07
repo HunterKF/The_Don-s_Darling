@@ -39,8 +39,8 @@ import com.example.thedonsdarling.presentation.createplayer.AvatarImage
 import com.example.thedonsdarling.presentation.util.CustomTextButton
 import com.example.thedonsdarling.ui.theme.Black
 import com.example.thedonsdarling.ui.theme.WarmRed
-import com.example.thedonsdarling.util.game.gamerules.gameserver.ConnectionRules
-import com.example.thedonsdarling.util.user.HandleUser
+import com.example.thedonsdarling.data.gameserver.ConnectionRules
+import com.example.thedonsdarling.domain.util.user.HandleUser
 
 @Composable
 fun JoinGameScreen(navController: NavHostController, gameLobbyViewModel: GameLobbyViewModel) {

@@ -26,10 +26,10 @@ import com.example.thedonsdarling.presentation.game.GameViewModel
 import com.example.thedonsdarling.presentation.util.CustomTextButton
 import com.example.thedonsdarling.presentation.util.RoomPlayerList
 import com.example.thedonsdarling.ui.theme.Black
-import com.example.thedonsdarling.util.Tools
+import com.example.thedonsdarling.domain.util.Tools
 import com.example.thedonsdarling.util.game.GameServer
-import com.example.thedonsdarling.util.game.gamerules.gameserver.StartGame
-import com.example.thedonsdarling.util.user.HandleUser
+import com.example.thedonsdarling.data.gameserver.StartGame
+import com.example.thedonsdarling.domain.util.user.HandleUser
 
 @Composable
 fun CreateRoom(

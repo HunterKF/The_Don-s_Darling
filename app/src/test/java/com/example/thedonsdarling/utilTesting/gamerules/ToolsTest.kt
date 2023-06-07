@@ -1,7 +1,7 @@
 package com.example.thedonsdarling.utilTesting.gamerules
 
 import com.example.thedonsdarling.domain.Player
-import com.example.thedonsdarling.util.Tools
+import com.example.thedonsdarling.domain.util.Tools
 import com.google.common.truth.Truth.assertThat
 import org.junit.Before
 import org.junit.Test

@@ -28,8 +28,8 @@ import com.example.thedonsdarling.presentation.messenger.Messenger
 import com.example.thedonsdarling.presentation.settings.Settings
 import com.example.thedonsdarling.ui.theme.Black
 import com.example.thedonsdarling.ui.theme.OffWhite
-import com.example.thedonsdarling.util.Tools
-import com.example.thedonsdarling.util.user.HandleUser
+import com.example.thedonsdarling.domain.util.Tools
+import com.example.thedonsdarling.domain.util.user.HandleUser
 import kotlinx.coroutines.launch
 
 @Composable
@@ -98,7 +98,8 @@ fun GameContent(game: GameRoom, gameViewModel: GameViewModel, navController: Nav
 
     /*This constantly updates the player so you always have the player's current hand*/
     var localPlayer by remember {
-        mutableStateOf(HandleUser.getCurrentUser(game.players,
+        mutableStateOf(
+            HandleUser.getCurrentUser(game.players,
             currentUser = HandleUser.returnUser()!!.uid))
     }
 

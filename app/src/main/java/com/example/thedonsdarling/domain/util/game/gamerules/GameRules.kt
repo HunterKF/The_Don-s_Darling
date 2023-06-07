@@ -1,4 +1,4 @@
-package com.example.thedonsdarling.util.game.gamerules
+package com.example.thedonsdarling.domain.util.game.gamerules
 
 import android.content.Context
 import android.util.Log
@@ -9,14 +9,15 @@ import com.example.thedonsdarling.WINNINGTAG
 import com.example.thedonsdarling.domain.GameRoom
 import com.example.thedonsdarling.domain.LogMessage
 import com.example.thedonsdarling.domain.Player
-import com.example.thedonsdarling.util.Tools
+import com.example.thedonsdarling.domain.util.Tools
 import com.example.thedonsdarling.util.game.GameServer
-import com.example.thedonsdarling.util.game.gamerules.CardRules.TheDoctor
+import com.example.thedonsdarling.domain.util.game.gamerules.CardRules.TheDoctor
 
 val GAMERULES_TAG = "GameRules"
 
 class GameRules {
     companion object {
+        val TURNTAG = "TURN"
 
         fun handlePlayedCard(card: Int, player: Player, gameRoom: GameRoom) {
 //            Log.d(TAG, "handlePlayerCard is being called.")
@@ -32,8 +33,6 @@ class GameRules {
                 }
             }
 //            Log.d(TAG, "handlePlayerCard is done")
-
-
         }
 
         private fun onTurn(gameRoom: GameRoom, player: Player): GameRoom {
@@ -141,9 +140,49 @@ class GameRules {
             return gameRoom.deck.deck[card]
         }
 
-        fun endRound(gameRoom: GameRoom, context: Context) {
+        fun endRound(gameRoom: GameRoom): EndRoundResult.FinalResult {
 //            Log.d(TAG, "endRound is being called")
 
+            val winningGame = determineWinner(gameRoom)
+            val logMessage = LogMessage()
+            var endRoundType: EndRoundResult = EndRoundResult.RoundIsOverWinner
+            when (winningGame.type) {
+                is DetermineWinnerResult.Winner -> {
+                    endRoundType = EndRoundResult.RoundIsOverWinner
+                }
+                is DetermineWinnerResult.Tie -> {
+                    endRoundType = EndRoundResult.RoundIsOverTie
+
+                }
+            }
+            winningGame.gameRoom.roundOver = true
+            val gameWinner = checkForGameWinner(gameRoom.players, gameRoom.playLimit)
+
+            gameWinner?.let {
+                winningGame.gameRoom.gameOver = true
+                if (winningGame.gameRoom.gameOver && winningGame.gameRoom.roundOver) {
+                    return EndRoundResult.FinalResult(
+                        winningGame.gameRoom,
+                        type = EndRoundResult.GameIsOver,
+                        winningGame.remainingPlayers
+                    )
+//                    Log.d(TAG, "The game should be over! The winner is: ${gameWinner.nickName}")
+                }
+            }
+            return EndRoundResult.FinalResult(
+                gameRoom = winningGame.gameRoom,
+                endRoundType,
+                remainingPlayers = winningGame.remainingPlayers
+            )
+            /*gameRoom.gameLog.add(logMessage)
+
+            */
+//            Log.d(TAG, "endRound is done")
+        }
+
+        private fun determineWinner(
+            gameRoom: GameRoom,
+        ): DetermineWinnerResult.WinningGame {
             val players = gameRoom.players
 
 
@@ -151,6 +190,7 @@ class GameRules {
                 it.isAlive
             }
             var remainingPlayers = arrayListOf<Player>()
+            var endResult: DetermineWinnerResult = DetermineWinnerResult.Winner
             val logMessage = LogMessage.createLogMessage(
                 message = "",
                 toastMessage = null,
@@ -168,18 +208,10 @@ class GameRules {
                     }
                 }
                 if (remainingPlayers.size == 1) {
-                    val roundWinner = remainingPlayers.first()
-                    logMessage.message = context.getString(R.string.round_over_winner_message, roundWinner.nickName)
-                    logMessage.uid = roundWinner.uid
+                    endResult = DetermineWinnerResult.Winner
                 } else {
 
-
-                    var message = "Appears to have been a tie. "
-                    for (player in remainingPlayers) {
-                        message += context.getString(R.string.round_over_tie_winner_message)
-                    }
-                    message = message.substring(0, message.length -5) + "."
-                    logMessage.message = message
+                    endResult = DetermineWinnerResult.Tie
                 }
                 gameRoom.players = players
             } else if (alivePlayers.size == 1) {
@@ -191,25 +223,17 @@ class GameRules {
 
                     }
                 }
-                val roundWinner = remainingPlayers.first()
-                logMessage.message = context.getString(R.string.round_over_winner_message, roundWinner.nickName)
-                logMessage.uid = roundWinner.uid
                 gameRoom.players = players
+                endResult = DetermineWinnerResult.Winner
             }
-            gameRoom.roundOver = true
-            val winner = checkForWinner(gameRoom.players, gameRoom.playLimit)
+            val winner = gameRoom.players.first { it.isWinner }
 
-            winner?.let {
-                gameRoom.gameOver = true
-                if (gameRoom.gameOver && gameRoom.roundOver) {
-                    logMessage.message = context.getString(R.string.game_over_winner_message, winner.nickName)
-//                    Log.d(TAG, "The game should be over! The winner is: ${winner.nickName}")
-                }
-            }
-            gameRoom.gameLog.add(logMessage)
-
-            GameServer.updateGame(gameRoom)
-//            Log.d(TAG, "endRound is done")
+            return DetermineWinnerResult.WinningGame(
+                gameRoom = gameRoom,
+                winner = winner,
+                type = endResult,
+                remainingPlayers = remainingPlayers
+            )
         }
 
         private fun winningHand(players: List<Player>): List<Player> {
@@ -259,7 +283,7 @@ class GameRules {
         }
 
 
-        private fun checkForWinner(players: List<Player>, playLimit: Int): Player? {
+        private fun checkForGameWinner(players: List<Player>, playLimit: Int): Player? {
 //            Log.d(TAG, "checkForWinner is being called")
 
             val filterArray = players.filter {
@@ -298,13 +322,18 @@ class GameRules {
                 updatedGameRoom.deckClear = true
             }
             if (!updatedGameRoom.gameOver && !updatedGameRoom.roundOver) {
-                val changedTurn = changeGameTurn(turn = updatedGameRoom.turn,
+                val changedTurn = changeGameTurn(
+                    turn = updatedGameRoom.turn,
                     size = updatedGameRoom.players.size,
-                    players = updatedGameRoom.players)
-                updatedGameRoom.turn = changeGameTurn(turn = updatedGameRoom.turn,
+                    players = updatedGameRoom.players
+                )
+                updatedGameRoom.turn = changeGameTurn(
+                    turn = updatedGameRoom.turn,
                     size = updatedGameRoom.players.size,
-                    players = updatedGameRoom.players)
-                updatedGameRoom.players = changePlayerTurn(gameRoom = updatedGameRoom, changedTurn = changedTurn)
+                    players = updatedGameRoom.players
+                )
+                updatedGameRoom.players =
+                    changePlayerTurn(gameRoom = updatedGameRoom, changedTurn = changedTurn)
             }
             updatedGameRoom.gameLog = GameServer.updateGameLog(updatedGameRoom.gameLog, logMessage)
             if (remainingPlayers.size != 1) {
@@ -361,7 +390,7 @@ class GameRules {
 
         fun dealCards(gameRoom: GameRoom): GameRoom {
 //            Log.d(TAG, "dealCards is being called")
-
+println("DEAL CARDS")
             val size = mutableStateOf(gameRoom.deck.deck.size)
             gameRoom.players.forEach { player ->
 //                Log.d("dealCards", "deck size: ${size.value} ")
@@ -409,8 +438,8 @@ class GameRules {
             return gameRoom
         }
 
-        private fun launchOnTurn(
-            game: GameRoom
+        fun launchOnTurn(
+            game: GameRoom,
         ): GameRoom {
             var currentPlayer = Player()
             game.players.forEach {
@@ -422,7 +451,7 @@ class GameRules {
                 if (currentPlayer.uid == player.uid) {
                     if (player.turn && player.hand.size < 2 && player.isAlive && !player.turnInProgress) {
 //                        Log.d("LaunchedEffect", "Matching player has been found: ${player.nickName}")
-                        onTurn(
+                        return onTurn(
                             gameRoom = game,
                             player = player
                         )
@@ -435,4 +464,26 @@ class GameRules {
 
 
     }
+}
+
+sealed class DetermineWinnerResult {
+    object Winner : DetermineWinnerResult()
+    object Tie : DetermineWinnerResult()
+    data class WinningGame(
+        val gameRoom: GameRoom,
+        val winner: Player,
+        val type: DetermineWinnerResult = Winner,
+        val remainingPlayers: ArrayList<Player>,
+    )
+}
+
+sealed class EndRoundResult {
+    object RoundIsOverWinner : EndRoundResult()
+    object RoundIsOverTie : EndRoundResult()
+    object GameIsOver : EndRoundResult()
+    data class FinalResult(
+        val gameRoom: GameRoom,
+        val type: EndRoundResult = RoundIsOverWinner,
+        val remainingPlayers: ArrayList<Player>,
+    )
 }

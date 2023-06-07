@@ -113,7 +113,7 @@ fun HostPlayer(navController: NavHostController, createRoomViewModel: CreateRoom
                     ),
                     placeholder = {
                         Text(
-                            stringResource(id = R.string.enter_room_code),
+                            stringResource(id = R.string.enter_room_name),
 
                             fontSize = 16.sp,
                         )
