@@ -1,8 +1,8 @@
 package com.example.thedonsdarling.domain.repository
 
-import com.example.thedonsdarling.domain.models.FirestoreUser
-import com.example.thedonsdarling.domain.models.GameRoom
-import com.example.thedonsdarling.domain.models.Player
+import android.content.Context
+import androidx.compose.runtime.MutableState
+import com.example.thedonsdarling.domain.models.*
 import com.google.firebase.auth.FirebaseUser
 import kotlinx.coroutines.flow.Flow
 
@@ -14,11 +14,38 @@ interface FireStoreRepository {
         roomNickname: String,
         players: List<Player>,
     )
+
     suspend fun deleteUserGameRoomForLocal(
         roomCode: String,
         roomNickname: String,
         player: Player,
     )
-    suspend fun observeMyGames(currentUser: FirebaseUser): Flow<FirestoreUser>
 
+    suspend fun observeMyGames(currentUser: FirebaseUser): Flow<FirestoreUser>
+    suspend fun deleteRoomFromFireStore(gameRoom: GameRoom)
+    suspend fun removePlayerFromGame(roomCode: String, player: Player)
+    suspend fun removeSingleGameFromPlayerJoinedList(
+        roomCode: String,
+        player: Player,
+        roomNickname: String,
+    )
+
+    suspend fun removeSingleGameFromAllPlayersJoinedGames(
+        roomCode: String,
+        roomNickname: String,
+        players: List<Player>,
+    )
+
+    suspend fun setGameInDB_update(gameRoom: GameRoom)
+
+    suspend fun subscribeToRealtimeUpdates(roomCode: String): Flow<GameRoom>
+
+    suspend fun checkGame(
+        roomCode: String
+    ): CheckGameResult
+
+    suspend fun joinGame(roomCode: String, player: Player) : JoinGameResult
+
+    suspend fun updatePlayers(gameRoom: GameRoom, uid: String)
+    suspend fun sendMessage(gameRoom: GameRoom, logMessage: LogMessage)
 }

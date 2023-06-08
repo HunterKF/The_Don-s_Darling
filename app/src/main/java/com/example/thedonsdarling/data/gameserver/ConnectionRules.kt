@@ -1,3 +1,4 @@
+/*
 package com.example.thedonsdarling.data.gameserver
 
 import android.content.Context
@@ -13,7 +14,8 @@ import com.google.firebase.firestore.FieldValue
 
 class ConnectionRules {
     companion object {
-        fun checkGame(
+        */
+/*fun checkGame(
             roomCode: String,
             roomFound: MutableState<Boolean>,
             context: Context,
@@ -37,10 +39,12 @@ class ConnectionRules {
                     }
                 }
             return roomFound.value
-        }
+        }*//*
+
 
         fun joinGame(roomCode: String, player: Player, context: Context, onSuccess: () -> Unit) {
-            dbGame.document(roomCode).get()
+            */
+/*dbGame.document(roomCode).get()
                 .addOnSuccessListener { result ->
                     if (result.data == null) {
                         Toast.makeText(context,
@@ -71,10 +75,13 @@ class ConnectionRules {
                     Toast.makeText(context,
                         context.getText(R.string.check_game_not_found),
                         Toast.LENGTH_SHORT).show()
-                }
+                }*//*
+
         }
 
         fun leaveGame(roomCode: String, player: Player) {
+            */
+/*Renamed to RemovePlayerFromGame
             dbGame.document(roomCode)
                 .update("players", FieldValue.arrayRemove(player))
                 .addOnSuccessListener {
@@ -82,9 +89,11 @@ class ConnectionRules {
                 }
                 .addOnFailureListener {
                     Log.d(TAG, "Failed to leave game! ${it.localizedMessage}")
-                }
+                }*//*
+
 
         }
     }
 
 }
+*/

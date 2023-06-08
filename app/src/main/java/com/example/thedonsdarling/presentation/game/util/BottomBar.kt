@@ -154,7 +154,8 @@ fun BottomBar(
                     gameViewModel.onPlay(
                         card = currentCard,
                         player = player,
-                        gameRoom = game
+                        gameRoom = game,
+                        context = context
                     )
                     cardTitle = ""
                     cardDescription = ""

@@ -30,7 +30,6 @@ import com.example.thedonsdarling.presentation.game.GameViewModel
 import com.example.thedonsdarling.ui.theme.Black
 import com.example.thedonsdarling.ui.theme.Navy
 import com.example.thedonsdarling.ui.theme.WarmRed
-import com.example.thedonsdarling.domain.util.user.HandleUser
 import com.example.thedonsdarling.util.UiEvent
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.auth
@@ -47,7 +46,7 @@ fun HomeScreen(
     val context = LocalContext.current
     LaunchedEffect(key1 = Unit, block = {
         if (currentUser != null) {
-            gameViewModel.onUiEvent(UiEvent.HandleUser)
+            gameViewModel.onUiEvent(UiEvent.CreateUserPlayer)
         }
     })
     HomeContent(

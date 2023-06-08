@@ -1,3 +1,4 @@
+/*
 package com.example.thedonsdarling.util.game
 
 import com.example.thedonsdarling.dbGame
@@ -13,7 +14,8 @@ import kotlin.collections.ArrayList
 class GameServer {
     companion object {
 
-        suspend fun subscribeToRealtimeUpdates(roomCode: String): Flow<GameRoom> {
+        */
+/*suspend fun subscribeToRealtimeUpdates(roomCode: String): Flow<GameRoom> {
             return callbackFlow {
                 var room = GameRoom()
 //                Log.d(TAG, "RoomCode is: $roomCode")
@@ -35,22 +37,24 @@ class GameServer {
                     listener.remove()
                 }
             }
-        }
+        }*//*
 
-        fun updateGameLog(
+
+       */
+/* fun updateGameLog(
             logs: ArrayList<LogMessage>,
             logMessage: LogMessage,
         ): ArrayList<LogMessage> {
-//            Log.d(TAG, "updateGameLog is being called")
             logs.add(logMessage)
-//            Log.d(TAG, "updateGameLog is done")
 
             return logs
         }
+*//*
 
         fun sendMessage(gameRoom: GameRoom, logMessage: LogMessage) {
 //            Log.d(TAG, "sendMessage is being called")
-            dbGame.document(gameRoom.roomCode)
+           */
+/* dbGame.document(gameRoom.roomCode)
                 .update("gameLog", FieldValue.arrayUnion(logMessage))
                 .addOnSuccessListener {
 //                    Log.d(TAG, "Successfully added player!")
@@ -58,11 +62,13 @@ class GameServer {
                 }
                 .addOnFailureListener {
 //                    Log.d(TAG, "Failed to add player! ${it.localizedMessage}")
-                }
+                }*//*
+
 //            Log.d(TAG, "sendMessage is done")
 
         }
-        private fun updateUnreadStatusForAll(gameRoom: GameRoom, uid: String) {
+        */
+/*private fun updateUnreadStatusForAll(gameRoom: GameRoom, uid: String) {
             gameRoom.players.forEach {
                 if (it.uid != uid) {
                     it.unread = true
@@ -77,8 +83,10 @@ class GameServer {
 //                    Log.d(TAG, "Failed to update player's unread status. ${it.localizedMessage}")
 
                 }
-        }
-        fun updateUnreadStatusForLocal(gameRoom: GameRoom, uid: String) {
+        }*//*
+
+        */
+/*fun updateUnreadStatusForLocal(gameRoom: GameRoom, uid: String) {
             gameRoom.players.forEach {
                 if (it.uid == uid) {
                     it.unread = false
@@ -93,23 +101,36 @@ class GameServer {
 //                    Log.d(TAG, "Failed to update player's unread status. ${it.localizedMessage}")
 
                 }
-        }
-        fun deleteRoom(game: GameRoom) {
+        }*//*
+
+        */
+/*fun deleteRoom(game: GameRoom) {
+            *//*
+*/
+/*This code should be done the in the VM or somewhere else, not here.
             game.deleteRoom = true
-            updateGame(game)
-            dbGame.document(game.roomCode)
+            updateGame(game)*//*
+*/
+/*
+            *//*
+*/
+/*dbGame.document(game.roomCode)
                 .get()
                 .addOnSuccessListener { result ->
                     result.reference.delete()
                 }
                 .addOnFailureListener {
                     println("Failure...")
-                }
-        }
-        fun startNewRound(gameRoom: GameRoom) {
+                }*//*
+*/
+/*
+        }*//*
+
+        fun startNewRound(gameRoom: GameRoom): GameRoom {
 //            Log.d(TAG, "startNewGame is being called")
 
-            val turn = (1..gameRoom.players.size).shuffled().random()
+            */
+/*val turn = (1..gameRoom.players.size).shuffled().random()
             gameRoom.players.forEach {
                 it.hand.clear()
                 it.isWinner = false
@@ -146,11 +167,15 @@ class GameServer {
 
             game.turn = turn
             game = GameRules.dealCards(game)
-            updateGame(game)
+            //TODO - Make this return the new game and just call update from VM
+            return game*//*
+
+        //            updateGame(game)
 //            Log.d(TAG, "startNewGame is done")
 
-        }
-        fun startNewGame(gameRoom: GameRoom) {
+//        }
+        */
+/*fun startNewGame(gameRoom: GameRoom) {
 //            Log.d(TAG, "startNewGame is being called")
 
             val turn = (1..gameRoom.players.size).shuffled().random()
@@ -191,27 +216,38 @@ class GameServer {
 
             game.turn = turn
             game = GameRules.dealCards(game)
-            updateGame(game)
+//            updateGame(game)
 //            Log.d(TAG, "startNewGame is done")
 
-        }
-         fun updateGame(gameRoom: GameRoom) {
+        }*//*
+
+         */
+/*fun updateGame(gameRoom: GameRoom) {
 //            Log.d(TAG, "updateGame is being called")
 //            Log.d(TAG, "updateGame is done")
 
-
-            dbGame.document(gameRoom.roomCode).set(gameRoom)
+*//*
+*/
+/*TODO - It has been moved, but nothing has been updated in the code yet to reflect the movement.*//*
+*/
+/*
+            *//*
+*/
+/*dbGame.document(gameRoom.roomCode).set(gameRoom)
                 .addOnSuccessListener {
 //                    Log.d(GAMERULES_TAG, "Successfully updated game room")
                 }
                 .addOnFailureListener {
 //                    Log.d(GAMERULES_TAG, "Failed to update room: ${it.localizedMessage}")
-                }
+                }*//*
+*/
+/*
 //            Log.d(TAG, "updateGame is done")
 
         }
 
 
-    }
+    }*//*
 
-}
+
+}}}*/

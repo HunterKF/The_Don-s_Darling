@@ -38,8 +38,6 @@ import com.example.thedonsdarling.presentation.settings.util.EndGameAlert
 import com.example.thedonsdarling.presentation.settings.util.ReportPlayer
 import com.example.thedonsdarling.presentation.util.OutlinedButton
 import com.example.thedonsdarling.ui.theme.*
-import com.example.thedonsdarling.util.game.GameServer
-import com.example.thedonsdarling.data.gameserver.ConnectionRules
 import com.example.thedonsdarling.domain.util.user.HandleUser
 import com.example.thedonsdarling.util.UiEvent
 
@@ -108,7 +106,8 @@ fun Settings(game: GameRoom, gameViewModel: GameViewModel, onExit: () -> Unit) {
                         modifier = Modifier.weight(1f)
                     )
                     OutlinedButton(icon = Icons.Rounded.Refresh) {
-                        GameServer.startNewRound(gameRoom = game)
+                        gameViewModel.onUiEvent(UiEvent.StartRound(game))
+//                        GameServer.startNewRound(gameRoom = game)
                     }
                 }
                 Spacer(modifier = Modifier.height(16.dp))
@@ -267,8 +266,7 @@ fun Settings(game: GameRoom, gameViewModel: GameViewModel, onExit: () -> Unit) {
                         modifier = Modifier.weight(1f)
                     )
                     OutlinedButton(drawable = R.drawable.exit) {
-                        gameViewModel.onUiEvent(UiEvent.ExitGame)
-
+                        gameViewModel.onUiEvent(UiEvent.ExitGame(game))
                         onExit()
                     }
                 }
@@ -282,12 +280,13 @@ fun Settings(game: GameRoom, gameViewModel: GameViewModel, onExit: () -> Unit) {
                 EndGameAlert(
                     onCancel = { endGameAlert = false },
                     onClick = {
-                        HandleUser.deleteUserGameRoomForAll(
+                        gameViewModel.onUiEvent(UiEvent.DeleteRoom(game))
+                        /*HandleUser.deleteUserGameRoomForAll(
                             roomCode = game.roomCode,
                             roomNickname = game.roomNickname,
                             players = game.players
                         )
-                        GameServer.deleteRoom(game)
+                        GameServer.deleteRoom(game)*/
                     }
                 )
             }
@@ -296,7 +295,8 @@ fun Settings(game: GameRoom, gameViewModel: GameViewModel, onExit: () -> Unit) {
             Popup(popupPositionProvider = WindowCenterOffsetPositionProvider(),
                 onDismissRequest = { reportPlayerAlert = false }) {
                 ReportPlayer(
-                    player = reportPlayer.value) {
+                    player = reportPlayer.value
+                ) {
                     reportPlayerAlert = false
                 }
             }

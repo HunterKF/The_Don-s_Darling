@@ -1,48 +1,44 @@
 package com.example.thedonsdarling.presentation.game
 
 import android.app.Application
+import android.content.Context
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
-import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.example.thedonsdarling.R
 import com.example.thedonsdarling.Screen
 import com.example.thedonsdarling.TAG
-import com.example.thedonsdarling.data.gameserver.ConnectionRules
 import com.example.thedonsdarling.domain.*
 import com.example.thedonsdarling.domain.models.GameRoom
 import com.example.thedonsdarling.domain.models.LogMessage
 import com.example.thedonsdarling.domain.models.Player
-import com.example.thedonsdarling.domain.repository.FireStoreRepository
+import com.example.thedonsdarling.domain.use_cases.UseCases
 import com.example.thedonsdarling.domain.util.game.gamerules.CardRules.*
 import com.example.thedonsdarling.domain.util.Tools
-import com.example.thedonsdarling.util.game.GameServer
 import com.example.thedonsdarling.domain.util.game.gamerules.EndRoundResult
 import com.example.thedonsdarling.domain.util.game.gamerules.GameRules
-import com.example.thedonsdarling.domain.util.user.HandleUser
 import com.example.thedonsdarling.util.UiEvent
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 
-class GameViewModel(
-    application: Application,
-    val fireStoreRepository: FireStoreRepository
-) : AndroidViewModel(application) {
+@HiltViewModel
+class GameViewModel @Inject constructor(
+    private val useCases: UseCases,
+) : ViewModel() {
 
     private val loadingState = MutableStateFlow<GameState>(GameState.Loading)
 
     val state = loadingState.asStateFlow()
-
-    private val context = getApplication<Application>().applicationContext
-
 
     val roomCode = mutableStateOf("1234")
     val currentUser: FirebaseUser? = Firebase.auth.currentUser
@@ -65,136 +61,182 @@ class GameViewModel(
 
 
     val listOfPlayers = mutableStateOf(listOf(Player()))
-    fun getSomeString(string: Int, variableString1: String?, variableString2: String?): String {
-        var returningString = ""
-        if (variableString1 != null && variableString2 == null) {
-            returningString = getApplication<Application>().resources.getString(string)
-        } else if (variableString1 != null && variableString2 != null) {
-            returningString = getApplication<Application>().resources.getString(string)
-        } else {
-            getApplication<Application>().resources.getString(string)
-        }
-        return returningString
-    }
 
-    fun onPlay(card: Int, gameRoom: GameRoom, player: Player) {
+    fun onPlay(card: Int, gameRoom: GameRoom, player: Player, context: Context) {
         playedCard.value = card
         when (playedCard.value) {
             1 -> {
                 selectPlayerAlert.value = true
-                GameRules.handlePlayedCard(
-                    card = playedCard.value,
-                    player = player,
-                    gameRoom = gameRoom
-                )
+                viewModelScope.launch(Dispatchers.IO) {
+                    useCases.setGameInDB(
+                        GameRules.handlePlayedCard(
+                            card = playedCard.value,
+                            player = player,
+                            gameRoom = gameRoom
+                        )
+                    )
+                }
+
+
             }
             2 -> {
                 selectPlayerAlert.value = true
-                GameRules.handlePlayedCard(
-                    card = playedCard.value,
-                    player = player,
-                    gameRoom = gameRoom
-                )
+                viewModelScope.launch(Dispatchers.IO) {
+                    useCases.setGameInDB(
+                        GameRules.handlePlayedCard(
+                            card = playedCard.value,
+                            player = player,
+                            gameRoom = gameRoom
+                        )
+                    )
+                }
             }
             3 -> {
                 selectPlayerAlert.value = true
-                GameRules.handlePlayedCard(
-                    card = playedCard.value,
-                    player = player,
-                    gameRoom = gameRoom
-                )
+                viewModelScope.launch(Dispatchers.IO) {
+                    useCases.setGameInDB(
+                        GameRules.handlePlayedCard(
+                            card = playedCard.value,
+                            player = player,
+                            gameRoom = gameRoom
+                        )
+                    )
+                }
             }
             4 -> {
-                GameRules.handlePlayedCard(
-                    card = playedCard.value,
-                    player = player,
-                    gameRoom = gameRoom
-                )
-                var message = ""
-                var toastMessage = ""
-                gameRoom.players.forEach {
-                    if (it.uid == localPlayer.value.uid) {
-                        it.protected = TheDoctor.toggleProtection(it)
-                        message = context.getString(R.string.card_doctor_message, it.nickName)
-                        toastMessage =
-                            context.getString(R.string.card_doctor_toast_message, it.nickName)
-                    }
-                }
-                val logMessage =
-                    LogMessage.createLogMessage(
-                        message = message,
-                        toastMessage = toastMessage,
-                        type = "gameLog",
-                        uid = null
+                viewModelScope.launch(Dispatchers.IO) {
+                    useCases.setGameInDB(
+                        GameRules.handlePlayedCard(
+                            card = playedCard.value,
+                            player = player,
+                            gameRoom = gameRoom
+                        )
                     )
+                    var message = ""
+                    var toastMessage = ""
+                    gameRoom.players.forEach {
+                        if (it.uid == localPlayer.value.uid) {
+                            it.protected = TheDoctor.toggleProtection(it)
+                            message = context.getString(R.string.card_doctor_message, it.nickName)
+                            toastMessage =
+                                context.getString(R.string.card_doctor_toast_message, it.nickName)
+                        }
+                    }
+                    val logMessage =
+                        LogMessage.createLogMessage(
+                            message = message,
+                            toastMessage = toastMessage,
+                            type = "gameLog",
+                            uid = null
+                        )
+                    useCases.setGameInDB(
+                        GameRules.onEnd(gameRoom = gameRoom, logMessage = logMessage)
+                    )
+                }
 
-                GameRules.onEnd(gameRoom = gameRoom, logMessage = logMessage)
+
+                viewModelScope.launch(Dispatchers.IO) {
+
+                }
+
             }
             5 -> {
                 selectPlayerAlert.value = true
-                GameRules.handlePlayedCard(
-                    card = playedCard.value,
-                    player = player,
-                    gameRoom = gameRoom
-                )
+                viewModelScope.launch(Dispatchers.IO) {
+                    useCases.setGameInDB(
+                        GameRules.handlePlayedCard(
+                            card = playedCard.value,
+                            player = player,
+                            gameRoom = gameRoom
+                        )
+                    )
+                }
             }
             6 -> {
                 selectPlayerAlert.value = true
-                GameRules.handlePlayedCard(
-                    card = playedCard.value,
-                    player = player,
-                    gameRoom = gameRoom
-                )
+                viewModelScope.launch(Dispatchers.IO) {
+                    useCases.setGameInDB(
+                        GameRules.handlePlayedCard(
+                            card = playedCard.value,
+                            player = player,
+                            gameRoom = gameRoom
+                        )
+                    )
+                }
             }
             7 -> {
-                GameRules.handlePlayedCard(
-                    card = playedCard.value,
-                    player = player,
-                    gameRoom = gameRoom
-                )
-                val logMessage =
-                    LogMessage.createLogMessage(
-                        message = context.getString(
-                            R.string.card_courtesan_message,
-                            localPlayer.value.nickName
-                        ),
-                        toastMessage = context.getString(
-                            R.string.card_courtesan_toast_message,
-                            localPlayer.value.nickName
-                        ),
-                        type = "gameLog",
-                        uid = null
+                viewModelScope.launch(Dispatchers.IO) {
+                    useCases.setGameInDB(
+                        GameRules.handlePlayedCard(
+                            card = playedCard.value,
+                            player = player,
+                            gameRoom = gameRoom
+                        )
                     )
-                GameRules.onEnd(gameRoom = gameRoom, logMessage = logMessage)
+                    val logMessage =
+                        LogMessage.createLogMessage(
+                            message = context.getString(
+                                R.string.card_courtesan_message,
+                                localPlayer.value.nickName
+                            ),
+                            toastMessage = context.getString(
+                                R.string.card_courtesan_toast_message,
+                                localPlayer.value.nickName
+                            ),
+                            type = "gameLog",
+                            uid = null
+                        )
+                    useCases.setGameInDB(
+                        GameRules.onEnd(gameRoom = gameRoom, logMessage = logMessage)
+                    )
+                }
+
+//                GameRules.onEnd(gameRoom = gameRoom, logMessage = logMessage)
             }
             8 -> {
-                val updatedGameRoom = GameRules.eliminatePlayer(
-                    gameRoom = gameRoom,
-                    player = player
-                )
-                GameRules.handlePlayedCard(
-                    card = playedCard.value,
-                    player = player,
-                    gameRoom = updatedGameRoom
-                )
-                val result = Darling.eliminatePlayer(gameRoom, player)
-                val logMessage =
-                    LogMessage.createLogMessage(
-                        message = context.getString(R.string.card_darling_message, player.nickName),
-                        toastMessage = context.getString(
-                            R.string.card_darling_toast_message,
-                            player.nickName
-                        ),
-                        type = "gameLog",
-                        uid = null
+
+                viewModelScope.launch(Dispatchers.IO) {
+                    val updatedGameRoom = GameRules.eliminatePlayer(
+                        gameRoom = gameRoom,
+                        player = player
                     )
-                result.game?.let { GameRules.onEnd(gameRoom = it, logMessage) }
+                    useCases.setGameInDB(
+                        GameRules.handlePlayedCard(
+                            card = playedCard.value,
+                            player = player,
+                            gameRoom = updatedGameRoom
+                        )
+                    )
+                    val result = Darling.eliminatePlayer(gameRoom, player)
+                    val logMessage =
+                        LogMessage.createLogMessage(
+                            message = context.getString(
+                                R.string.card_darling_message,
+                                player.nickName
+                            ),
+                            toastMessage = context.getString(
+                                R.string.card_darling_toast_message,
+                                player.nickName
+                            ),
+                            type = "gameLog",
+                            uid = null
+                        )
+                    result.game?.let {
+                        useCases.setGameInDB(
+                            GameRules.onEnd(
+                                gameRoom = it,
+                                logMessage
+                            )
+                        )
+                    }
+
+                }
 
             }
         }
     }
 
-    fun onSelectPlayer(selectedPlayer: Player, gameRoom: GameRoom) {
+    fun onSelectPlayer(selectedPlayer: Player, gameRoom: GameRoom, context: Context) {
         val players = gameRoom.players
         this.selectedPlayer.value = selectedPlayer
         gameRoom.players.forEach {
@@ -209,22 +251,30 @@ class GameViewModel(
                     guessCardAlert.value = true
                 }
                 2 -> {
-                    revealCardAlert.value = true
-                    emptyCard.value = selectedPlayer.hand.first()
-                    val privateEyeMessage = context.getString(
-                        R.string.card_private_eye_message,
-                        localPlayer.value.nickName,
-                        selectedPlayer.nickName
-                    )
-                    val logMessage =
-                        LogMessage.createLogMessage(
-                            message = privateEyeMessage,
-                            toastMessage = privateEyeMessage,
-                            type = "gameLog",
-                            uid = null
+                    viewModelScope.launch(Dispatchers.IO) {
+                        revealCardAlert.value = true
+                        emptyCard.value = selectedPlayer.hand.first()
+                        val privateEyeMessage = context.getString(
+                            R.string.card_private_eye_message,
+                            localPlayer.value.nickName,
+                            selectedPlayer.nickName
                         )
+                        val logMessage =
+                            LogMessage.createLogMessage(
+                                message = privateEyeMessage,
+                                toastMessage = privateEyeMessage,
+                                type = "gameLog",
+                                uid = null
+                            )
 
-                    GameRules.onEnd(gameRoom = gameRoom, logMessage = logMessage)
+                        useCases.setGameInDB(
+                            GameRules.onEnd(
+                                gameRoom = gameRoom,
+                                logMessage
+                            )
+                        )
+                    }
+
 
                 }
                 3 -> {
@@ -289,9 +339,16 @@ class GameViewModel(
                             uid = null
                         )
 
+
                     updateResult(result)
 
-                    result.game?.let { GameRules.onEnd(gameRoom = it, logMessage = logMessage) }
+                    viewModelScope.launch(Dispatchers.IO) {
+                        result.game?.let {
+                            useCases.setGameInDB(
+                                GameRules.onEnd(gameRoom = it, logMessage = logMessage)
+                            )
+                        }
+                    }
                 }
                 5 -> {
                     val result = Wiseguy.discardAndDraw(
@@ -356,7 +413,11 @@ class GameViewModel(
                     val updatedGame = result.game
 
                     if (updatedGame != null) {
-                        GameRules.onEnd(gameRoom = updatedGame, logMessage = logMessage)
+                        viewModelScope.launch(Dispatchers.IO) {
+                            useCases.setGameInDB(
+                                GameRules.onEnd(gameRoom = updatedGame, logMessage = logMessage)
+                            )
+                        }
                     }
 
                 }
@@ -389,7 +450,11 @@ class GameViewModel(
 
                     gameRoom.players = result.players!!
 
-                    GameRules.onEnd(gameRoom = gameRoom, logMessage)
+                    viewModelScope.launch(Dispatchers.IO) {
+                        useCases.setGameInDB(
+                            GameRules.onEnd(gameRoom = gameRoom, logMessage = logMessage)
+                        )
+                    }
 
                 }
             }
@@ -414,13 +479,16 @@ class GameViewModel(
                 type = "gameLog",
                 uid = null
             )
-
-            GameRules.onEnd(gameRoom = gameRoom, logMessage = logMessage)
+            viewModelScope.launch(Dispatchers.IO) {
+                useCases.setGameInDB(
+                    GameRules.onEnd(gameRoom = gameRoom, logMessage = logMessage)
+                )
+            }
         }
         selectPlayerAlert.value = false
     }
 
-    fun onGuess(card: Int, gameRoom: GameRoom) {
+    fun onGuess(card: Int, gameRoom: GameRoom, context: Context) {
         guessCardAlert.value = false
         emptyCard.value = card
         val result = Policeman.returnResult(
@@ -474,42 +542,115 @@ class GameViewModel(
         )
 
         updateResult(result)
-
-        GameRules.onEnd(gameRoom = gameRoom, logMessage)
+        viewModelScope.launch(Dispatchers.IO) {
+            useCases.setGameInDB(
+                GameRules.onEnd(gameRoom = gameRoom, logMessage = logMessage)
+            )
+        }
 
     }
 
-    fun onUiEvent(uiEvent: UiEvent) {
-        when (uiEvent) {
-            is UiEvent.HandleUser -> {
+    fun onUiEvent(event: UiEvent) {
+        when (event) {
+            is UiEvent.InitialStart -> {
+                val logMessage = LogMessage.createLogMessage(
+                    event.context.getString(R.string.start_game_message),
+                    toastMessage = null,
+                    null,
+                    "serverMessage"
+                )
+                val newGame = useCases.startGame(gameRoom = event.gameRoom, logMessage = logMessage)
                 viewModelScope.launch(Dispatchers.IO) {
-                    currentUser?.let { fireStoreRepository.createUserPlayer(it.uid) }
+
+                    useCases.setGameInDB(newGame)
+                }
+                event.onNavigate()
+            }
+            is UiEvent.CreateUserPlayer -> {
+                viewModelScope.launch(Dispatchers.IO) {
+                    currentUser?.let { useCases.createUserPlayer(it.uid) }
                 }
             }
             is UiEvent.DeleteRoom -> {
                 viewModelScope.launch(Dispatchers.IO) {
-                    fireStoreRepository.del
-                    GameServer.deleteRoom(loaded.gameRoom)
-                    HandleUser.deleteUserGameRoomForAll(
-                        loaded.gameRoom.roomCode,
-                        loaded.gameRoom.roomNickname,
-                        loaded.gameRoom.players
+                    event.gameRoom.deleteRoom = true
+                    useCases.setGameInDB(event.gameRoom)
+                    useCases.deleteRoomFromFirestore
+                    useCases.deleteUserGameRoomForAll(
+                        event.gameRoom.roomCode,
+                        event.gameRoom.roomNickname,
+                        event.gameRoom.players
                     )
                 }
             }
             is UiEvent.ExitGame -> {
-                viewModelScope.launch {
-                    fireStoreRepository.deleteUserGameRoomForLocal(roomNickname = roomCode.value, player = localPlayer.value)
+                viewModelScope.launch(Dispatchers.IO) {
+                    useCases.deleteUserGameRoomForLocal(
+                        roomCode.value,
+                        roomNickname = event.gameRoom.roomNickname,
+                        localPlayer.value
+                    )
+                    useCases.removePlayerFromGame(roomCode.value, localPlayer.value)
+                    useCases.deleteUserGameRoomForLocal(
+                        roomCode.value,
+                        event.gameRoom.roomNickname,
+                        player = localPlayer.value
+                    )
                 }
-                ConnectionRules.leaveGame(
-                    roomCode = game.roomCode,
-                    player = gameViewModel.localPlayer.value
-                )
-                HandleUser.deleteUserGameRoomForLocal(
-                    roomCode = game.roomCode,
-                    roomNickname = game.roomNickname,
-                    player = gameViewModel.localPlayer.value
-                )
+            }
+            is UiEvent.ObserveRoom -> {
+                viewModelScope.launch(Dispatchers.IO) {
+                    useCases.subscribeToRealtimeUpdates(roomCode = roomCode.value)
+                }
+            }
+            is UiEvent.EndRound -> {
+                viewModelScope.launch(Dispatchers.IO) {
+                    useCases.setGameInDB(
+                        endRound(
+                            event.alivePlayers,
+                            event.game,
+                            event.playerIsPlaying,
+                            event.context
+                        )
+                    )
+                }
+            }
+            is UiEvent.StartRound -> {
+
+                viewModelScope.launch(Dispatchers.IO) {
+                    useCases.setGameInDB(useCases.startNewRound(gameRoom = event.gameRoom))
+                }
+                endRoundAlert.value = false
+                resultAlert.value = false
+            }
+            is UiEvent.StartNewGame -> {
+                //this happens when a player's wins == win limit.
+                useCases.startNewGame(event.gameRoom)
+                endRoundAlert.value = false
+                resultAlert.value = false
+            }
+            is UiEvent.UpdateUnreadStatus -> {
+                viewModelScope.launch(Dispatchers.IO) {
+                    currentUser?.let {
+                        useCases.updateUnreadStatusForLocal(
+                            gameRoom = event.gameRoom,
+                            it.uid
+                        )
+                    }
+
+                }
+            }
+            is UiEvent.SendMessage -> {
+                viewModelScope.launch(Dispatchers.IO) {
+
+                    useCases.sendMessage(gameRoom = event.gameRoom, logMessage = event.logMessage)
+                    currentUser?.let {
+                        useCases.updateUnreadStatusForAll(
+                            gameRoom = event.gameRoom,
+                            it.uid
+                        )
+                    }
+                }
             }
 
         }
@@ -520,19 +661,19 @@ class GameViewModel(
         resultAlert.value = true
     }
 
-    fun observeRoom() {
-        Log.d(TAG, "Observe room is being called again and again.")
-        viewModelScope.launch {
-            Log.d(TAG, "roomCode in viewModel: ${roomCode.value}")
-            GameServer.subscribeToRealtimeUpdates(roomCode.value).map { gameRoom ->
-                GameState.Loaded(
-                    gameRoom = gameRoom
-                )
-            }.collect {
-                loadingState.emit(it)
-            }
-        }
-    }
+    /* fun observeRoom() {
+         Log.d(TAG, "Observe room is being called again and again.")
+         viewModelScope.launch {
+             Log.d(TAG, "roomCode in viewModel: ${roomCode.value}")
+             GameServer.subscribeToRealtimeUpdates(roomCode.value).map { gameRoom ->
+                 GameState.Loaded(
+                     gameRoom = gameRoom
+                 )
+             }.collect {
+                 loadingState.emit(it)
+             }
+         }
+     }*/
 
     fun removeCurrentPlayer(list: List<Player>): List<Player> {
 
@@ -572,11 +713,6 @@ class GameViewModel(
         }
     }
 
-    fun checkRoundOver(gameRoom: GameRoom) {
-        if (gameRoom.roundOver && !gameRoom.gameOver) {
-            endRoundAlert.value = true
-        }
-    }
 
     fun getPlayerFromGameList(
         game: GameRoom,
@@ -593,9 +729,10 @@ class GameViewModel(
         alivePlayers: List<Player>,
         game: GameRoom,
         playerIsPlaying: Boolean,
-    ) {
+        context: Context,
+    ): GameRoom {
         if (alivePlayers.size == 1 && !game.roundOver && !playerIsPlaying) {
-            Log.d(TAG, "(if) ending game")
+//            Log.d(TAG, "(if) ending game")
             val endGame = GameRules.endRound(gameRoom = game)
             val logMessage = LogMessage.createLogMessage(
                 message = "",
@@ -609,9 +746,10 @@ class GameViewModel(
                 }
             }
             endRoundAlert.value = true
-            logMessage.message = updateLogMessageFromEndGame(endGame, logMessage)
+            logMessage.message = updateLogMessageFromEndGame(endGame, logMessage, context)
             endGame.gameRoom.gameLog.add(logMessage)
-            GameServer.updateGame(endGame.gameRoom)
+            return endGame.gameRoom
+//            GameServer.updateGame(endGame.gameRoom)
         } else if (game.deck.deck.isEmpty() && !playerIsPlaying && !game.roundOver && game.deckClear) {
             Log.d(TAG, "(else-if) ending game")
             val endGame = GameRules.endRound(gameRoom = game)
@@ -628,16 +766,20 @@ class GameViewModel(
                 }
             }
             endRoundAlert.value = true
-            logMessage.message = updateLogMessageFromEndGame(endGame, logMessage)
+            logMessage.message = updateLogMessageFromEndGame(endGame, logMessage, context)
 
             endGame.gameRoom.gameLog.add(logMessage)
-            GameServer.updateGame(endGame.gameRoom)
+            return endGame.gameRoom
+
+//            GameServer.updateGame(endGame.gameRoom)
         }
+        return game
     }
 
     private fun updateLogMessageFromEndGame(
         endGame: EndRoundResult.FinalResult,
         logMessage: LogMessage,
+        context: Context,
     ): String {
         when (endGame.type) {
             is EndRoundResult.RoundIsOverWinner -> {

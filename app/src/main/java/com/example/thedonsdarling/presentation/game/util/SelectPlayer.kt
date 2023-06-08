@@ -172,7 +172,8 @@ fun SelectPlayer(
                 onClick = {
                     gameViewModel.onSelectPlayer(
                         selectedPlayer = selectedPlayer.value,
-                        gameRoom = gameRoom
+                        gameRoom = gameRoom,
+                        context = context
                     )
                 },
                 text = stringResource(R.string.select),

@@ -27,8 +27,7 @@ import com.example.thedonsdarling.presentation.joingame.GameLobbyState
 import com.example.thedonsdarling.presentation.joingame.GameLobbyViewModel
 import com.example.thedonsdarling.presentation.util.RoomPlayerList
 import com.example.thedonsdarling.ui.theme.Black
-import com.example.thedonsdarling.data.gameserver.ConnectionRules
-import com.example.thedonsdarling.domain.util.user.HandleUser
+import com.example.thedonsdarling.util.UiEvent
 
 @Composable
 fun GameLobby(
@@ -59,19 +58,22 @@ fun GameLobby(
                 GameLobbyContent(
                     navController = navController,
                     gameLobbyViewModel = gameLobbyViewModel,
-                    gameRoom = loaded.gameRoom)
+                    gameRoom = loaded.gameRoom
+                )
                 BackHandler() {
-                    ConnectionRules.leaveGame(
+                    gameLobbyViewModel.onUiEvent(UiEvent.LeaveGame(loaded.gameRoom))
+                    /*ConnectionRules.leaveGame(
                         gameLobbyViewModel.roomCode.value,
                         HandleUser.createGamePlayer(
                             gameLobbyViewModel.playerChar.value,
-                            gameLobbyViewModel.playerNickname.value, isHost = false),
+                            gameLobbyViewModel.playerNickname.value, isHost = false
+                        ),
                     )
                     HandleUser.deleteUserGameRoomForAll(
                         loaded.gameRoom.roomCode,
                         loaded.gameRoom.roomNickname,
                         loaded.gameRoom.players
-                    )
+                    )*/
                     navController.navigate(Screen.Home.route)
                 }
             }
@@ -114,7 +116,8 @@ private fun GameLobbyContent(
                         .align(Alignment.TopStart)
                         .padding(4.dp),
                         onClick = {
-                            ConnectionRules.leaveGame(gameRoom.roomCode,
+                            gameLobbyViewModel.onUiEvent(UiEvent.LeaveGame(gameRoom))
+                            /*ConnectionRules.leaveGame(gameRoom.roomCode,
                                 HandleUser.createGamePlayer(avatar = 0,
                                     nickname = "",
                                     isHost = false))
@@ -122,7 +125,7 @@ private fun GameLobbyContent(
                                 gameRoom.roomCode,
                                 gameRoom.roomNickname,
                                 gameRoom.players
-                            )
+                            )*/
                             navController.navigate(Screen.Home.route)
                         }) {
                         Icon(

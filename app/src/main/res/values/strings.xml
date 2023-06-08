@@ -144,4 +144,6 @@
     <string name="settings_title">Settings</string>
     <string name="enter_room_name">Enter room name.</string>
     <string name="game_tie_message">Appears to have been a tie.</string>
+    <string name="unknown_error">"An unknown error occurred. "</string>
+    <string name="successfully_joined_game">Successfully joined game!</string>
 </resources>

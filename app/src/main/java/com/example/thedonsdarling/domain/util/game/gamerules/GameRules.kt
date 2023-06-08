@@ -5,7 +5,6 @@ import com.example.thedonsdarling.domain.models.GameRoom
 import com.example.thedonsdarling.domain.models.LogMessage
 import com.example.thedonsdarling.domain.models.Player
 import com.example.thedonsdarling.domain.util.Tools
-import com.example.thedonsdarling.util.game.GameServer
 import com.example.thedonsdarling.domain.util.game.gamerules.CardRules.TheDoctor
 
 val GAMERULES_TAG = "GameRules"
@@ -13,7 +12,7 @@ val GAMERULES_TAG = "GameRules"
 class GameRules {
     companion object {
 
-        fun handlePlayedCard(card: Int, player: Player, gameRoom: GameRoom) {
+        fun handlePlayedCard(card: Int, player: Player, gameRoom: GameRoom): GameRoom {
 //            Log.d(TAG, "handlePlayerCard is being called.")
 
             gameRoom.players.forEach {
@@ -23,9 +22,10 @@ class GameRules {
                     it.hand.remove(card)
                     gameRoom.deck.discardDeck = addToDiscardPile(card, gameRoom = gameRoom)
 
-                    GameServer.updateGame(gameRoom = gameRoom)
+//                    GameServer.updateGame(gameRoom = gameRoom)
                 }
             }
+            return gameRoom
 //            Log.d(TAG, "handlePlayerCard is done")
         }
 
@@ -307,7 +307,7 @@ class GameRules {
             return gameRoom
         }
 
-        fun onEnd(gameRoom: GameRoom, logMessage: LogMessage) {
+        fun onEnd(gameRoom: GameRoom, logMessage: LogMessage): GameRoom {
 //            Log.d(TAG, "onEnd is being called")
             var updatedGameRoom = gameRoom
             var remainingPlayers = updatedGameRoom.players.filter { it.isAlive }
@@ -329,12 +329,22 @@ class GameRules {
                 updatedGameRoom.players =
                     changePlayerTurn(gameRoom = updatedGameRoom, changedTurn = changedTurn)
             }
-            updatedGameRoom.gameLog = GameServer.updateGameLog(updatedGameRoom.gameLog, logMessage)
-            if (remainingPlayers.size != 1) {
-                updatedGameRoom = launchOnTurn(game = gameRoom)
-            }
-            GameServer.updateGame(gameRoom = updatedGameRoom)
+            updatedGameRoom.gameLog = updateGameLogs(updatedGameRoom.gameLog, logMessage)
+                if (remainingPlayers.size != 1) {
+                    updatedGameRoom = launchOnTurn(game = gameRoom)
+                }
+            return updatedGameRoom
+//            GameServer.updateGame(gameRoom = updatedGameRoom)
 //            Log.d(TAG, "onEnd is done")
+        }
+
+        private fun updateGameLogs(
+            logs: ArrayList<LogMessage>,
+            logMessage: LogMessage,
+        ): ArrayList<LogMessage> {
+            logs.add(logMessage)
+
+            return logs
         }
 
 
@@ -384,7 +394,7 @@ class GameRules {
 
         fun dealCards(gameRoom: GameRoom): GameRoom {
 //            Log.d(TAG, "dealCards is being called")
-println("DEAL CARDS")
+            println("DEAL CARDS")
             val size = mutableStateOf(gameRoom.deck.deck.size)
             gameRoom.players.forEach { player ->
 //                Log.d("dealCards", "deck size: ${size.value} ")

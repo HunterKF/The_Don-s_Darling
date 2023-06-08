@@ -2,22 +2,19 @@ package com.example.thedonsdarling.data.gameserver.repository
 
 import android.util.Log
 import com.example.thedonsdarling.TAG
-import com.example.thedonsdarling.domain.models.FirestoreUser
-import com.example.thedonsdarling.domain.models.GameRoom
-import com.example.thedonsdarling.domain.models.JoinedGame
-import com.example.thedonsdarling.domain.models.Player
+import com.example.thedonsdarling.domain.models.*
 import com.example.thedonsdarling.domain.repository.FireStoreRepository
-import com.example.thedonsdarling.domain.util.user.HandleUser
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FieldValue
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.tasks.await
 
 class FireStoreRepositoryImpl(
     private val dbPlayers: CollectionReference,
-    private val dbGame: CollectionReference
+    private val dbGame: CollectionReference,
 ) : FireStoreRepository {
     override suspend fun addGameToPlayer(userId: String, gameRoom: GameRoom) {
         val joinedGame =
@@ -130,4 +127,176 @@ class FireStoreRepositoryImpl(
             }
         }
     }
+
+    override suspend fun deleteRoomFromFireStore(gameRoom: GameRoom) {
+        dbGame.document(gameRoom.roomCode)
+            .get()
+            .addOnSuccessListener { result ->
+                result.reference.delete()
+            }
+            .addOnFailureListener {
+                println("Failure...")
+            }
+    }
+
+    override suspend fun removePlayerFromGame(roomCode: String, player: Player) {
+        dbGame.document(roomCode)
+            .update("players", FieldValue.arrayRemove(player))
+            .addOnSuccessListener {
+                Log.d(TAG, "Successfully left game!")
+            }
+            .addOnFailureListener {
+                Log.d(TAG, "Failed to leave game! ${it.localizedMessage}")
+            }
+    }
+
+    override suspend fun removeSingleGameFromPlayerJoinedList(
+        roomCode: String,
+        player: Player,
+        roomNickname: String,
+    ) {
+        val joinedGame = JoinedGame(
+            roomCode = roomCode, roomNickname = roomNickname,
+            ready = true
+        )
+        dbPlayers.document(player.uid).update("joinedGames", FieldValue.arrayRemove(joinedGame))
+            .addOnSuccessListener {
+                Log.d(TAG, "Successfully added game to user's joined game list.")
+            }
+            .addOnFailureListener {
+                Log.d(TAG, "Failed to add game to user list. ${it.localizedMessage}")
+            }
+    }
+
+    override suspend fun removeSingleGameFromAllPlayersJoinedGames(
+        roomCode: String,
+        roomNickname: String,
+        players: List<Player>,
+    ) {
+        val joinedGame = JoinedGame(
+            roomCode = roomCode, roomNickname = roomNickname,
+            ready = true
+        )
+
+        players.forEach {
+            dbPlayers.document(it.uid).update("joinedGames", FieldValue.arrayRemove(joinedGame))
+                .addOnSuccessListener {
+                    Log.d(TAG, "Successfully added game to user's joined game list.")
+                }
+                .addOnFailureListener {
+                    Log.d(TAG, "Failed to add game to user list. ${it.localizedMessage}")
+                }
+        }
+    }
+
+    override suspend fun setGameInDB_update(gameRoom: GameRoom) {
+        dbGame.document(gameRoom.roomCode).set(gameRoom)
+            .addOnSuccessListener {
+//                    Log.d(GAMERULES_TAG, "Successfully updated game room")
+            }
+            .addOnFailureListener {
+//                    Log.d(GAMERULES_TAG, "Failed to update room: ${it.localizedMessage}")
+            }
+    }
+
+    override suspend fun subscribeToRealtimeUpdates(roomCode: String): Flow<GameRoom> {
+        return callbackFlow {
+            var room = GameRoom()
+            val listener = dbGame.document(roomCode)
+                .addSnapshotListener { querySnapshot, exception ->
+                    exception?.let {
+                        println(exception.localizedMessage)
+                        return@addSnapshotListener
+                    }
+                    querySnapshot?.let {
+                        val updatedRoom = it.toObject(GameRoom::class.java)
+                        updatedRoom?.let {
+                            room = updatedRoom
+                        }
+
+                    }
+                    trySend(room)
+                }
+            awaitClose {
+                listener.remove()
+            }
+        }
+    }
+
+    override suspend fun checkGame(
+        roomCode: String,
+    ): CheckGameResult {
+        return try {
+            val documentSnapshot = dbGame.document(roomCode).get().await()
+            if (documentSnapshot.data == null) {
+                Log.d(TAG, "Room code not found. Failure.")
+                CheckGameResult.GameFound
+            } else {
+                Log.d(TAG, "Room code found. Success.")
+                CheckGameResult.GameNotFound
+            }
+        } catch (e: Exception) {
+            CheckGameResult.GameNotFound
+        }
+    }
+
+    override suspend fun joinGame(roomCode: String, player: Player): JoinGameResult {
+        return try {
+            val result = dbGame.document(roomCode).get().await()
+            if (result.data == null) {
+//                Toast.makeText(context, context.getText(R.string.check_game_not_found), Toast.LENGTH_SHORT).show()
+                JoinGameResult.CodeNotFound
+            } else {
+                val gameRoom = result.toObject(GameRoom::class.java)
+                gameRoom?.let {
+                    if (it.players.size == 4) {
+//                        Toast.makeText(context, context.getText(R.string.check_game_full), Toast.LENGTH_SHORT).show()
+                        JoinGameResult.GameFull
+                    } else {
+                        dbGame.document(roomCode)
+                            .update("players", FieldValue.arrayUnion(player))
+                            .await()
+                        Log.d(TAG, "Successfully added player!")
+                        JoinGameResult.Success
+                    }
+                } ?: JoinGameResult.UnknownError
+            }
+        } catch (e: Exception) {
+            Log.d(TAG, "Failed to join game! ${e.localizedMessage}")
+//            Toast.makeText(context, context.getText(R.string.check_game_not_found), Toast.LENGTH_SHORT).show()
+            JoinGameResult.UnknownError
+        }
+
+    }
+
+    override suspend fun updatePlayers(gameRoom: GameRoom, uid: String) {
+        dbGame.document(gameRoom.roomCode)
+            .update("players", gameRoom.players)
+            .addOnSuccessListener {
+//                    Log.d(TAG, "Successfully updated player's unread status")
+            }
+            .addOnFailureListener {
+//                    Log.d(TAG, "Failed to update player's unread status. ${it.localizedMessage}")
+
+            }
+    }
+
+    override suspend fun sendMessage(gameRoom: GameRoom, logMessage: LogMessage) {
+        dbGame.document(gameRoom.roomCode)
+            .update("gameLog", FieldValue.arrayUnion(logMessage))
+            .addOnSuccessListener {
+//                    Log.d(TAG, "Successfully added player!")
+                /*logMessage.uid?.let { uid ->
+                    GameServer.updateUnreadStatusForAll(
+                        gameRoom = gameRoom,
+                        uid = uid
+                    )
+                }*/
+            }
+            .addOnFailureListener {
+//                    Log.d(TAG, "Failed to add player! ${it.localizedMessage}")
+            }
+    }
+
+
 }

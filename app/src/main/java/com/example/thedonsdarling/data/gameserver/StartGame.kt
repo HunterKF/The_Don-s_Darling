@@ -1,3 +1,4 @@
+/*
 package com.example.thedonsdarling.data.gameserver
 
 import android.content.Context
@@ -26,8 +27,9 @@ class StartGame(
 ) {
 
 
-        val currentUser = Firebase.auth.currentUser
-        fun createRoom(
+//        val currentUser = Firebase.auth.currentUser
+        */
+/*fun createRoom(
             roomNickname: String,
             playLimit: Int,
             players: List<Player>,
@@ -57,14 +59,18 @@ class StartGame(
             } catch (e: Exception) {
                 println(e.localizedMessage)
             }
-        }
+        }*//*
 
-        suspend fun startGame(
+
+        */
+/*suspend fun startGame(
             gameRoom: GameRoom,
             context: Context,
             onSuccess: () -> Unit,
         ) {
-            val logMessage = LogMessage.createLogMessage(
+            *//*
+*/
+/*val logMessage = LogMessage.createLogMessage(
                 context.getString(R.string.start_game_message),
                 toastMessage = null,
                 null,
@@ -79,26 +85,35 @@ class StartGame(
 
             gameRoom.start = true
 
-            updatedGameRoom = GameRules.dealCards(gameRoom)
+            updatedGameRoom = GameRules.dealCards(gameRoom)*//*
+*/
+/*
 
             updatedGameRoom.players.forEach {
                 repository.addGameToPlayer(it.uid, gameRoom = updatedGameRoom)
             }
 
 
-            dbGame.document(gameRoom.roomCode).set(updatedGameRoom)
+            *//*
+*/
+/*dbGame.document(gameRoom.roomCode).set(updatedGameRoom)
                 .addOnSuccessListener {
                     Log.d(TAG, "The game has started")
+                    TODO - This should not be here. Have to figure out why it's here and how to should it.
                     Toast.makeText(context, context.getString(R.string.start_game_announcement), Toast.LENGTH_SHORT).show()
                     onSuccess()
                 }
                 .addOnFailureListener {
                     Log.d(TAG, "Failed to make game: ${it.localizedMessage}")
                 }
+*//*
+*/
+/*
+        }*//*
 
-        }
 
-        suspend fun subscribeToRealtimeUpdates(roomCode: String): Flow<GameRoom> {
+        */
+/*suspend fun subscribeToRealtimeUpdates(roomCode: String): Flow<GameRoom> {
             return callbackFlow {
                 var room = GameRoom()
                 val listener = dbGame.document(roomCode)
@@ -120,10 +135,12 @@ class StartGame(
                     listener.remove()
                 }
             }
-        }
+        }*//*
+
 
     }
     companion object {
 
 
 }
+*/

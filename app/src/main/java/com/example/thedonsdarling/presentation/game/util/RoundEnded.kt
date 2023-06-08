@@ -22,7 +22,7 @@ import com.example.thedonsdarling.domain.models.Player
 import com.example.thedonsdarling.presentation.game.GameViewModel
 import com.example.thedonsdarling.presentation.util.CustomTextButton
 import com.example.thedonsdarling.presentation.util.Scoreboard
-import com.example.thedonsdarling.util.game.GameServer
+import com.example.thedonsdarling.util.UiEvent
 
 @Composable
 fun RoundEndedAlert(gameViewModel: GameViewModel, gameRoom: GameRoom) {
@@ -100,9 +100,8 @@ fun RoundEndedAlert(gameViewModel: GameViewModel, gameRoom: GameRoom) {
                         CustomTextButton(
                             enabled = true,
                             onClick = {
-                                GameServer.startNewRound(gameRoom)
-                                gameViewModel.endRoundAlert.value = false
-                                gameViewModel.resultAlert.value = false
+                                gameViewModel.onUiEvent(UiEvent.StartRound(gameRoom))
+//                                GameServer.startNewRound(gameRoom)
                             },
                             text = stringResource(R.string.start_next_round),
                             backgroundColor = MaterialTheme.colors.primary,
@@ -112,9 +111,11 @@ fun RoundEndedAlert(gameViewModel: GameViewModel, gameRoom: GameRoom) {
                         CustomTextButton(
                             enabled = true,
                             onClick = {
-                                GameServer.startNewGame(gameRoom)
+                                gameViewModel.onUiEvent(UiEvent.StartNewGame(gameRoom))
+
+                               /* GameServer.startNewGame(gameRoom)
                                 gameViewModel.endRoundAlert.value = false
-                                gameViewModel.resultAlert.value = false
+                                gameViewModel.resultAlert.value = false*/
                             },
                             text = stringResource(R.string.start_new_game),
                             backgroundColor = MaterialTheme.colors.primary,
@@ -125,9 +126,10 @@ fun RoundEndedAlert(gameViewModel: GameViewModel, gameRoom: GameRoom) {
                         CustomTextButton(
                             enabled = true,
                             onClick = {
-                                GameServer.deleteRoom(gameRoom)
+                                gameViewModel.onUiEvent(UiEvent.DeleteRoom(gameRoom))
+                                /*GameServer.deleteRoom(gameRoom)
                                 gameViewModel.endRoundAlert.value = false
-                                gameViewModel.resultAlert.value = false
+                                gameViewModel.resultAlert.value = false*/
                             },
                             text = stringResource(R.string.end_and_delete_game),
                             backgroundColor = MaterialTheme.colors.primary,

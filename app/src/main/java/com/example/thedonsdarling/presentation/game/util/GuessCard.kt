@@ -18,6 +18,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -35,6 +36,7 @@ fun GuessCard(gameRoom: GameRoom, gameViewModel: GameViewModel) {
     var guessedCard by remember {
         mutableStateOf(0)
     }
+    val context = LocalContext.current
     Box(
         modifier = Modifier
             .fillMaxWidth(1f)
@@ -124,7 +126,7 @@ fun GuessCard(gameRoom: GameRoom, gameViewModel: GameViewModel) {
                 CustomTextButton(
                     enabled = guessedCard != 0 && guessedCard != -1,
                     onClick = {
-                        gameViewModel.onGuess(guessedCard, gameRoom = gameRoom)
+                        gameViewModel.onGuess(guessedCard, gameRoom = gameRoom, context = context)
                     },
                     modifier = Modifier
                         .weight(0.5f)
