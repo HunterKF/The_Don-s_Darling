@@ -1,4 +1,4 @@
-package com.example.thedonsdarling.domain
+package com.example.thedonsdarling.domain.models
 
 import androidx.annotation.DrawableRes
 import com.example.thedonsdarling.R

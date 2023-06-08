@@ -8,10 +8,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Home
-import androidx.compose.material.icons.rounded.Menu
-import androidx.compose.material.icons.rounded.Notifications
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -28,7 +24,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.thedonsdarling.R
 import com.example.thedonsdarling.Screen
 import com.example.thedonsdarling.TAG
-import com.example.thedonsdarling.domain.FirestoreUser
+import com.example.thedonsdarling.domain.models.FirestoreUser
 import com.example.thedonsdarling.items
 import com.example.thedonsdarling.presentation.game.GameViewModel
 import com.example.thedonsdarling.ui.theme.Black

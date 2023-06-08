@@ -7,8 +7,8 @@ import androidx.compose.runtime.MutableState
 import com.example.thedonsdarling.R
 import com.example.thedonsdarling.TAG
 import com.example.thedonsdarling.dbGame
-import com.example.thedonsdarling.domain.GameRoom
-import com.example.thedonsdarling.domain.Player
+import com.example.thedonsdarling.domain.models.GameRoom
+import com.example.thedonsdarling.domain.models.Player
 import com.google.firebase.firestore.FieldValue
 
 class ConnectionRules {

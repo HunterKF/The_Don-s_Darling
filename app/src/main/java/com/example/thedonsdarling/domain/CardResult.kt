@@ -1,5 +1,8 @@
 package com.example.thedonsdarling.domain
 
+import com.example.thedonsdarling.domain.models.GameRoom
+import com.example.thedonsdarling.domain.models.Player
+
 data class CardResult(
     var cardResult: Any?,
     var message: String,

@@ -1,7 +1,6 @@
 package com.example.thedonsdarling.presentation.createroom
 
 import android.content.Intent
-import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
@@ -22,8 +21,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.thedonsdarling.R
 import com.example.thedonsdarling.Screen
-import com.example.thedonsdarling.TAG
-import com.example.thedonsdarling.domain.GameRoom
+import com.example.thedonsdarling.domain.models.GameRoom
 import com.example.thedonsdarling.presentation.game.GameViewModel
 import com.example.thedonsdarling.presentation.joingame.GameLobbyState
 import com.example.thedonsdarling.presentation.joingame.GameLobbyViewModel

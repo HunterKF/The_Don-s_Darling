@@ -1,4 +1,4 @@
-package com.example.thedonsdarling.domain
+package com.example.thedonsdarling.domain.models
 
 data class GameRoom(
     val deck: Deck,

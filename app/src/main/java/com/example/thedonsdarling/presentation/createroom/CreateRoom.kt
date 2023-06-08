@@ -21,7 +21,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.thedonsdarling.R
 import com.example.thedonsdarling.Screen
-import com.example.thedonsdarling.domain.GameRoom
+import com.example.thedonsdarling.domain.models.GameRoom
 import com.example.thedonsdarling.presentation.game.GameViewModel
 import com.example.thedonsdarling.presentation.util.CustomTextButton
 import com.example.thedonsdarling.presentation.util.RoomPlayerList
@@ -30,13 +30,17 @@ import com.example.thedonsdarling.domain.util.Tools
 import com.example.thedonsdarling.util.game.GameServer
 import com.example.thedonsdarling.data.gameserver.StartGame
 import com.example.thedonsdarling.domain.util.user.HandleUser
+import com.example.thedonsdarling.util.UiEvent
 
 @Composable
 fun CreateRoom(
     navController: NavHostController,
     createRoomViewModel: CreateRoomViewModel,
     gameViewModel: GameViewModel,
-) {
+    onNavigateBack: () -> Boolean,
+    onNavigateToScreen: () -> Unit,
+
+    ) {
 
     val state by createRoomViewModel.state.collectAsState()
 
@@ -54,19 +58,16 @@ fun CreateRoom(
 //                HandleUser.addGameToUser(loaded.gameRoom.roomCode, loaded.gameRoom.roomNickname)
             })
             CreateRoomContent(
-                navController = navController,
+                onNavigateToScreen = { onNavigateToScreen() },
+                onNavigateBack = { onNavigateBack() },
                 createRoomViewModel = createRoomViewModel,
                 gameRoom = loaded.gameRoom,
                 gameViewModel = gameViewModel
             )
             BackHandler() {
-                GameServer.deleteRoom(loaded.gameRoom)
-                HandleUser.deleteUserGameRoomForAll(
-                    loaded.gameRoom.roomCode,
-                    loaded.gameRoom.roomNickname,
-                    loaded.gameRoom.players
-                )
-                navController.popBackStack()
+                gameViewModel.onUiEvent(UiEvent.DeleteRoom)
+                onNavigateBack()
+
             }
         }
 
@@ -77,10 +78,12 @@ fun CreateRoom(
 
 @Composable
 private fun CreateRoomContent(
-    navController: NavHostController,
+    navController: () -> Unit,
     createRoomViewModel: CreateRoomViewModel,
     gameRoom: GameRoom,
     gameViewModel: GameViewModel,
+    onNavigateToScreen: () -> Unit,
+    onNavigateBack: () -> Boolean,
 ) {
     val context = LocalContext.current
     var ready by remember { mutableStateOf(false) }
@@ -98,9 +101,10 @@ private fun CreateRoomContent(
 
         ) {
 
-            Column(Modifier
-                .fillMaxSize()
-                .padding(vertical = 48.dp, horizontal = 16.dp),
+            Column(
+                Modifier
+                    .fillMaxSize()
+                    .padding(vertical = 48.dp, horizontal = 16.dp),
                 verticalArrangement = Arrangement.SpaceBetween,
                 horizontalAlignment = Alignment.CenterHorizontally) {
                 Box(
@@ -111,7 +115,7 @@ private fun CreateRoomContent(
                         .align(Alignment.TopStart)
                         .padding(4.dp),
                         onClick = {
-                            navController.popBackStack()
+                            onNavigateBack()
                             GameServer.deleteRoom(game = gameRoom)
                             HandleUser.deleteUserGameRoomForAll(
                                 gameRoom.roomCode,
@@ -153,12 +157,13 @@ private fun CreateRoomContent(
                 Spacer(modifier = Modifier.height(24.dp))
 
 
-                Column(Modifier
-                    .padding(16.dp)
-                    .clip(RoundedCornerShape(25.dp))
-                    .weight(1f)
-                    .fillMaxWidth()
-                    .background(MaterialTheme.colors.onPrimary)) {
+                Column(
+                    Modifier
+                        .padding(16.dp)
+                        .clip(RoundedCornerShape(25.dp))
+                        .weight(1f)
+                        .fillMaxWidth()
+                        .background(MaterialTheme.colors.onPrimary)) {
                     LazyColumn(
                         modifier = Modifier.fillMaxWidth()
                     ) {
@@ -199,7 +204,7 @@ private fun CreateRoomContent(
                                     gameRoom = gameRoom,
                                     context = context
                                 ) {
-                                    navController.navigate(Screen.Game.route)
+                                    onNavigateToScreen()
                                 }
                             }) {
                             Icon(Icons.Rounded.Check,

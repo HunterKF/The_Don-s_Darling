@@ -1,4 +1,4 @@
-package com.example.thedonsdarling.domain
+package com.example.thedonsdarling.domain.models
 
 class Deck(
     var deck: ArrayList<Int> = arrayListOf(

@@ -1,14 +1,9 @@
 package com.example.thedonsdarling.domain.util.game.gamerules
 
-import android.content.Context
-import android.util.Log
 import androidx.compose.runtime.mutableStateOf
-import com.example.thedonsdarling.R
-import com.example.thedonsdarling.TAG
-import com.example.thedonsdarling.WINNINGTAG
-import com.example.thedonsdarling.domain.GameRoom
-import com.example.thedonsdarling.domain.LogMessage
-import com.example.thedonsdarling.domain.Player
+import com.example.thedonsdarling.domain.models.GameRoom
+import com.example.thedonsdarling.domain.models.LogMessage
+import com.example.thedonsdarling.domain.models.Player
 import com.example.thedonsdarling.domain.util.Tools
 import com.example.thedonsdarling.util.game.GameServer
 import com.example.thedonsdarling.domain.util.game.gamerules.CardRules.TheDoctor
@@ -17,7 +12,6 @@ val GAMERULES_TAG = "GameRules"
 
 class GameRules {
     companion object {
-        val TURNTAG = "TURN"
 
         fun handlePlayedCard(card: Int, player: Player, gameRoom: GameRoom) {
 //            Log.d(TAG, "handlePlayerCard is being called.")

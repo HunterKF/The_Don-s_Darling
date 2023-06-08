@@ -27,7 +27,7 @@ fun Navigation(
     createRoomViewModel: CreateRoomViewModel,
     gameLobbyViewModel: GameLobbyViewModel,
     myGamesViewModel: MyGamesViewModel,
-    startDestination: String
+    startDestination: String,
 ) {
 
     NavHost(
@@ -38,7 +38,15 @@ fun Navigation(
             HomeScreen(navController, gameViewModel)
         }
         composable(Screen.CreateRoom.route) {
-            CreateRoom(navController, createRoomViewModel, gameViewModel)
+            CreateRoom(
+                navController,
+                createRoomViewModel,
+                gameViewModel,
+                onNavigateBack = { navController.popBackStack() },
+                onNavigateToScreen = {
+                    navController.navigate(Screen.Game.route)
+                }
+            )
         }
         composable(Screen.HostPlayer.route) {
             HostPlayer(navController, createRoomViewModel)
@@ -59,7 +67,11 @@ fun Navigation(
             WelcomeScreen(navController = navController)
         }
         composable(Screen.MyGames.route) {
-            MyGames(myGamesViewModel = myGamesViewModel, navHostController = navController, gameViewModel = gameViewModel)
+            MyGames(
+                myGamesViewModel = myGamesViewModel,
+                navHostController = navController,
+                gameViewModel = gameViewModel
+            )
         }
         composable(Screen.Rules.route) {
             RulesScreen(navController)

@@ -30,8 +30,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Popup
 import com.example.thedonsdarling.R
 import com.example.thedonsdarling.domain.Avatar
-import com.example.thedonsdarling.domain.GameRoom
-import com.example.thedonsdarling.domain.Player
+import com.example.thedonsdarling.domain.models.GameRoom
+import com.example.thedonsdarling.domain.models.Player
 import com.example.thedonsdarling.presentation.game.GameViewModel
 import com.example.thedonsdarling.presentation.game.util.WindowCenterOffsetPositionProvider
 import com.example.thedonsdarling.presentation.settings.util.EndGameAlert
@@ -41,6 +41,7 @@ import com.example.thedonsdarling.ui.theme.*
 import com.example.thedonsdarling.util.game.GameServer
 import com.example.thedonsdarling.data.gameserver.ConnectionRules
 import com.example.thedonsdarling.domain.util.user.HandleUser
+import com.example.thedonsdarling.util.UiEvent
 
 @Composable
 fun Settings(game: GameRoom, gameViewModel: GameViewModel, onExit: () -> Unit) {
@@ -266,15 +267,8 @@ fun Settings(game: GameRoom, gameViewModel: GameViewModel, onExit: () -> Unit) {
                         modifier = Modifier.weight(1f)
                     )
                     OutlinedButton(drawable = R.drawable.exit) {
-                        ConnectionRules.leaveGame(
-                            roomCode = game.roomCode,
-                            player = gameViewModel.localPlayer.value
-                        )
-                        HandleUser.deleteUserGameRoomForLocal(
-                            roomCode = game.roomCode,
-                            roomNickname = game.roomNickname,
-                            player = gameViewModel.localPlayer.value
-                        )
+                        gameViewModel.onUiEvent(UiEvent.ExitGame)
+
                         onExit()
                     }
                 }

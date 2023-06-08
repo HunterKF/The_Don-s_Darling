@@ -28,8 +28,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.thedonsdarling.R
-import com.example.thedonsdarling.domain.GameRoom
-import com.example.thedonsdarling.domain.LogMessage
+import com.example.thedonsdarling.domain.models.GameRoom
+import com.example.thedonsdarling.domain.models.LogMessage
 import com.example.thedonsdarling.presentation.game.GameViewModel
 import com.example.thedonsdarling.presentation.messenger.util.GameMessage
 import com.example.thedonsdarling.presentation.messenger.util.PlayerMessage

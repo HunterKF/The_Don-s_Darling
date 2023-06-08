@@ -6,10 +6,11 @@ import android.widget.Toast
 import com.example.thedonsdarling.R
 import com.example.thedonsdarling.TAG
 import com.example.thedonsdarling.dbGame
-import com.example.thedonsdarling.domain.Deck
-import com.example.thedonsdarling.domain.GameRoom
-import com.example.thedonsdarling.domain.LogMessage
-import com.example.thedonsdarling.domain.Player
+import com.example.thedonsdarling.domain.models.Deck
+import com.example.thedonsdarling.domain.models.GameRoom
+import com.example.thedonsdarling.domain.models.LogMessage
+import com.example.thedonsdarling.domain.models.Player
+import com.example.thedonsdarling.domain.repository.FireStoreRepository
 import com.example.thedonsdarling.domain.util.game.gamerules.GameRules
 import com.example.thedonsdarling.domain.util.user.HandleUser
 import com.google.firebase.auth.ktx.auth
@@ -20,9 +21,11 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.tasks.await
 
-class StartGame() {
+class StartGame(
+   private val repository: FireStoreRepository
+) {
 
-    companion object {
+
         val currentUser = Firebase.auth.currentUser
         fun createRoom(
             roomNickname: String,
@@ -56,7 +59,7 @@ class StartGame() {
             }
         }
 
-        fun startGame(
+        suspend fun startGame(
             gameRoom: GameRoom,
             context: Context,
             onSuccess: () -> Unit,
@@ -79,8 +82,9 @@ class StartGame() {
             updatedGameRoom = GameRules.dealCards(gameRoom)
 
             updatedGameRoom.players.forEach {
-                HandleUser.addGameToPlayer(it.uid, gameRoom = updatedGameRoom)
+                repository.addGameToPlayer(it.uid, gameRoom = updatedGameRoom)
             }
+
 
             dbGame.document(gameRoom.roomCode).set(updatedGameRoom)
                 .addOnSuccessListener {
@@ -119,6 +123,7 @@ class StartGame() {
         }
 
     }
+    companion object {
 
 
 }

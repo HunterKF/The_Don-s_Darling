@@ -1,12 +1,11 @@
 package com.example.thedonsdarling.util.game.gamerules.CardRules
 
-import com.example.thedonsdarling.domain.GameRoom
+import com.example.thedonsdarling.domain.models.GameRoom
 import com.example.thedonsdarling.domain.util.game.gamerules.CardRules.TheDoctor
 import com.example.thedonsdarling.util.game.gamerules.testGameRoom
 import com.example.thedonsdarling.util.game.gamerules.testPlayer1
 import com.example.thedonsdarling.util.game.gamerules.testPlayer2
 import com.google.common.truth.Truth
-import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
 

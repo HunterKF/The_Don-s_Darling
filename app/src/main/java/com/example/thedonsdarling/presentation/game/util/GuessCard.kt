@@ -24,7 +24,7 @@ import androidx.compose.ui.unit.dp
 import com.example.thedonsdarling.R
 import com.example.thedonsdarling.TAG
 import com.example.thedonsdarling.domain.CardAvatar
-import com.example.thedonsdarling.domain.GameRoom
+import com.example.thedonsdarling.domain.models.GameRoom
 import com.example.thedonsdarling.presentation.game.GameViewModel
 import com.example.thedonsdarling.presentation.util.CustomTextButton
 

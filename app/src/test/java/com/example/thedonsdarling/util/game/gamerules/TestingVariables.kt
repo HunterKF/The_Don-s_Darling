@@ -1,7 +1,7 @@
 package com.example.thedonsdarling.util.game.gamerules
 
-import com.example.thedonsdarling.domain.GameRoom
-import com.example.thedonsdarling.domain.Player
+import com.example.thedonsdarling.domain.models.GameRoom
+import com.example.thedonsdarling.domain.models.Player
 
 val testPlayer1 = Player().copy(
     avatar = 1,

@@ -1,6 +1,6 @@
 package com.example.thedonsdarling.domain.util
 
-import com.example.thedonsdarling.domain.Player
+import com.example.thedonsdarling.domain.models.Player
 import com.google.firebase.auth.FirebaseUser
 
 class Tools {

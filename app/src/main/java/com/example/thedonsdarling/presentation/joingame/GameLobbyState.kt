@@ -1,6 +1,6 @@
 package com.example.thedonsdarling.presentation.joingame
 
-import com.example.thedonsdarling.domain.GameRoom
+import com.example.thedonsdarling.domain.models.GameRoom
 
 sealed class GameLobbyState {
     object Loading : GameLobbyState()

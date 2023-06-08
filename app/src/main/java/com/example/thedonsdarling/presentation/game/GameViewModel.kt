@@ -9,22 +9,33 @@ import androidx.navigation.NavController
 import com.example.thedonsdarling.R
 import com.example.thedonsdarling.Screen
 import com.example.thedonsdarling.TAG
+import com.example.thedonsdarling.data.gameserver.ConnectionRules
 import com.example.thedonsdarling.domain.*
+import com.example.thedonsdarling.domain.models.GameRoom
+import com.example.thedonsdarling.domain.models.LogMessage
+import com.example.thedonsdarling.domain.models.Player
+import com.example.thedonsdarling.domain.repository.FireStoreRepository
 import com.example.thedonsdarling.domain.util.game.gamerules.CardRules.*
 import com.example.thedonsdarling.domain.util.Tools
 import com.example.thedonsdarling.util.game.GameServer
 import com.example.thedonsdarling.domain.util.game.gamerules.EndRoundResult
 import com.example.thedonsdarling.domain.util.game.gamerules.GameRules
+import com.example.thedonsdarling.domain.util.user.HandleUser
+import com.example.thedonsdarling.util.UiEvent
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
 
-class GameViewModel(application: Application) : AndroidViewModel(application) {
+class GameViewModel(
+    application: Application,
+    val fireStoreRepository: FireStoreRepository
+) : AndroidViewModel(application) {
 
     private val loadingState = MutableStateFlow<GameState>(GameState.Loading)
 
@@ -466,6 +477,42 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
 
         GameRules.onEnd(gameRoom = gameRoom, logMessage)
 
+    }
+
+    fun onUiEvent(uiEvent: UiEvent) {
+        when (uiEvent) {
+            is UiEvent.HandleUser -> {
+                viewModelScope.launch(Dispatchers.IO) {
+                    currentUser?.let { fireStoreRepository.createUserPlayer(it.uid) }
+                }
+            }
+            is UiEvent.DeleteRoom -> {
+                viewModelScope.launch(Dispatchers.IO) {
+                    fireStoreRepository.del
+                    GameServer.deleteRoom(loaded.gameRoom)
+                    HandleUser.deleteUserGameRoomForAll(
+                        loaded.gameRoom.roomCode,
+                        loaded.gameRoom.roomNickname,
+                        loaded.gameRoom.players
+                    )
+                }
+            }
+            is UiEvent.ExitGame -> {
+                viewModelScope.launch {
+                    fireStoreRepository.deleteUserGameRoomForLocal(roomNickname = roomCode.value, player = localPlayer.value)
+                }
+                ConnectionRules.leaveGame(
+                    roomCode = game.roomCode,
+                    player = gameViewModel.localPlayer.value
+                )
+                HandleUser.deleteUserGameRoomForLocal(
+                    roomCode = game.roomCode,
+                    roomNickname = game.roomNickname,
+                    player = gameViewModel.localPlayer.value
+                )
+            }
+
+        }
     }
 
     private fun updateResult(result: CardResult) {

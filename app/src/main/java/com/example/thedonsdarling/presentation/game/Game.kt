@@ -2,7 +2,6 @@ package com.example.thedonsdarling.presentation.game
 
 import android.util.Log
 import android.widget.Toast
-import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
@@ -18,11 +17,11 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Popup
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.thedonsdarling.Screen
 import com.example.thedonsdarling.TAG
 import com.example.thedonsdarling.domain.*
+import com.example.thedonsdarling.domain.models.GameRoom
 import com.example.thedonsdarling.presentation.game.util.*
 import com.example.thedonsdarling.presentation.messenger.Messenger
 import com.example.thedonsdarling.presentation.settings.Settings

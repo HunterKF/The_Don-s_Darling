@@ -1,7 +1,7 @@
 package com.example.thedonsdarling.domain.util.game.gamerules.CardRules
 
-import com.example.thedonsdarling.domain.GameRoom
-import com.example.thedonsdarling.domain.Player
+import com.example.thedonsdarling.domain.models.GameRoom
+import com.example.thedonsdarling.domain.models.Player
 import com.example.thedonsdarling.domain.CardResult
 
 class TheDon {

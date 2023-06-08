@@ -1,11 +1,8 @@
 package com.example.thedonsdarling.util.game
 
-import android.util.Log
-import com.example.thedonsdarling.TAG
 import com.example.thedonsdarling.dbGame
-import com.example.thedonsdarling.domain.GameRoom
-import com.example.thedonsdarling.domain.LogMessage
-import com.example.thedonsdarling.domain.util.game.gamerules.GAMERULES_TAG
+import com.example.thedonsdarling.domain.models.GameRoom
+import com.example.thedonsdarling.domain.models.LogMessage
 import com.example.thedonsdarling.domain.util.game.gamerules.GameRules
 import com.google.firebase.firestore.FieldValue
 import kotlinx.coroutines.channels.awaitClose

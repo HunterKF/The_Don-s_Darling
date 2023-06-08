@@ -1,7 +1,12 @@
 package com.example.thedonsdarling.di
 
 import android.content.Context
+import com.example.thedonsdarling.data.gameserver.repository.FireStoreRepositoryImpl
 import com.example.thedonsdarling.domain.DataStoreRepository
+import com.example.thedonsdarling.domain.repository.FireStoreRepository
+import com.google.firebase.firestore.CollectionReference
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -16,7 +21,22 @@ object MainModule {
     @Provides
     @Singleton
     fun provideDataStoreRepository(
-        @ApplicationContext context: Context
+        @ApplicationContext context: Context,
     ) = DataStoreRepository(context = context)
 
+    @Provides
+    @Singleton
+    fun provideGameReference() = Firebase.firestore.collection("game")
+
+    @Provides
+    @Singleton
+    fun providePlayersReference() = Firebase.firestore.collection("players")
+
+
+    @Provides
+    @Singleton
+    fun providesFireStoreRepository(
+        dbPlayers: CollectionReference,
+        dbGame: CollectionReference,
+    ): FireStoreRepository = FireStoreRepositoryImpl(dbPlayers, dbGame)
 }
