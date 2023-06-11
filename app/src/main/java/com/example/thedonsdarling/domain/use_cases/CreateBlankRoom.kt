@@ -5,7 +5,7 @@ import com.example.thedonsdarling.domain.models.GameRoom
 import com.example.thedonsdarling.domain.models.Player
 import com.example.thedonsdarling.domain.repository.FireStoreRepository
 
-class CreateRoom(
+class CreateBlankRoom(
     private val repository: FireStoreRepository,
 ) {
      operator fun invoke(

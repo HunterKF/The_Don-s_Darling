@@ -1,7 +1,5 @@
 package com.example.thedonsdarling.domain.repository
 
-import android.content.Context
-import androidx.compose.runtime.MutableState
 import com.example.thedonsdarling.domain.models.*
 import com.google.firebase.auth.FirebaseUser
 import kotlinx.coroutines.flow.Flow
@@ -44,7 +42,8 @@ interface FireStoreRepository {
         roomCode: String
     ): CheckGameResult
 
-    suspend fun joinGame(roomCode: String, player: Player) : JoinGameResult
+    suspend fun getAndReturnGame(roomCode: String, player: Player) : GameRoom?
+    suspend fun addPlayerToGame(roomCode: String, player: Player)
 
     suspend fun updatePlayers(gameRoom: GameRoom, uid: String)
     suspend fun sendMessage(gameRoom: GameRoom, logMessage: LogMessage)

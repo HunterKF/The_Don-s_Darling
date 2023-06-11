@@ -8,6 +8,13 @@ class JoinGame(
     private val repository: FireStoreRepository
 ) {
     suspend operator fun invoke(roomCode: String, player: Player): JoinGameResult {
-        return repository.joinGame(roomCode, player)
+        val result = repository.getAndReturnGame(roomCode, player) ?: return JoinGameResult.CodeNotFound
+
+        return if (result.players.size >= 4) {
+            JoinGameResult.GameFull
+        } else {
+            repository.addPlayerToGame(roomCode, player)
+            JoinGameResult.Success
+        }
     }
 }

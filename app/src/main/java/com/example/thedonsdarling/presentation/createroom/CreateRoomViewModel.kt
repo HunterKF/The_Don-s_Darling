@@ -46,30 +46,32 @@ class CreateRoomViewModel @Inject constructor(
 
     fun observeRoom() {
         viewModelScope.launch(Dispatchers.IO) {
-            val currentUser = Firebase.auth.currentUser?.uid
-            if (currentUser != null) {
-                useCases.createRoom(
+            val currentUserUid = Firebase.auth.currentUser?.uid
+            if (currentUserUid != null) {
+                val newRoom = useCases.createBlankRoom(
                     roomNickname = roomNickname.value,
-                    playLimit.value,
-                    listOf(
+                    playLimit = playLimit.value,
+                    players = listOf(
                         HandleUser.createGamePlayer(
                             avatar = playerChar.value,
                             nickname = playerNickname.value,
                             isHost = true,
-                            uid = ""
+                            uid = currentUserUid
                         )
                     ),
-                    roomCode.value,
-                    currentUser
+                    roomCode = roomCode.value,
+                    uid = currentUserUid
                 )
+                useCases.setGameInDB(newRoom)
             }
             useCases.subscribeToRealtimeUpdates(roomCode.value).map { gameRoom ->
-
                 CreateRoomState.Loaded(
                     gameRoom = gameRoom
                 )
             }.collect {
                 loadingState.emit(it)
+                println("GAMEROOM${it.gameRoom}")
+
             }
         }
     }

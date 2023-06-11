@@ -7,13 +7,11 @@ import com.example.thedonsdarling.domain.models.Player
 import com.example.thedonsdarling.domain.util.Tools
 import com.example.thedonsdarling.domain.util.game.gamerules.CardRules.TheDoctor
 
-val GAMERULES_TAG = "GameRules"
 
 class GameRules {
     companion object {
 
         fun handlePlayedCard(card: Int, player: Player, gameRoom: GameRoom): GameRoom {
-//            Log.d(TAG, "handlePlayerCard is being called.")
 
             gameRoom.players.forEach {
 
@@ -22,14 +20,12 @@ class GameRules {
                     it.hand.remove(card)
                     gameRoom.deck.discardDeck = addToDiscardPile(card, gameRoom = gameRoom)
 
-//                    GameServer.updateGame(gameRoom = gameRoom)
                 }
             }
             return gameRoom
-//            Log.d(TAG, "handlePlayerCard is done")
         }
 
-        private fun onTurn(gameRoom: GameRoom, player: Player): GameRoom {
+        private fun onTurnDealCard(gameRoom: GameRoom, player: Player): GameRoom {
 //            Log.d(TAG, "onTurn is being called")
             if (gameRoom.deck.deck.isNotEmpty()) {
                 val card = drawCard(gameRoom = gameRoom)
@@ -45,6 +41,7 @@ class GameRules {
                         deck = removeFromDeck(card = card, gameRoom = gameRoom)
                     }
                 }
+                gameRoom.deck.deck = deck
             }
 //            Log.d(TAG, "onTurn is done")
             return gameRoom
@@ -111,11 +108,8 @@ class GameRules {
 
             val deck = gameRoom.deck.deck
             val index = deck.indexOf(card)
-            val TAG1 = "removeFromDeck"
             if (index >= 0) {
                 deck.removeAt(index)
-            } else {
-//                Log.d(TAG1, "An error occurred with the index: $index")
             }
 //            Log.d(TAG, "removeFromDeck is done")
 
@@ -138,7 +132,6 @@ class GameRules {
 //            Log.d(TAG, "endRound is being called")
 
             val winningGame = determineWinner(gameRoom)
-            val logMessage = LogMessage()
             var endRoundType: EndRoundResult = EndRoundResult.RoundIsOverWinner
             when (winningGame.type) {
                 is DetermineWinnerResult.Winner -> {
@@ -183,14 +176,8 @@ class GameRules {
             val alivePlayers = gameRoom.players.filter {
                 it.isAlive
             }
-            var remainingPlayers = arrayListOf<Player>()
+            val remainingPlayers = arrayListOf<Player>()
             var endResult: DetermineWinnerResult = DetermineWinnerResult.Winner
-            val logMessage = LogMessage.createLogMessage(
-                message = "",
-                toastMessage = null,
-                type = "winnerMessage",
-                uid = null
-            )
             if (alivePlayers.size > 1) {
                 val winningCard = winningHand(players = players)
                 players.forEach { player ->
@@ -234,7 +221,7 @@ class GameRules {
 //            Log.d(WINNINGTAG, "winningHand is being called")
 
             val winners = arrayListOf<Player>()
-            var duplicates = mutableStateOf(0)
+            val duplicates = mutableStateOf(0)
             val hands = arrayListOf<Int>()
             players.forEach { player ->
                 player.hand.forEach { card ->
@@ -246,7 +233,7 @@ class GameRules {
             val distinct = hands.distinct().count()
 
             if (distinct != hands.size) {
-                var groupBy = hands.groupBy { it }
+                val groupBy = hands.groupBy { it }
 
                 groupBy.forEach {
                     if (it.value.size != 1 && it.key == highestCard) {
@@ -310,29 +297,24 @@ class GameRules {
         fun onEnd(gameRoom: GameRoom, logMessage: LogMessage): GameRoom {
 //            Log.d(TAG, "onEnd is being called")
             var updatedGameRoom = gameRoom
-            var remainingPlayers = updatedGameRoom.players.filter { it.isAlive }
+            val remainingPlayers = updatedGameRoom.players.filter { it.isAlive }
             updatedGameRoom.players = endPlayerTurn(gameRoom = gameRoom)
             if (updatedGameRoom.deck.deck.isEmpty()) {
                 updatedGameRoom.deckClear = true
             }
-            if (!updatedGameRoom.gameOver && !updatedGameRoom.roundOver) {
-                val changedTurn = changeGameTurn(
-                    turn = updatedGameRoom.turn,
-                    size = updatedGameRoom.players.size,
-                    players = updatedGameRoom.players
-                )
+            if (!updatedGameRoom.gameOver && !updatedGameRoom.roundOver && remainingPlayers.size != 1) {
                 updatedGameRoom.turn = changeGameTurn(
                     turn = updatedGameRoom.turn,
                     size = updatedGameRoom.players.size,
                     players = updatedGameRoom.players
                 )
                 updatedGameRoom.players =
-                    changePlayerTurn(gameRoom = updatedGameRoom, changedTurn = changedTurn)
+                    changePlayerTurn(gameRoom = updatedGameRoom, changedTurn = updatedGameRoom.turn )
             }
             updatedGameRoom.gameLog = updateGameLogs(updatedGameRoom.gameLog, logMessage)
-                if (remainingPlayers.size != 1) {
-                    updatedGameRoom = launchOnTurn(game = gameRoom)
-                }
+            if (remainingPlayers.size != 1) {
+                updatedGameRoom = launchOnTurn(game = gameRoom)
+            }
             return updatedGameRoom
 //            GameServer.updateGame(gameRoom = updatedGameRoom)
 //            Log.d(TAG, "onEnd is done")
@@ -445,6 +427,7 @@ class GameRules {
         fun launchOnTurn(
             game: GameRoom,
         ): GameRoom {
+            /*finds player and calls deals a card*/
             var currentPlayer = Player()
             game.players.forEach {
                 if (it.turn) {
@@ -454,8 +437,7 @@ class GameRules {
             game.players.forEach { player ->
                 if (currentPlayer.uid == player.uid) {
                     if (player.turn && player.hand.size < 2 && player.isAlive && !player.turnInProgress) {
-//                        Log.d("LaunchedEffect", "Matching player has been found: ${player.nickName}")
-                        return onTurn(
+                        return onTurnDealCard(
                             gameRoom = game,
                             player = player
                         )

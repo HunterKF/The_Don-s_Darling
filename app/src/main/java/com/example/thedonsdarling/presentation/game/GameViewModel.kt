@@ -1,6 +1,5 @@
 package com.example.thedonsdarling.presentation.game
 
-import android.app.Application
 import android.content.Context
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
@@ -27,6 +26,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -329,7 +329,7 @@ class GameViewModel @Inject constructor(
                         }
                     }
                     result.players?.let {
-                        gameRoom.players = result.players!!
+                        gameRoom.players = result.players
                     }
                     val logMessage =
                         LogMessage.createLogMessage(
@@ -356,7 +356,7 @@ class GameViewModel @Inject constructor(
                         player2 = selectedPlayer,
                         gameRoom = gameRoom,
                     )
-                    var player2Card =
+                    val player2Card =
                         context.getString(CardAvatar.setCardAvatar(selectedPlayer.hand.first()).cardName)
 
                     when (result.cardResult) {
@@ -461,13 +461,13 @@ class GameViewModel @Inject constructor(
         } else {
             Log.d("Handmaid", "Selected player was protected.")
             val cardName = context.getString(card.cardName)
-            var message = context.getString(
-                R.string.card_doctor_protection_message,
-                localPlayer.value.nickName,
-                cardName,
-                selectedPlayer.nickName
+            val message = context.getString(
+              R.string.card_doctor_protection_message,
+              localPlayer.value.nickName,
+              cardName,
+              selectedPlayer.nickName
             )
-            var toastMessage = context.getString(
+            val toastMessage = context.getString(
                 R.string.card_doctor_protection_toast_message,
                 localPlayer.value.nickName,
                 cardName,
@@ -497,7 +497,7 @@ class GameViewModel @Inject constructor(
             guessedCard = card,
             gameRoom = gameRoom
         )
-        var updatedGameRoom = gameRoom
+        val updatedGameRoom = gameRoom
         updatedGameRoom.players.forEach {
             if (result.player2?.uid == it.uid) {
                 it.isAlive = result.player2.isAlive
@@ -552,6 +552,18 @@ class GameViewModel @Inject constructor(
 
     fun onUiEvent(event: UiEvent) {
         when (event) {
+            is UiEvent.ObserveRoom -> {
+                viewModelScope.launch {
+                    Log.d(TAG, "roomCode in viewModel: ${roomCode.value}")
+                    useCases.subscribeToRealtimeUpdates(roomCode.value).map { gameRoom ->
+                        GameState.Loaded(
+                            gameRoom = gameRoom
+                        )
+                    }.collect {
+                        loadingState.emit(it)
+                    }
+                }
+            }
             is UiEvent.InitialStart -> {
                 val logMessage = LogMessage.createLogMessage(
                     event.context.getString(R.string.start_game_message),
@@ -596,11 +608,6 @@ class GameViewModel @Inject constructor(
                         event.gameRoom.roomNickname,
                         player = localPlayer.value
                     )
-                }
-            }
-            is UiEvent.ObserveRoom -> {
-                viewModelScope.launch(Dispatchers.IO) {
-                    useCases.subscribeToRealtimeUpdates(roomCode = roomCode.value)
                 }
             }
             is UiEvent.EndRound -> {
@@ -676,7 +683,7 @@ class GameViewModel @Inject constructor(
      }*/
 
     fun removeCurrentPlayer(list: List<Player>): List<Player> {
-
+        //This is used for the table, it removes the player so it won't display on the table.
         val newList = arrayListOf<Player>()
         list.forEach {
             Log.d(TAG, "Comparing uids: ${it.uid} and ${localPlayer.value.uid}")
@@ -725,7 +732,7 @@ class GameViewModel @Inject constructor(
         return localPlayer.value
     }
 
-    fun endRound(
+    private fun endRound(
         alivePlayers: List<Player>,
         game: GameRoom,
         playerIsPlaying: Boolean,
@@ -759,12 +766,12 @@ class GameViewModel @Inject constructor(
                 type = "winnerMessage",
                 uid = null
             )
-            var winner = Player()
+            /*var winner = Player()
             game.players.forEach {
                 if (it.isWinner) {
                     winner = it
                 }
-            }
+            }*/
             endRoundAlert.value = true
             logMessage.message = updateLogMessageFromEndGame(endGame, logMessage, context)
 

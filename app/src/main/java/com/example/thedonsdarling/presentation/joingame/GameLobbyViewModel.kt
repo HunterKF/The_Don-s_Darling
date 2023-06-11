@@ -79,11 +79,12 @@ class GameLobbyViewModel @Inject constructor(
                         is CheckGameResult.GameFound -> {
                             Toast.makeText(
                                 context,
-                                context.getText(R.string.check_game_not_found),
+                                context.getText(R.string.check_game_found),
                                 Toast.LENGTH_SHORT
                             ).show()
                         }
                         is CheckGameResult.GameNotFound -> {
+                            println("Game not found")
                             Toast.makeText(
                                 context,
                                 context.getText(R.string.check_game_not_found),
@@ -97,47 +98,45 @@ class GameLobbyViewModel @Inject constructor(
             }
             is UiEvent.JoinGame -> {
                 val context = event.context
-                viewModelScope.launch(Dispatchers.IO) {
-                    val result = useCases.joinGame(
-                        roomCode.value, player = HandleUser.createGamePlayer(
-                            avatar = playerChar.value,
-                            nickname = playerNickname.value, isHost = false,
-                            currentUser.uid
+                var message = context.getString(R.string.unknown_error)
+                viewModelScope.launch {
+                    currentUser?.let {
+                        val result = useCases.joinGame(
+                            roomCode.value, player = HandleUser.createGamePlayer(
+                                avatar = playerChar.value,
+                                nickname = playerNickname.value, isHost = false,
+                                currentUser.uid
+                            )
                         )
-                    )
-                    when (result) {
-                        is JoinGameResult.GameFull -> {
-                            Toast.makeText(
-                                context,
-                                context.getText(R.string.check_game_full),
-                                Toast.LENGTH_SHORT
-                            ).show()
-                        }
-                        is JoinGameResult.CodeNotFound -> {
-                            Toast.makeText(
-                                context,
-                                context.getText(R.string.check_game_not_found),
-                                Toast.LENGTH_SHORT
-                            ).show()
-                        }
-                        is JoinGameResult.UnknownError -> {
-                            Toast.makeText(
-                                context,
-                                context.getText(R.string.unknown_error),
-                                Toast.LENGTH_SHORT
-                            ).show()
-                        }
-                        is JoinGameResult.Success -> {
-                            Toast.makeText(
-                                context,
-                                context.getText(R.string.successfully_joined_game),
-                                Toast.LENGTH_SHORT
-                            ).show()
-                            event.navigate()
-                        }
-                    }
-                }
+                        when (result) {
+                            is JoinGameResult.GameFull -> {
+                                message = context.getString(R.string.check_game_full)
 
+                            }
+                            is JoinGameResult.CodeNotFound -> {
+                                message = context.getString(R.string.check_game_not_found)
+
+                            }
+                            is JoinGameResult.UnknownError -> {
+                                message = context.getString(R.string.unknown_error)
+                            }
+                            is JoinGameResult.Success -> {
+                                message = context.getString(R.string.successfully_joined_game)
+                                event.navigate()
+                            }
+                        }
+                        Toast.makeText(
+                            context,
+                            message,
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    } ?: Toast.makeText(
+                        context,
+                        message,
+                        Toast.LENGTH_SHORT
+                    ).show()
+
+                }
             }
             is UiEvent.LeaveGame -> {
                 viewModelScope.launch(Dispatchers.IO) {

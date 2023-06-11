@@ -1,12 +1,9 @@
 package com.example.thedonsdarling.domain.use_cases
 
-import com.example.thedonsdarling.domain.models.CheckGameResult
-import com.example.thedonsdarling.util.UiEvent
-
 data class UseCases(
     val addGameToMultiplePlayers: AddGameToMultiplePlayers,
     val addGameToPlayer: AddGameToPlayer,
-    val createRoom: CreateRoom,
+    val createBlankRoom: CreateBlankRoom,
     val createUserPlayer: CreateUserPlayer,
     val deleteRoomFromFirestore: DeleteRoomFromFirestore,
     val deleteUserGameRoomForAll: DeleteUserGameRoomForAll,

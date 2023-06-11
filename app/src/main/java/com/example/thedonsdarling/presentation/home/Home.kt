@@ -1,6 +1,5 @@
 package com.example.thedonsdarling.presentation
 
-import android.content.Context
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -31,7 +30,6 @@ import com.example.thedonsdarling.ui.theme.Black
 import com.example.thedonsdarling.ui.theme.Navy
 import com.example.thedonsdarling.ui.theme.WarmRed
 import com.example.thedonsdarling.util.UiEvent
-import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 
@@ -43,26 +41,19 @@ fun HomeScreen(
     ) {
     val auth = Firebase.auth
     val currentUser = auth.currentUser
-    val context = LocalContext.current
     LaunchedEffect(key1 = Unit, block = {
         if (currentUser != null) {
             gameViewModel.onUiEvent(UiEvent.CreateUserPlayer)
         }
     })
     HomeContent(
-        navHostController = navHostController,
-        currentUser = currentUser,
-        gameViewModel = gameViewModel,
-        context = context,
+        navHostController = navHostController
     )
 }
 
 @Composable
 private fun HomeContent(
-    navHostController: NavHostController,
-    currentUser: FirebaseUser,
-    gameViewModel: GameViewModel,
-    context: Context,
+    navHostController: NavHostController
 ) {
     val navBackStackEntry by navHostController.currentBackStackEntryAsState()
 

@@ -230,43 +230,38 @@ class FireStoreRepositoryImpl(
             val documentSnapshot = dbGame.document(roomCode).get().await()
             if (documentSnapshot.data == null) {
                 Log.d(TAG, "Room code not found. Failure.")
-                CheckGameResult.GameFound
+                CheckGameResult.GameNotFound
             } else {
                 Log.d(TAG, "Room code found. Success.")
-                CheckGameResult.GameNotFound
+                CheckGameResult.GameFound
             }
         } catch (e: Exception) {
             CheckGameResult.GameNotFound
         }
     }
 
-    override suspend fun joinGame(roomCode: String, player: Player): JoinGameResult {
+    override suspend fun getAndReturnGame(roomCode: String, player: Player): GameRoom? {
         return try {
             val result = dbGame.document(roomCode).get().await()
             if (result.data == null) {
-//                Toast.makeText(context, context.getText(R.string.check_game_not_found), Toast.LENGTH_SHORT).show()
-                JoinGameResult.CodeNotFound
+                null
             } else {
                 val gameRoom = result.toObject(GameRoom::class.java)
                 gameRoom?.let {
-                    if (it.players.size == 4) {
-//                        Toast.makeText(context, context.getText(R.string.check_game_full), Toast.LENGTH_SHORT).show()
-                        JoinGameResult.GameFull
-                    } else {
-                        dbGame.document(roomCode)
-                            .update("players", FieldValue.arrayUnion(player))
-                            .await()
-                        Log.d(TAG, "Successfully added player!")
-                        JoinGameResult.Success
-                    }
-                } ?: JoinGameResult.UnknownError
+                    gameRoom
+                }
             }
         } catch (e: Exception) {
-            Log.d(TAG, "Failed to join game! ${e.localizedMessage}")
-//            Toast.makeText(context, context.getText(R.string.check_game_not_found), Toast.LENGTH_SHORT).show()
-            JoinGameResult.UnknownError
+           null
         }
 
+    }
+
+    override suspend fun addPlayerToGame(roomCode: String, player: Player) {
+        dbGame.document(roomCode)
+            .update("players", FieldValue.arrayUnion(player))
+            .await()
+        Log.d(TAG, "Successfully added player!")
     }
 
     override suspend fun updatePlayers(gameRoom: GameRoom, uid: String) {
@@ -285,18 +280,12 @@ class FireStoreRepositoryImpl(
         dbGame.document(gameRoom.roomCode)
             .update("gameLog", FieldValue.arrayUnion(logMessage))
             .addOnSuccessListener {
-//                    Log.d(TAG, "Successfully added player!")
-                /*logMessage.uid?.let { uid ->
-                    GameServer.updateUnreadStatusForAll(
-                        gameRoom = gameRoom,
-                        uid = uid
-                    )
-                }*/
             }
             .addOnFailureListener {
-//                    Log.d(TAG, "Failed to add player! ${it.localizedMessage}")
             }
     }
+
+
 
 
 }

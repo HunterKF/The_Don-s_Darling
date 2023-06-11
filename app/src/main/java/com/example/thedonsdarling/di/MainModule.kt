@@ -13,6 +13,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import javax.inject.Named
 import javax.inject.Singleton
 
 @Module
@@ -27,27 +28,30 @@ object MainModule {
 
     @Provides
     @Singleton
+    @Named("dbGame")
     fun provideGameReference() = Firebase.firestore.collection("game")
 
     @Provides
     @Singleton
+    @Named("dbPlayers")
     fun providePlayersReference() = Firebase.firestore.collection("players")
 
 
     @Provides
     @Singleton
     fun provideFireStoreRepository(
-        dbPlayers: CollectionReference,
-        dbGame: CollectionReference,
+        @Named("dbPlayers") dbPlayers: CollectionReference,
+        @Named("dbGame") dbGame: CollectionReference,
     ): FireStoreRepository = FireStoreRepositoryImpl(dbPlayers, dbGame)
 
     @Provides
+    @Singleton
     fun provideUseCases(
         repository: FireStoreRepository,
     ) = UseCases(
         addGameToMultiplePlayers = AddGameToMultiplePlayers(repository),
         addGameToPlayer = AddGameToPlayer(repository),
-        createRoom = CreateRoom(repository),
+        createBlankRoom = CreateBlankRoom(repository),
         createUserPlayer = CreateUserPlayer(repository),
         deleteRoomFromFirestore = DeleteRoomFromFirestore(repository),
         deleteUserGameRoomForAll = DeleteUserGameRoomForAll(repository),
