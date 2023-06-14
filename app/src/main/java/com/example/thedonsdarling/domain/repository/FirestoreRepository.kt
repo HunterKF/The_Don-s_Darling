@@ -47,4 +47,5 @@ interface FireStoreRepository {
 
     suspend fun updatePlayers(gameRoom: GameRoom, uid: String)
     suspend fun sendMessage(gameRoom: GameRoom, logMessage: LogMessage)
+    fun returnUid(): String?
 }

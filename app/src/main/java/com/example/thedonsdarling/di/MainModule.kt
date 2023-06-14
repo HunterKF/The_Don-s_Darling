@@ -92,6 +92,7 @@ object MainModule {
         startNewGame = StartNewGame(),
         updateUnreadStatusForLocal = UpdateUnreadStatusForLocal(repository),
         updateUnreadStatusForAll = UpdateUnreadStatusForAll(repository),
-        sendMessage = SendMessage(repository)
+        sendMessage = SendMessage(repository),
+        getUid = GetUid(repository)
     )
 }

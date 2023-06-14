@@ -54,7 +54,7 @@ fun Messenger(gameRoom: GameRoom, gameViewModel: GameViewModel) {
         coroutineScope.launch {
             listState.animateScrollToItem(gameRoom.gameLog.size - 1)
         }
-        gameViewModel.currentUser?.let {
+        gameViewModel.currentUserUid?.let {
             gameViewModel.onUiEvent(UiEvent.UpdateUnreadStatus(gameRoom))
             /*GameServer.updateUnreadStatusForLocal(gameRoom, it.uid) */
         }

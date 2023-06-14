@@ -22,9 +22,9 @@ class Tools {
             return host.first().uid == currentUser!!.uid
         }
 
-        fun getPlayer(players: List<Player>, currentUser: FirebaseUser?): Player {
+        fun getPlayer(players: List<Player>, currentUserUid: String): Player {
             val player = players.filter {
-                it.uid == currentUser!!.uid
+                it.uid == currentUserUid
             }
             return player.first()
         }

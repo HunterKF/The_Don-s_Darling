@@ -101,10 +101,10 @@ fun GameContent(game: GameRoom, gameViewModel: GameViewModel, navController: Nav
     /*This constantly updates the player so you always have the player's current hand*/
     var localPlayer by remember {
         mutableStateOf(
-            gameViewModel.currentUser?.let {
+            gameViewModel.currentUserUid?.let { uid ->
                 HandleUser.getCurrentUser(
                     game.players,
-                    currentUser = it.uid
+                    currentUser = uid
                 )
             })
     }

@@ -1,7 +1,6 @@
 package com.example.thedonsdarling.presentation.game
 
 import android.content.Context
-import android.content.SharedPreferences
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -10,11 +9,11 @@ import androidx.navigation.NavController
 import com.example.thedonsdarling.R
 import com.example.thedonsdarling.Screen
 import com.example.thedonsdarling.TAG
-import com.example.thedonsdarling.data.gameserver.preferences.DefaultPreferences
 import com.example.thedonsdarling.domain.*
 import com.example.thedonsdarling.domain.models.GameRoom
 import com.example.thedonsdarling.domain.models.LogMessage
 import com.example.thedonsdarling.domain.models.Player
+import com.example.thedonsdarling.domain.preferences.Preferences
 import com.example.thedonsdarling.domain.use_cases.UseCases
 import com.example.thedonsdarling.domain.util.game.gamerules.CardRules.*
 import com.example.thedonsdarling.domain.util.Tools
@@ -36,7 +35,7 @@ import javax.inject.Inject
 @HiltViewModel
 class GameViewModel @Inject constructor(
     private val useCases: UseCases,
-    private val preferences: DefaultPreferences
+    private val preferences: Preferences
 ) : ViewModel() {
 
     private val loadingState = MutableStateFlow<GameState>(GameState.Loading)
@@ -44,7 +43,7 @@ class GameViewModel @Inject constructor(
     val state = loadingState.asStateFlow()
 
     val roomCode = mutableStateOf("1234")
-    val currentUser: FirebaseUser? = Firebase.auth.currentUser
+    val currentUserUid= useCases.getUid()
     var localPlayer = mutableStateOf(Player())
     val selectedPlayer = mutableStateOf(Player())
     private val playedCard = mutableStateOf(0)
@@ -585,7 +584,9 @@ class GameViewModel @Inject constructor(
             }
             is UiEvent.CreateUserPlayer -> {
                 viewModelScope.launch(Dispatchers.IO) {
-                    currentUser?.let { useCases.createUserPlayer(it.uid) }
+                    if (currentUserUid != null) {
+                        useCases.createUserPlayer(currentUserUid)
+                    }
                 }
             }
             is UiEvent.DeleteRoom -> {
@@ -643,10 +644,10 @@ class GameViewModel @Inject constructor(
             }
             is UiEvent.UpdateUnreadStatus -> {
                 viewModelScope.launch(Dispatchers.IO) {
-                    currentUser?.let {
+                    currentUserUid?.let {
                         useCases.updateUnreadStatusForLocal(
                             gameRoom = event.gameRoom,
-                            it.uid
+                            currentUserUid
                         )
                     }
 
@@ -656,10 +657,10 @@ class GameViewModel @Inject constructor(
                 viewModelScope.launch(Dispatchers.IO) {
 
                     useCases.sendMessage(gameRoom = event.gameRoom, logMessage = event.logMessage)
-                    currentUser?.let {
+                    currentUserUid?.let {
                         useCases.updateUnreadStatusForAll(
                             gameRoom = event.gameRoom,
-                            it.uid
+                            currentUserUid
                         )
                     }
                 }
@@ -720,8 +721,8 @@ class GameViewModel @Inject constructor(
     fun localizeCurrentPlayer(
         game: GameRoom,
     ) {
-        if (localPlayer.value.uid == "") {
-            localPlayer.value = Tools.getPlayer(game.players, currentUser)
+        if (localPlayer.value.uid == "" && currentUserUid != null) {
+            localPlayer.value = Tools.getPlayer(game.players, currentUserUid)
         }
     }
 

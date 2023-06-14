@@ -5,8 +5,10 @@ import com.example.thedonsdarling.TAG
 import com.example.thedonsdarling.domain.models.*
 import com.example.thedonsdarling.domain.repository.FireStoreRepository
 import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FieldValue
+import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
@@ -285,7 +287,9 @@ class FireStoreRepositoryImpl(
             }
     }
 
-
+    override fun returnUid(): String? {
+        return Firebase.auth.currentUser?.uid
+    }
 
 
 }

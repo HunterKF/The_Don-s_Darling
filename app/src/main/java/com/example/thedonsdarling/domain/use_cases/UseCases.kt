@@ -21,5 +21,6 @@ data class UseCases(
     val startNewGame: StartNewGame,
     val updateUnreadStatusForLocal: UpdateUnreadStatusForLocal,
     val updateUnreadStatusForAll: UpdateUnreadStatusForAll,
-    val sendMessage: SendMessage
+    val sendMessage: SendMessage,
+    val getUid: GetUid
 )

@@ -66,7 +66,7 @@ fun SelectPlayer(
 
                 gameRoom.players.forEach {
 
-                    if (it.uid != gameViewModel.currentUser!!.uid) {
+                    if (it.uid != gameViewModel.currentUserUid) {
                         val avatar = Avatar.setAvatar(it.avatar)
                         val color by animateColorAsState(targetValue = if (it == selectedPlayer.value) WarmRed
                         else MaterialTheme.colors.primary)
