@@ -31,9 +31,7 @@ fun WelcomeScreen(
     welcomeViewModel: WelcomeViewModel = hiltViewModel(),
 ) {
     val pages = listOf(
-        OnBoardingPage.First,
-        OnBoardingPage.Second,
-        OnBoardingPage.Third
+        OnBoardingPage.First, OnBoardingPage.Second, OnBoardingPage.Third
     )
     val pagerState = rememberPagerState()
 
@@ -45,22 +43,21 @@ fun WelcomeScreen(
             modifier = Modifier.fillMaxSize()
         ) {
             HorizontalPager(
-                modifier = Modifier.weight(10f),
-                count = 3,
-                state = pagerState
+                modifier = Modifier.weight(10f), count = 3, state = pagerState
             ) { position ->
                 PagerScreen(onBoardingPage = pages[position])
             }
             HorizontalPagerIndicator(
                 modifier = Modifier
                     .align(CenterHorizontally)
-                    .weight(1f),
-                pagerState = pagerState
+                    .weight(1f), pagerState = pagerState
             )
             FinishButton(modifier = Modifier.weight(1f), pagerState = pagerState) {
-                welcomeViewModel.saveOnBoardingState(completed = true)
-                navController.popBackStack()
-                navController.navigate(Screen.Home.route)
+                welcomeViewModel.onWelcomeEvent(WelcomeEvent.OnCompletion {
+                    navController.popBackStack()
+                    navController.navigate(Screen.Home.route)
+                })
+
             }
         }
     }
@@ -73,8 +70,7 @@ fun PagerScreen(
 ) {
 
     Column(
-        modifier = Modifier
-            .fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top
     ) {
@@ -97,8 +93,7 @@ fun PagerScreen(
             )
         }
         Text(
-            modifier = Modifier
-                .fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth(),
             text = onBoardingPage.title,
             fontSize = MaterialTheme.typography.h4.fontSize,
             fontWeight = FontWeight.Bold,
@@ -124,11 +119,15 @@ fun PagerScreen(
                     .padding(horizontal = 40.dp)
                     .padding(top = 20.dp),
                 fullText = stringResource(R.string.agree_to),
-                linkText = listOf(stringResource(R.string.privacy_policy),
-                    stringResource(
-                        R.string.terms_of_use)),
-                hyperlinks = listOf("https://github.com/HunterKF/Terms-and-Policies/blob/main/Privacy%20Policy%20for%20The%20Don's%20Darling%20-%20TermsFeed.pdf",
-                    "https://github.com/HunterKF/Terms-and-Policies/blob/main/The%20Don's%20Darling%20-%20Terms%20of%20Use.pdf"),
+                linkText = listOf(
+                    stringResource(R.string.privacy_policy), stringResource(
+                        R.string.terms_of_use
+                    )
+                ),
+                hyperlinks = listOf(
+                    "https://github.com/HunterKF/Terms-and-Policies/blob/main/Privacy%20Policy%20for%20The%20Don's%20Darling%20-%20TermsFeed.pdf",
+                    "https://github.com/HunterKF/Terms-and-Policies/blob/main/The%20Don's%20Darling%20-%20Terms%20of%20Use.pdf"
+                ),
                 fontSize = MaterialTheme.typography.subtitle1.fontSize,
                 textColor = textColor
             )
@@ -145,19 +144,15 @@ fun FinishButton(
     onClick: () -> Unit,
 ) {
     Row(
-        modifier = modifier
-            .padding(horizontal = 40.dp),
+        modifier = modifier.padding(horizontal = 40.dp),
         verticalAlignment = Alignment.Top,
         horizontalArrangement = Arrangement.Center
     ) {
         AnimatedVisibility(
-            modifier = Modifier.fillMaxWidth(),
-            visible = pagerState.currentPage == 2
+            modifier = Modifier.fillMaxWidth(), visible = pagerState.currentPage == 2
         ) {
             CustomTextButton(
-                enabled = true,
-                onClick = onClick,
-                text = stringResource(R.string.finish)
+                enabled = true, onClick = onClick, text = stringResource(R.string.finish)
             )
         }
     }

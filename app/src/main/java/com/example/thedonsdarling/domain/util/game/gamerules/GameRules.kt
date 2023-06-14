@@ -280,7 +280,6 @@ class GameRules {
         }
 
         fun eliminatePlayer(gameRoom: GameRoom, player: Player): GameRoom {
-//            Log.d(TAG, "eliminatePlayer is being called")
 
             gameRoom.deck.discardDeck = addToDiscardPile(player.hand.first(), gameRoom)
             gameRoom.players.forEach {
@@ -289,7 +288,6 @@ class GameRules {
                     it.hand.clear()
                 }
             }
-//            Log.d(TAG, "eliminatePlayer is done")
             //returns a gameroom where player is not alive, the discard deck is updated.
             return gameRoom
         }
@@ -358,9 +356,8 @@ class GameRules {
         }
 
         fun assignTurns(list: List<Player>, gameTurn: Int): List<Player> {
-//            Log.d(TAG, "assignTurns is being called")
 
-            val turn = mutableStateOf(1)
+            val turn = mutableStateOf(0)
             list.forEach {
                 it.turnOrder = turn.value
                 if (it.turnOrder == gameTurn) {
@@ -369,25 +366,20 @@ class GameRules {
                 }
                 turn.value = turn.value + 1
             }
-//            Log.d(TAG, "assignTurns is done")
 
             return list
         }
 
         fun dealCards(gameRoom: GameRoom): GameRoom {
-//            Log.d(TAG, "dealCards is being called")
             println("DEAL CARDS")
+            /*Happens at the beginning of a game/round. Deals cards to each player accordingly.*/
             val size = mutableStateOf(gameRoom.deck.deck.size)
             gameRoom.players.forEach { player ->
-//                Log.d("dealCards", "deck size: ${size.value} ")
 
                 if (player.turn) {
+
                     var randomCard = Tools.randomNumber(size.value)
                     size.value -= 2
-
-//                    Log.d("dealCards", "(if) Dealing a card: $randomCard ")
-//                    Log.d("dealCards", "(if) Deck size: ${size.value}")
-
 
                     if (randomCard == size.value) {
                         randomCard - 1
@@ -403,8 +395,6 @@ class GameRules {
                 } else {
 
                     val randomCard = Tools.randomNumber(size.value)
-//                    Log.d("dealCards", "(else) Dealing a card: $randomCard")
-//                    Log.d("dealCards", "(else) Deck size: ${size.value}")
 
                     if (randomCard == size.value) {
                         randomCard - 1

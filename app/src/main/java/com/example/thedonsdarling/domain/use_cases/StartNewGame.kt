@@ -6,7 +6,7 @@ import com.example.thedonsdarling.domain.util.game.gamerules.GameRules
 
 class StartNewGame {
     operator fun invoke(gameRoom: GameRoom): GameRoom{
-        val turn = (1..gameRoom.players.size).shuffled().random()
+        val turn = (0 until gameRoom.players.size).shuffled().random()
         gameRoom.players.forEach {
             it.hand.clear()
             it.isWinner = false

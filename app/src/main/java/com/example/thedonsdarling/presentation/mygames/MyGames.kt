@@ -75,7 +75,7 @@ private fun MyGamesContent(
                     .shadow(12.dp, RoundedCornerShape(0.dp)),
                 backgroundColor = Color.White
             ) {
-                var tabIndex by remember {
+                /*var tabIndex by remember {
                     mutableStateOf(0)
                 }
                 TabRow(
@@ -111,7 +111,7 @@ private fun MyGamesContent(
 
                         }
                     }
-                }
+                }*/
 
                 items.forEach { screen ->
                     var vector = R.drawable.icon_end_game

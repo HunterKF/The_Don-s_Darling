@@ -7,6 +7,7 @@ import androidx.activity.viewModels
 import androidx.compose.runtime.getValue
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.navigation.compose.rememberNavController
+import com.example.thedonsdarling.domain.preferences.Preferences
 import com.example.thedonsdarling.presentation.SplashViewModel
 import com.example.thedonsdarling.presentation.createroom.CreateRoomViewModel
 import com.example.thedonsdarling.presentation.game.GameViewModel
@@ -23,22 +24,27 @@ class MainActivity : ComponentActivity() {
     @Inject
     lateinit var splashViewModel: SplashViewModel
 
+    @Inject
+    lateinit var preferences: Preferences
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        installSplashScreen().setKeepOnScreenCondition {
+        /*installSplashScreen().setKeepOnScreenCondition {
             !splashViewModel.isLoading.value
-        }
+        }*/
         val gameViewModel by viewModels<GameViewModel>()
         val createRoomViewModel by viewModels<CreateRoomViewModel>()
         val gameLobbyViewModel by viewModels<GameLobbyViewModel>()
         val myGamesViewModel by viewModels<MyGamesViewModel>()
+        val shouldShowOnboarding = preferences.loadShouldShowOnboarding()
+
 
 //        WindowCompat.setDecorFitsSystemWindows(window, false)
         setContent {
 
             TheDonsDarlingTheme {
                 val navController = rememberNavController()
-                val screen by splashViewModel.startDestination
+                val screen = if (shouldShowOnboarding) Screen.Welcome.route else Screen.Home.route
 
                 Navigation(
                     navController = navController,

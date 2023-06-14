@@ -643,7 +643,7 @@ class GameRulesTest {
     }
 
     @Test
-    fun `endRound, return updated deck`() {
+    fun `eliminatePlayer, eliminate player 3, return gameRoom`() {
         val card = 4
         val gameRoom2Players = GameRoom().copy(
             turn = 4,
@@ -652,18 +652,18 @@ class GameRulesTest {
             playLimit = 5,
             players = listOf(
                 testPlayer1.copy(
-                    hand = arrayListOf(card),
+                    hand = arrayListOf(2),
                     isAlive = true,
                     turn = false
                 ),
                 testPlayer2.copy(
-                    hand = arrayListOf(1),
+                    hand = arrayListOf(8),
                     isAlive = true,
                     turn = false
 
                 ),
                 testPlayer3.copy(
-                    hand = arrayListOf(2),
+                    hand = arrayListOf(card),
                     isAlive = true,
                     turn = false
                 ),
@@ -685,15 +685,214 @@ class GameRulesTest {
 
 
         val result =
-            GameRules.drawCard(gameRoom2Players)
+            GameRules.eliminatePlayer(gameRoom2Players, gameRoom2Players.players[2])
+        Truth.assertThat(result.players[2].isAlive).isFalse()
+        Truth.assertThat(result.players[2].hand).isEmpty()
+        Truth.assertThat(result.deck.discardDeck).contains(card)
+    }
 
-        Truth.assertThat(result).isGreaterThan(0)
-        Truth.assertThat(result).isLessThan(9)
+    @Test
+    fun `assignTurns, return gameRoom`() {
+        for (i in 1..100) {
+            val card = 4
+            val gameRoom2Players = GameRoom().copy(
+                turn = 1,
+                roomCode = "ABCD",
+                roomNickname = "QRST",
+                playLimit = 5,
+                players = listOf(
+                    testPlayer1.copy(
+                        hand = arrayListOf(2),
+                        isAlive = true,
+                        turn = false,
+                        turnOrder = 1
+
+                    ),
+                    testPlayer2.copy(
+                        hand = arrayListOf(8),
+                        isAlive = true,
+                        turn = false,
+                        turnOrder = 1
+
+                    ),
+                    testPlayer3.copy(
+                        hand = arrayListOf(card),
+                        isAlive = true,
+                        turn = false,
+                        turnOrder = 1
+                    ),
+                    testPlayer4.copy(
+                        hand = arrayListOf(4),
+                        isAlive = true,
+                        turn = false,
+                        turnOrder = 1
+                    )
+                ),
+                start = true,
+                host = "apple_uid",
+                roundOver = false,
+                gameOver = false,
+                showLogs = true,
+                deleteRoom = false,
+                deckClear = false,
+                gameLog = arrayListOf()
+            )
+            val gameTurn = (0 until gameRoom2Players.players.size).shuffled().random()
+
+            val result =
+                GameRules.assignTurns(gameRoom2Players.players, gameTurn)
+            println("Gameturn $gameTurn")
+            Truth.assertThat(result.first { it.turn }).isNotNull()
+            Truth.assertThat(result.first { it.turn }).isEqualTo(gameRoom2Players.players[gameTurn])
+        }
     }
 
 
-    /*
-    * TODO - eliminate player
-    *  TODO - AssignTurns
-    *   Todo - deal cards*/
+    @Test
+    fun `dealCards, all players alive, P4's turn, return gameRoom`() {
+        val gameRoom2Players = GameRoom().copy(
+            turn = 4,
+            roomCode = "ABCD",
+            roomNickname = "QRST",
+            playLimit = 5,
+            players = listOf(
+                testPlayer1.copy(
+                    hand = arrayListOf(),
+                    isAlive = true,
+                    turn = false
+                ),
+                testPlayer2.copy(
+                    hand = arrayListOf(),
+                    isAlive = true,
+                    turn = false
+
+                ),
+                testPlayer3.copy(
+                    hand = arrayListOf(),
+                    isAlive = true,
+                    turn = false
+                ),
+                testPlayer4.copy(
+                    hand = arrayListOf(),
+                    isAlive = true,
+                    turn = true
+                )
+            ),
+            start = true,
+            host = "apple_uid",
+            roundOver = false,
+            gameOver = false,
+            showLogs = true,
+            deleteRoom = false,
+            deckClear = false,
+            gameLog = arrayListOf()
+        )
+
+
+        val result =
+            GameRules.dealCards(gameRoom2Players)
+        println(result.players)
+        for (i in 0 until  3) {
+            if (!result.players[i].turn) {
+                Truth.assertThat(result.players[i].hand.size).isEqualTo(1)
+
+            } else {
+                Truth.assertThat(result.players[i].hand.size).isEqualTo(2)
+            }
+        }
+        Truth.assertThat(result.deck.deck.size).isEqualTo(11)
+    }
+    @Test
+    fun `dealCards, 3 players, P3's turn, return gameRoom`() {
+        val gameRoom2Players = GameRoom().copy(
+            turn = 4,
+            roomCode = "ABCD",
+            roomNickname = "QRST",
+            playLimit = 5,
+            players = listOf(
+                testPlayer1.copy(
+                    hand = arrayListOf(),
+                    isAlive = true,
+                    turn = false
+                ),
+                testPlayer2.copy(
+                    hand = arrayListOf(),
+                    isAlive = true,
+                    turn = false
+
+                ),
+                testPlayer3.copy(
+                    hand = arrayListOf(),
+                    isAlive = true,
+                    turn = true
+                )
+            ),
+            start = true,
+            host = "apple_uid",
+            roundOver = false,
+            gameOver = false,
+            showLogs = true,
+            deleteRoom = false,
+            deckClear = false,
+            gameLog = arrayListOf()
+        )
+
+
+        val result =
+            GameRules.dealCards(gameRoom2Players)
+        println(result.players)
+        for (i in 0 until  3) {
+            if (!result.players[i].turn) {
+                Truth.assertThat(result.players[i].hand.size).isEqualTo(1)
+
+            } else {
+                Truth.assertThat(result.players[i].hand.size).isEqualTo(2)
+            }
+        }
+        Truth.assertThat(result.deck.deck.size).isEqualTo(12)
+    }
+    @Test
+    fun `dealCards, 2 players alive, P1's turn, return gameRoom`() {
+        val gameRoom2Players = GameRoom().copy(
+            turn = 4,
+            roomCode = "ABCD",
+            roomNickname = "QRST",
+            playLimit = 5,
+            players = listOf(
+                testPlayer1.copy(
+                    hand = arrayListOf(),
+                    isAlive = true,
+                    turn = false
+                ),
+                testPlayer2.copy(
+                    hand = arrayListOf(),
+                    isAlive = true,
+                    turn = true
+
+                )
+            ),
+            start = true,
+            host = "apple_uid",
+            roundOver = false,
+            gameOver = false,
+            showLogs = true,
+            deleteRoom = false,
+            deckClear = false,
+            gameLog = arrayListOf()
+        )
+
+
+        val result =
+            GameRules.dealCards(gameRoom2Players)
+        println(result.players)
+        for (i in 0 until  2) {
+            if (!result.players[i].turn) {
+                Truth.assertThat(result.players[i].hand.size).isEqualTo(1)
+
+            } else {
+                Truth.assertThat(result.players[i].hand.size).isEqualTo(2)
+            }
+        }
+        Truth.assertThat(result.deck.deck.size).isEqualTo(13)
+    }
 }

@@ -1,8 +1,12 @@
 package com.example.thedonsdarling.di
 
+import android.app.Application
 import android.content.Context
+import android.content.SharedPreferences
+import com.example.thedonsdarling.data.gameserver.preferences.DefaultPreferences
 import com.example.thedonsdarling.data.gameserver.repository.FireStoreRepositoryImpl
 import com.example.thedonsdarling.domain.DataStoreRepository
+import com.example.thedonsdarling.domain.preferences.Preferences
 import com.example.thedonsdarling.domain.repository.FireStoreRepository
 import com.example.thedonsdarling.domain.use_cases.*
 import com.google.firebase.firestore.CollectionReference
@@ -25,6 +29,21 @@ object MainModule {
     fun provideDataStoreRepository(
         @ApplicationContext context: Context,
     ) = DataStoreRepository(context = context)
+
+    @Provides
+    @Singleton
+    fun provideSharedPrefences(
+        app: Application
+    ): SharedPreferences {
+        return app.getSharedPreferences("shared_pref", Context.MODE_PRIVATE)
+    }
+
+    @Provides
+    @Singleton
+    fun providePreferences(sharedPreferences: SharedPreferences): Preferences {
+        return DefaultPreferences(sharedPreferences)
+    }
+
 
     @Provides
     @Singleton
