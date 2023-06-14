@@ -226,7 +226,7 @@ fun BottomBar(
         }
         val offsetX = remember { Animatable(0f) }
 
-        if (cardTitle != "" && player.guide) {
+        if (cardTitle != "" && gameViewModel.showGuides.value) {
             Box(
                 modifier = Modifier
                     .offset(y = (-200).dp)

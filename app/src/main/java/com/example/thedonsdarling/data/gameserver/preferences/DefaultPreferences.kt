@@ -2,10 +2,10 @@ package com.example.thedonsdarling.data.gameserver.preferences
 
 import android.content.SharedPreferences
 import com.example.thedonsdarling.domain.preferences.Preferences
+import javax.inject.Inject
 
-class DefaultPreferences(
+class DefaultPreferences @Inject constructor(
     private val sharedPref: SharedPreferences,
-
     ) : Preferences {
     override fun toggleGuideEnabled(enabled: Boolean) {
         sharedPref.edit()

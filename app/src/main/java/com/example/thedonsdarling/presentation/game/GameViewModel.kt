@@ -1,6 +1,7 @@
 package com.example.thedonsdarling.presentation.game
 
 import android.content.Context
+import android.content.SharedPreferences
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -9,6 +10,7 @@ import androidx.navigation.NavController
 import com.example.thedonsdarling.R
 import com.example.thedonsdarling.Screen
 import com.example.thedonsdarling.TAG
+import com.example.thedonsdarling.data.gameserver.preferences.DefaultPreferences
 import com.example.thedonsdarling.domain.*
 import com.example.thedonsdarling.domain.models.GameRoom
 import com.example.thedonsdarling.domain.models.LogMessage
@@ -34,6 +36,7 @@ import javax.inject.Inject
 @HiltViewModel
 class GameViewModel @Inject constructor(
     private val useCases: UseCases,
+    private val preferences: DefaultPreferences
 ) : ViewModel() {
 
     private val loadingState = MutableStateFlow<GameState>(GameState.Loading)
@@ -54,6 +57,8 @@ class GameViewModel @Inject constructor(
     val isHost = mutableStateOf(false)
     val endRoundAlert = mutableStateOf(false)
     var winner = mutableStateOf(Player())
+
+    val showGuides = mutableStateOf(preferences.getGuideEnabled())
 
 
     val chatOpen = mutableStateOf(false)

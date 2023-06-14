@@ -1,6 +1,7 @@
 package com.example.thedonsdarling
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -20,9 +21,9 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-
+/*
     @Inject
-    lateinit var splashViewModel: SplashViewModel
+    lateinit var splashViewModel: SplashViewModel*/
 
     @Inject
     lateinit var preferences: Preferences
@@ -36,6 +37,7 @@ class MainActivity : ComponentActivity() {
         val createRoomViewModel by viewModels<CreateRoomViewModel>()
         val gameLobbyViewModel by viewModels<GameLobbyViewModel>()
         val myGamesViewModel by viewModels<MyGamesViewModel>()
+
         val shouldShowOnboarding = preferences.loadShouldShowOnboarding()
 
 
@@ -45,6 +47,7 @@ class MainActivity : ComponentActivity() {
             TheDonsDarlingTheme {
                 val navController = rememberNavController()
                 val screen = if (shouldShowOnboarding) Screen.Welcome.route else Screen.Home.route
+                Log.d("MainActivity", "Value of shouldShow: $shouldShowOnboarding")
 
                 Navigation(
                     navController = navController,

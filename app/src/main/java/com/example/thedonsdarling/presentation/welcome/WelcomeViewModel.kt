@@ -16,7 +16,7 @@ class WelcomeViewModel @Inject constructor(
         when (event) {
             is WelcomeEvent.OnCompletion -> {
                 viewModelScope.launch {
-                    preferences.saveShouldShowOnboarding(true)
+                    preferences.saveShouldShowOnboarding(false)
                     event.onNavigate()
                 }
             }
