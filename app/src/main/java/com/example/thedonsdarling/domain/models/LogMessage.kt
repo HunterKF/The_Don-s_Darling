@@ -3,14 +3,14 @@ package com.example.thedonsdarling.domain.models
 import java.util.*
 
 data class LogMessage(
-    var message: String,
-    var toastMessage: String?,
+    var message: UiText,
+    var toastMessage: UiText?,
     val type: String,
     var uid: String?,
     val date: Date,
 ) {
     constructor(): this(
-        "",
+        UiText.DynamicString(""),
         null,
         "",
         null,
@@ -21,7 +21,7 @@ data class LogMessage(
     * serverMessage
     * userMessage*/
     companion object {
-        fun createLogMessage(message: String, toastMessage: String?, uid: String?, type: String): LogMessage {
+        fun createLogMessage(message: UiText, toastMessage: UiText?, uid: String?, type: String): LogMessage {
 
             return LogMessage(
                 message = message,

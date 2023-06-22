@@ -2,6 +2,7 @@ package com.example.thedonsdarling.presentation.game
 
 import android.content.Context
 import android.util.Log
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -13,6 +14,7 @@ import com.example.thedonsdarling.domain.*
 import com.example.thedonsdarling.domain.models.GameRoom
 import com.example.thedonsdarling.domain.models.LogMessage
 import com.example.thedonsdarling.domain.models.Player
+import com.example.thedonsdarling.domain.models.UiText
 import com.example.thedonsdarling.domain.preferences.Preferences
 import com.example.thedonsdarling.domain.use_cases.UseCases
 import com.example.thedonsdarling.domain.util.game.gamerules.CardRules.*
@@ -35,7 +37,7 @@ import javax.inject.Inject
 @HiltViewModel
 class GameViewModel @Inject constructor(
     private val useCases: UseCases,
-    private val preferences: Preferences
+    private val preferences: Preferences,
 ) : ViewModel() {
 
     private val loadingState = MutableStateFlow<GameState>(GameState.Loading)
@@ -43,7 +45,7 @@ class GameViewModel @Inject constructor(
     val state = loadingState.asStateFlow()
 
     val roomCode = mutableStateOf("1234")
-    val currentUserUid= useCases.getUid()
+    val currentUserUid = useCases.getUid()
     var localPlayer = mutableStateOf(Player())
     val selectedPlayer = mutableStateOf(Player())
     private val playedCard = mutableStateOf(0)
@@ -52,7 +54,7 @@ class GameViewModel @Inject constructor(
     val revealCardAlert = mutableStateOf(false)
     private val emptyCard = mutableStateOf(0)
     val resultAlert = mutableStateOf(false)
-    val resultMessage = mutableStateOf("")
+    private val resultMessage: MutableState<UiText> = mutableStateOf(UiText.DynamicString(""))
     val isHost = mutableStateOf(false)
     val endRoundAlert = mutableStateOf(false)
     var winner = mutableStateOf(Player())
@@ -116,14 +118,18 @@ class GameViewModel @Inject constructor(
                             gameRoom = gameRoom
                         )
                     )
-                    var message = ""
-                    var toastMessage = ""
+                    var message: UiText = UiText.DynamicString("")
+                    var toastMessage: UiText = UiText.DynamicString("")
                     gameRoom.players.forEach {
                         if (it.uid == localPlayer.value.uid) {
                             it.protected = TheDoctor.toggleProtection(it)
-                            message = context.getString(R.string.card_doctor_message, it.nickName)
+                            message =
+                                UiText.StringResource(R.string.card_doctor_message, it.nickName)
                             toastMessage =
-                                context.getString(R.string.card_doctor_toast_message, it.nickName)
+                                UiText.StringResource(
+                                    R.string.card_doctor_toast_message,
+                                    it.nickName
+                                )
                         }
                     }
                     val logMessage =
@@ -179,11 +185,11 @@ class GameViewModel @Inject constructor(
                     )
                     val logMessage =
                         LogMessage.createLogMessage(
-                            message = context.getString(
+                            message = UiText.StringResource(
                                 R.string.card_courtesan_message,
                                 localPlayer.value.nickName
                             ),
-                            toastMessage = context.getString(
+                            toastMessage = UiText.StringResource(
                                 R.string.card_courtesan_toast_message,
                                 localPlayer.value.nickName
                             ),
@@ -192,6 +198,7 @@ class GameViewModel @Inject constructor(
                         )
                     useCases.setGameInDB(
                         GameRules.onEnd(gameRoom = gameRoom, logMessage = logMessage)
+
                     )
                 }
 
@@ -214,11 +221,11 @@ class GameViewModel @Inject constructor(
                     val result = Darling.eliminatePlayer(gameRoom, player)
                     val logMessage =
                         LogMessage.createLogMessage(
-                            message = context.getString(
+                            message = UiText.StringResource(
                                 R.string.card_darling_message,
                                 player.nickName
                             ),
-                            toastMessage = context.getString(
+                            toastMessage = UiText.StringResource(
                                 R.string.card_darling_toast_message,
                                 player.nickName
                             ),
@@ -258,7 +265,7 @@ class GameViewModel @Inject constructor(
                     viewModelScope.launch(Dispatchers.IO) {
                         revealCardAlert.value = true
                         emptyCard.value = selectedPlayer.hand.first()
-                        val privateEyeMessage = context.getString(
+                        val privateEyeMessage = UiText.StringResource(
                             R.string.card_private_eye_message,
                             localPlayer.value.nickName,
                             selectedPlayer.nickName
@@ -295,12 +302,12 @@ class GameViewModel @Inject constructor(
                     )
                     when (result.cardResult) {
                         is Moneylender.Player1Wins -> {
-                            result.message = context.getString(
+                            result.message = UiText.StringResource(
                                 R.string.card_moneylender_message_win,
                                 localPlayer.value.nickName,
                                 selectedPlayer.nickName
                             )
-                            result.toastMessage = context.getString(
+                            result.toastMessage = UiText.StringResource(
                                 R.string.card_moneylender_toast_message_win,
                                 localPlayer.value.nickName,
                                 selectedPlayer.nickName
@@ -308,24 +315,24 @@ class GameViewModel @Inject constructor(
 
                         }
                         is Moneylender.Player2Wins -> {
-                            result.message = context.getString(
+                            result.message = UiText.StringResource(
                                 R.string.card_moneylender_message_lose,
                                 localPlayer.value.nickName,
                                 selectedPlayer.nickName
                             )
-                            result.toastMessage = context.getString(
+                            result.toastMessage = UiText.StringResource(
                                 R.string.card_moneylender_toast_message_lose,
                                 localPlayer.value.nickName,
                                 selectedPlayer.nickName
                             )
                         }
                         is Moneylender.Draw -> {
-                            result.message = context.getString(
+                            result.message = UiText.StringResource(
                                 R.string.card_moneylender_message_tie,
                                 localPlayer.value.nickName,
                                 selectedPlayer.nickName
                             )
-                            result.toastMessage = context.getString(
+                            result.toastMessage = UiText.StringResource(
                                 R.string.card_moneylender_toast_message_tie,
                                 localPlayer.value.nickName,
                                 selectedPlayer.nickName
@@ -350,6 +357,7 @@ class GameViewModel @Inject constructor(
                         result.game?.let {
                             useCases.setGameInDB(
                                 GameRules.onEnd(gameRoom = it, logMessage = logMessage)
+
                             )
                         }
                     }
@@ -361,17 +369,17 @@ class GameViewModel @Inject constructor(
                         gameRoom = gameRoom,
                     )
                     val player2Card =
-                        context.getString(CardAvatar.setCardAvatar(selectedPlayer.hand.first()).cardName)
+                        UiText.StringResource(CardAvatar.setCardAvatar(selectedPlayer.hand.first()).cardName)
 
                     when (result.cardResult) {
                         is Wiseguy.ForcedToDiscard -> {
-                            result.message = context.getString(
+                            result.message = UiText.StringResource(
                                 R.string.card_wiseguy_message,
                                 localPlayer.value.nickName,
                                 selectedPlayer.nickName,
                                 player2Card
                             )
-                            result.toastMessage = context.getString(
+                            result.toastMessage = UiText.StringResource(
                                 R.string.card_wiseguy_toast_message,
                                 localPlayer.value.nickName,
                                 selectedPlayer.nickName,
@@ -380,25 +388,25 @@ class GameViewModel @Inject constructor(
 
                         }
                         is Wiseguy.ForcedToDiscardDarling -> {
-                            result.message = context.getString(
+                            result.message = UiText.StringResource(
                                 R.string.card_darling_forced_message,
                                 localPlayer.value.nickName,
                                 selectedPlayer.nickName,
                             )
-                            result.toastMessage = context.getString(
+                            result.toastMessage = UiText.StringResource(
                                 R.string.card_darling_forced_toast_message,
                                 localPlayer.value.nickName,
                                 selectedPlayer.nickName,
                             )
                         }
                         is Wiseguy.ForcedToDiscardAndEmptyDeck -> {
-                            result.message = context.getString(
+                            result.message = UiText.StringResource(
                                 R.string.card_wiseguy_message_empty_deck,
                                 localPlayer.value.nickName,
                                 selectedPlayer.nickName,
                                 player2Card
                             )
-                            result.toastMessage = context.getString(
+                            result.toastMessage = UiText.StringResource(
                                 R.string.card_wiseguy_toast_message_empty_deck,
                                 localPlayer.value.nickName,
                                 selectedPlayer.nickName,
@@ -420,6 +428,7 @@ class GameViewModel @Inject constructor(
                         viewModelScope.launch(Dispatchers.IO) {
                             useCases.setGameInDB(
                                 GameRules.onEnd(gameRoom = updatedGame, logMessage = logMessage)
+
                             )
                         }
                     }
@@ -432,12 +441,12 @@ class GameViewModel @Inject constructor(
                         player2 = selectedPlayer,
                         gameRoom = gameRoom
                     )
-                    result.message = context.getString(
+                    result.message = UiText.StringResource(
                         R.string.card_the_don_message,
                         localPlayer.value.nickName,
                         selectedPlayer.nickName
                     )
-                    result.toastMessage = context.getString(
+                    result.toastMessage = UiText.StringResource(
                         R.string.card_the_don_toast_message,
                         localPlayer.value.nickName,
                         selectedPlayer.nickName
@@ -457,6 +466,7 @@ class GameViewModel @Inject constructor(
                     viewModelScope.launch(Dispatchers.IO) {
                         useCases.setGameInDB(
                             GameRules.onEnd(gameRoom = gameRoom, logMessage = logMessage)
+
                         )
                     }
 
@@ -464,14 +474,14 @@ class GameViewModel @Inject constructor(
             }
         } else {
             Log.d("Handmaid", "Selected player was protected.")
-            val cardName = context.getString(card.cardName)
-            val message = context.getString(
-              R.string.card_doctor_protection_message,
-              localPlayer.value.nickName,
-              cardName,
-              selectedPlayer.nickName
+            val cardName = UiText.StringResource(card.cardName)
+            val message = UiText.StringResource(
+                R.string.card_doctor_protection_message,
+                localPlayer.value.nickName,
+                cardName,
+                selectedPlayer.nickName
             )
-            val toastMessage = context.getString(
+            val toastMessage = UiText.StringResource(
                 R.string.card_doctor_protection_toast_message,
                 localPlayer.value.nickName,
                 cardName,
@@ -507,16 +517,16 @@ class GameViewModel @Inject constructor(
                 it.isAlive = result.player2.isAlive
             }
         }
-        val cardName = context.getString(CardAvatar.setCardAvatar(card).cardName)
+        val cardName = UiText.StringResource(CardAvatar.setCardAvatar(card).cardName)
         when (result.cardResult) {
             is Policeman.CorrectGuess -> {
-                result.message = context.getString(
+                result.message = UiText.StringResource(
                     R.string.card_policemen_message_correct,
                     localPlayer.value.nickName,
                     selectedPlayer.value.nickName,
                     cardName
                 )
-                result.toastMessage = context.getString(
+                result.toastMessage = UiText.StringResource(
                     R.string.card_policemen_toast_message_correct,
                     localPlayer.value.nickName,
                     selectedPlayer.value.nickName,
@@ -524,13 +534,13 @@ class GameViewModel @Inject constructor(
                 )
             }
             is Policeman.WrongGuess -> {
-                result.message = context.getString(
+                result.message = UiText.StringResource(
                     R.string.card_policemen_message_incorrect,
                     localPlayer.value.nickName,
                     selectedPlayer.value.nickName,
-                    context.getString(CardAvatar.setCardAvatar(card).cardName)
+                    UiText.StringResource(CardAvatar.setCardAvatar(card).cardName)
                 )
-                result.toastMessage = context.getString(
+                result.toastMessage = UiText.StringResource(
                     R.string.card_policemen_toast_message_incorrect,
                     localPlayer.value.nickName,
                     selectedPlayer.value.nickName,
@@ -570,7 +580,7 @@ class GameViewModel @Inject constructor(
             }
             is UiEvent.InitialStart -> {
                 val logMessage = LogMessage.createLogMessage(
-                    event.context.getString(R.string.start_game_message),
+                    UiText.StringResource(R.string.start_game_message),
                     toastMessage = null,
                     null,
                     "serverMessage"
@@ -631,7 +641,9 @@ class GameViewModel @Inject constructor(
             is UiEvent.StartRound -> {
 
                 viewModelScope.launch(Dispatchers.IO) {
-                    useCases.setGameInDB(useCases.startNewRound(gameRoom = event.gameRoom))
+                    useCases.setGameInDB(
+                        useCases.startNewRound(gameRoom = event.gameRoom)
+                    )
                 }
                 endRoundAlert.value = false
                 resultAlert.value = false
@@ -748,7 +760,7 @@ class GameViewModel @Inject constructor(
 //            Log.d(TAG, "(if) ending game")
             val endGame = GameRules.endRound(gameRoom = game)
             val logMessage = LogMessage.createLogMessage(
-                message = "",
+                message = UiText.DynamicString(""),
                 toastMessage = null,
                 type = "winnerMessage",
                 uid = null
@@ -767,7 +779,7 @@ class GameViewModel @Inject constructor(
             Log.d(TAG, "(else-if) ending game")
             val endGame = GameRules.endRound(gameRoom = game)
             val logMessage = LogMessage.createLogMessage(
-                message = "",
+                message = UiText.DynamicString(""),
                 toastMessage = null,
                 type = "winnerMessage",
                 uid = null
@@ -793,26 +805,42 @@ class GameViewModel @Inject constructor(
         endGame: EndRoundResult.FinalResult,
         logMessage: LogMessage,
         context: Context,
-    ): String {
+    ): UiText {
         when (endGame.type) {
             is EndRoundResult.RoundIsOverWinner -> {
                 logMessage.message =
-                    context.getString(R.string.round_over_winner_message, winner.value.nickName)
+                    UiText.StringResource(R.string.round_over_winner_message, winner.value.nickName)
+                return logMessage.message
+
             }
             is EndRoundResult.RoundIsOverTie -> {
-                var message = context.getString(R.string.game_tie_message)
+                var names = listOf<String>()
                 for (player in endGame.remainingPlayers) {
-                    message += context.getString(R.string.round_over_tie_winner_message)
+                    names = names.plus(player.nickName)
                 }
-                message = message.substring(0, message.length - 5) + "."
-                logMessage.message = message
+                logMessage.message = when (endGame.remainingPlayers.size) {
+                    2 -> {
+                        UiText.StringResource(R.string.game_tie_message_2_players, names)
+                    }
+                    3 -> {
+                        UiText.StringResource(R.string.game_tie_message_3_players, names)
+                    }
+                    4 -> {
+                        UiText.StringResource(R.string.game_tie_message_4_players, names)
+                    }
+                    else -> {
+                        UiText.StringResource(R.string.unknown_error)
+                    }
+                }
+                return logMessage.message
             }
             is EndRoundResult.GameIsOver -> {
                 logMessage.message =
-                    context.getString(R.string.game_over_winner_message, winner.value.nickName)
+                    UiText.StringResource(R.string.game_over_winner_message, winner.value.nickName)
+                return logMessage.message
+
             }
         }
-        return logMessage.message
     }
 
     fun handleDeletedRoom(

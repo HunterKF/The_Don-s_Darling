@@ -1,8 +1,7 @@
 package com.example.thedonsdarling.presentation.game
 
-import com.example.thedonsdarling.data.gameserver.preferences.DefaultPreferences
-import com.example.thedonsdarling.data.gameserver.preferences.FakeDefaultPreferences
-import com.example.thedonsdarling.data.gameserver.repository.FakeFireStoreRepositoryImpl
+import com.example.thedonsdarling.data.preferences.FakeDefaultPreferences
+import com.example.thedonsdarling.data.repository.FakeFireStoreRepositoryImpl
 import com.example.thedonsdarling.domain.models.GameRoom
 import com.example.thedonsdarling.domain.preferences.Preferences
 import com.example.thedonsdarling.domain.repository.FireStoreRepository

@@ -111,9 +111,9 @@ fun GameContent(game: GameRoom, gameViewModel: GameViewModel, navController: Nav
 
 
     LaunchedEffect(key1 = game.gameLog) {
-        if (game.gameLog.last().type == "gameLog") {
+        if (game.gameLog.isNotEmpty() && game.gameLog.last().type == "gameLog") {
             game.gameLog.last().toastMessage?.let {
-                Toast.makeText(context, game.gameLog.last().toastMessage, Toast.LENGTH_LONG).show()
+                Toast.makeText(context, game.gameLog.last().toastMessage!!.asString(context), Toast.LENGTH_LONG).show()
             }
         }
     }

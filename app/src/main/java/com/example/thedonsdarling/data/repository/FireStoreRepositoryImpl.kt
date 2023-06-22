@@ -1,4 +1,4 @@
-package com.example.thedonsdarling.data.gameserver.repository
+package com.example.thedonsdarling.data.repository
 
 import android.util.Log
 import com.example.thedonsdarling.TAG

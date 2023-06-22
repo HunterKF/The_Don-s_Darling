@@ -143,7 +143,10 @@
     <string name="report_player_email_title">Reporting player: %1$s</string>
     <string name="settings_title">Settings</string>
     <string name="enter_room_name">Enter room name.</string>
-    <string name="game_tie_message">Appears to have been a tie.</string>
+    <string name="game_tie_message_2_players">Appears to have been a tie.</string>
     <string name="unknown_error">"An unknown error occurred. "</string>
     <string name="successfully_joined_game">Successfully joined game!</string>
+    <string name="game_tie_message_3_players">Appears to have been a tie. %1$s, %2$s and %3$s have won!</string>
+    <string name="game_tie_message_4_players">Appears to have been a tie. %1$s, %2$s, %3$s and %4$s have won!</string>
+    <string name="new_round_message">A new round is starting.</string>
 </resources>

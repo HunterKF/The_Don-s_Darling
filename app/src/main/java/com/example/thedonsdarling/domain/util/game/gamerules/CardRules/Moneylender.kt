@@ -3,6 +3,7 @@ package com.example.thedonsdarling.domain.util.game.gamerules.CardRules
 import com.example.thedonsdarling.domain.models.GameRoom
 import com.example.thedonsdarling.domain.models.Player
 import com.example.thedonsdarling.domain.CardResult
+import com.example.thedonsdarling.domain.models.UiText
 import com.example.thedonsdarling.domain.util.game.gamerules.GameRules
 
 sealed class Moneylender {
@@ -42,7 +43,7 @@ sealed class Moneylender {
             }
             return CardResult(
                 cardResult = comparisonResult,
-                message = "",
+                message = UiText.DynamicString(""),
                 player1 = player1,
                 player2 = player2,
                 players = players,

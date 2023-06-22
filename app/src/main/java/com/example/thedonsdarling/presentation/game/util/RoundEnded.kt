@@ -57,7 +57,7 @@ fun RoundEndedAlert(gameViewModel: GameViewModel, gameRoom: GameRoom) {
             Divider()
             Spacer(modifier = Modifier.height(22.dp))
             Text(
-                text = winnerMessage.message,
+                text = winnerMessage.message.asString(),
                 style = MaterialTheme.typography.h6,
                 textAlign = TextAlign.Center
             )

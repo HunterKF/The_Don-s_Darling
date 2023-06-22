@@ -1,4 +1,4 @@
-package com.example.thedonsdarling.data.gameserver.repository
+package com.example.thedonsdarling.data.repository
 
 import com.example.thedonsdarling.domain.models.*
 import com.example.thedonsdarling.domain.repository.FireStoreRepository

@@ -11,8 +11,6 @@ sealed class UiEvent {
     object RemovePlayer : UiEvent()
     data class DeleteRoom(val gameRoom: GameRoom) : UiEvent()
     data class ExitGame(val gameRoom: GameRoom) : UiEvent()
-
-    data class ShowSnackbar(val message: UiText) : UiEvent()
     data class EndRound(
         val alivePlayers: List<Player>,
         val game: GameRoom,

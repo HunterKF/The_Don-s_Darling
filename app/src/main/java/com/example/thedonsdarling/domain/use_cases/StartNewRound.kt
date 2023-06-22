@@ -1,7 +1,9 @@
 package com.example.thedonsdarling.domain.use_cases
 
+import com.example.thedonsdarling.R
 import com.example.thedonsdarling.domain.models.GameRoom
 import com.example.thedonsdarling.domain.models.LogMessage
+import com.example.thedonsdarling.domain.models.UiText
 import com.example.thedonsdarling.domain.util.game.gamerules.GameRules
 
 class StartNewRound {
@@ -20,7 +22,7 @@ class StartNewRound {
         val gameLogs = gameRoom.gameLog.filter { it.type == "userMessage" || it.type == "serverMessage" || it.type == "winnerMessage" }
 
         val logMessage = LogMessage.createLogMessage(
-            message = "A new round is starting.",
+            message = UiText.StringResource(R.string.new_round_message),
             toastMessage = null,
             uid = null,
             type = "serverMessage"

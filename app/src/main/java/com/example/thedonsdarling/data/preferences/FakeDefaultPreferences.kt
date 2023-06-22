@@ -1,4 +1,4 @@
-package com.example.thedonsdarling.data.gameserver.preferences
+package com.example.thedonsdarling.data.preferences
 
 import com.example.thedonsdarling.domain.preferences.Preferences
 

@@ -3,8 +3,8 @@ package com.example.thedonsdarling.di
 import android.app.Application
 import android.content.Context
 import android.content.SharedPreferences
-import com.example.thedonsdarling.data.gameserver.preferences.DefaultPreferences
-import com.example.thedonsdarling.data.gameserver.repository.FireStoreRepositoryImpl
+import com.example.thedonsdarling.data.preferences.DefaultPreferences
+import com.example.thedonsdarling.data.repository.FireStoreRepositoryImpl
 import com.example.thedonsdarling.domain.DataStoreRepository
 import com.example.thedonsdarling.domain.preferences.Preferences
 import com.example.thedonsdarling.domain.repository.FireStoreRepository

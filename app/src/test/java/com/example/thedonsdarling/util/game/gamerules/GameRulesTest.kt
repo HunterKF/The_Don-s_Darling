@@ -1,9 +1,6 @@
 package com.example.thedonsdarling.util.game.gamerules
 
-import com.example.thedonsdarling.domain.models.Deck
-import com.example.thedonsdarling.domain.models.GameRoom
-import com.example.thedonsdarling.domain.models.LogMessage
-import com.example.thedonsdarling.domain.models.Player
+import com.example.thedonsdarling.domain.models.*
 import com.example.thedonsdarling.domain.util.game.gamerules.GameRules
 import com.google.common.truth.Truth
 
@@ -159,7 +156,7 @@ class GameRulesTest {
             gameLog = arrayListOf()
         )
         val logMessage = LogMessage.createLogMessage(
-            message = "test1",
+            message = UiText.DynamicString("test1"),
             toastMessage = null,
             type = "game rule",
             uid = null
@@ -201,7 +198,7 @@ class GameRulesTest {
             gameLog = arrayListOf()
         )
         val logMessage = LogMessage.createLogMessage(
-            message = "test1",
+            message = UiText.DynamicString("test1"),
             toastMessage = null,
             type = "game rule",
             uid = null
@@ -251,7 +248,7 @@ class GameRulesTest {
             gameLog = arrayListOf()
         )
         val logMessage = LogMessage.createLogMessage(
-            message = "test1",
+            message = UiText.DynamicString("test1"),
             toastMessage = null,
             type = "game rule",
             uid = null
@@ -308,7 +305,7 @@ class GameRulesTest {
             gameLog = arrayListOf()
         )
         val logMessage = LogMessage.createLogMessage(
-            message = "test1",
+            message = UiText.DynamicString("test1"),
             toastMessage = null,
             type = "game rule",
             uid = null
@@ -366,7 +363,7 @@ class GameRulesTest {
             gameLog = arrayListOf()
         )
         val logMessage = LogMessage.createLogMessage(
-            message = "test1",
+            message = UiText.DynamicString("test1"),
             toastMessage = null,
             type = "game rule",
             uid = null
@@ -427,7 +424,7 @@ class GameRulesTest {
             gameLog = arrayListOf()
         )
         val logMessage = LogMessage.createLogMessage(
-            message = "test1",
+            message = UiText.DynamicString("test1"),
             toastMessage = null,
             type = "game rule",
             uid = null

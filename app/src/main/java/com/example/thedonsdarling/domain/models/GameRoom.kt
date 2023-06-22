@@ -16,7 +16,6 @@ data class GameRoom(
     var deckClear: Boolean,
     var gameLog: ArrayList<LogMessage>,
 ) {
-
     constructor() : this(
         Deck(),
         turn = 0,
