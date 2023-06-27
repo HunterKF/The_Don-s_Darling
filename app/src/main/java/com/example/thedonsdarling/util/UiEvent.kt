@@ -14,8 +14,7 @@ sealed class UiEvent {
     data class EndRound(
         val alivePlayers: List<Player>,
         val game: GameRoom,
-        val playerIsPlaying: Boolean,
-        val context: Context,
+        val playerIsPlaying: Boolean
     ) : UiEvent()
 
     object ObserveRoom : UiEvent()

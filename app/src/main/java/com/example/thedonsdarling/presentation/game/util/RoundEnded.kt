@@ -13,10 +13,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.thedonsdarling.R
+import com.example.thedonsdarling.domain.models.GameMessage
 import com.example.thedonsdarling.domain.models.GameRoom
 import com.example.thedonsdarling.domain.models.Player
 import com.example.thedonsdarling.presentation.game.GameViewModel
@@ -36,6 +38,7 @@ fun RoundEndedAlert(gameViewModel: GameViewModel, gameRoom: GameRoom) {
     var showRemainingPlayers by remember {
         mutableStateOf(false)
     }
+    val context = LocalContext.current
     Box(
         modifier = Modifier
             .fillMaxWidth(1f)
@@ -57,7 +60,9 @@ fun RoundEndedAlert(gameViewModel: GameViewModel, gameRoom: GameRoom) {
             Divider()
             Spacer(modifier = Modifier.height(22.dp))
             Text(
-                text = winnerMessage.message.asString(),
+                text = GameMessage.fromMessageReturnMessageString(
+                    winnerMessage.gameMessage!!
+                ),
                 style = MaterialTheme.typography.h6,
                 textAlign = TextAlign.Center
             )

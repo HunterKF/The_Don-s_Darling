@@ -56,7 +56,7 @@ sealed class Wiseguy {
 
             return CardResult(
                 cardResult = wiseGuyMessage,
-                message = UiText.DynamicString(""),
+                message = null,
                 player1 = null,
                 player2 = null,
                 players = null,

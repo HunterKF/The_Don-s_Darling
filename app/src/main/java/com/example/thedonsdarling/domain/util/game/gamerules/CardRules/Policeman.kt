@@ -24,7 +24,7 @@ sealed class Policeman {
                 )
                 return CardResult(
                     cardResult = CorrectGuess,
-                    message = UiText.DynamicString(""),
+                    message = null,
                     player1 = player1,
                     player2 = player2,
                     players = null,
@@ -33,7 +33,7 @@ sealed class Policeman {
             } else {
                 return CardResult(
                     cardResult = WrongGuess,
-                    message = UiText.DynamicString(""),
+                    message = null,
                     player1 = player1,
                     player2 = player2,
                     players = null,

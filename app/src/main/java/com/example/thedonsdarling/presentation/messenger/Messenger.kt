@@ -28,6 +28,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.thedonsdarling.R
+import com.example.thedonsdarling.domain.models.GameMessage
 import com.example.thedonsdarling.domain.models.GameRoom
 import com.example.thedonsdarling.domain.models.LogMessage
 import com.example.thedonsdarling.domain.models.UiText
@@ -52,11 +53,11 @@ fun Messenger(gameRoom: GameRoom, gameViewModel: GameViewModel) {
     val listState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
     LaunchedEffect(key1 = gameRoom.gameLog, block = {
-       if ( gameRoom.gameLog.isNotEmpty()) {
-           coroutineScope.launch {
-               listState.animateScrollToItem(gameRoom.gameLog.size - 1)
-           }
-       }
+        if (gameRoom.gameLog.isNotEmpty()) {
+            coroutineScope.launch {
+                listState.animateScrollToItem(gameRoom.gameLog.size - 1)
+            }
+        }
         gameViewModel.currentUserUid?.let {
             gameViewModel.onUiEvent(UiEvent.UpdateUnreadStatus(gameRoom))
             /*GameServer.updateUnreadStatusForLocal(gameRoom, it.uid) */
@@ -168,29 +169,59 @@ fun Messenger(gameRoom: GameRoom, gameViewModel: GameViewModel) {
                                                 modifier = Modifier.fillMaxWidth()
                                             ) {
                                                 if (player.uid == gameViewModel.localPlayer.value.uid) {
-                                                    UserMessage(
-                                                        message = it.message.asString(),
-                                                        time = date,
-                                                    )
+                                                    it.chatMessage?.let { message ->
+                                                        UserMessage(
+                                                            message = UiText.DynamicString(message)
+                                                                .asString(),
+                                                            time = date,
+                                                        )
+                                                    }
                                                 } else {
-                                                    PlayerMessage(
-                                                        message = it.message.asString(),
-                                                        avatar = player.avatar,
-                                                        nickName = player.nickName,
-                                                        time = date
-                                                    )
+                                                    it.chatMessage?.let { message ->
+                                                        PlayerMessage(
+                                                            message = UiText.DynamicString(message)
+                                                                .asString(),
+                                                            avatar = player.avatar,
+                                                            nickName = player.nickName,
+                                                            time = date
+                                                        )
+                                                    }
+
                                                 }
                                             }
 
                                         }
                                         "winnerMessage" -> {
-                                            GameMessage(message = it.message.asString(), time = date)
+                                            it.gameMessage?.let { message ->
+                                                GameMessage(
+                                                    message = message.gameMessageType,
+                                                    time = date
+                                                )
+                                            }
                                         }
                                         "gameLog" -> {
-                                            GameMessage(message = it.message.asString(), time = date)
+                                            it.gameMessage?.let { gameMessage ->
+                                                GameMessage.fromMessageReturnMessageString(
+                                                    gameMessage = gameMessage
+                                                )
+                                            }?.let { value ->
+                                                GameMessage(
+                                                    message = value,
+                                                    time = date
+                                                )
+                                            }
                                         }
                                         "serverMessage" -> {
-                                            GameMessage(message = it.message.asString(), time = date)
+                                            it.gameMessage?.let { gameMessage ->
+                                                GameMessage.fromMessageReturnMessageString(
+                                                    gameMessage = gameMessage
+                                                )
+                                            }?.let { value ->
+                                                GameMessage(
+                                                    message = value,
+                                                    time = date
+                                                )
+                                            }
                                         }
                                     }
 
@@ -234,10 +265,10 @@ fun Messenger(gameRoom: GameRoom, gameViewModel: GameViewModel) {
                         gameViewModel.onUiEvent(
                             UiEvent.SendMessage(
                                 gameRoom, LogMessage.createLogMessage(
-                                    message = UiText.DynamicString(chatMessage.value),
-                                    toastMessage = null,
+                                    chatMessage = chatMessage.value,
                                     uid = gameViewModel.localPlayer.value.uid,
-                                    type = "userMessage"
+                                    type = "userMessage",
+                                    gameMessage = null
                                 )
                             )
                         )
@@ -268,10 +299,10 @@ fun Messenger(gameRoom: GameRoom, gameViewModel: GameViewModel) {
                         gameViewModel.onUiEvent(
                             UiEvent.SendMessage(
                                 gameRoom, LogMessage.createLogMessage(
-                                    message = UiText.DynamicString(chatMessage.value),
-                                    toastMessage = null,
+                                    chatMessage = chatMessage.value,
                                     uid = gameViewModel.localPlayer.value.uid,
-                                    type = "userMessage"
+                                    type = "userMessage",
+                                    gameMessage = null
                                 )
                             )
                         )

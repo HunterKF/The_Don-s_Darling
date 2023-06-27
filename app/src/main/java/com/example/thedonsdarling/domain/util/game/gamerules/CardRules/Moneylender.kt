@@ -43,7 +43,7 @@ sealed class Moneylender {
             }
             return CardResult(
                 cardResult = comparisonResult,
-                message = UiText.DynamicString(""),
+                message = null,
                 player1 = player1,
                 player2 = player2,
                 players = players,

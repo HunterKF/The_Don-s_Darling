@@ -3,29 +3,35 @@ package com.example.thedonsdarling.domain.models
 import java.util.*
 
 data class LogMessage(
-    var message: UiText,
-    var toastMessage: UiText?,
+    var chatMessage: String?,
+    var gameMessage: GameMessage?,
     val type: String,
     var uid: String?,
     val date: Date,
 ) {
-    constructor(): this(
-        UiText.DynamicString(""),
+    constructor() : this(
+        null,
         null,
         "",
         null,
         Date()
     )
+
     /*Log Message Types:
     * gameLog
     * serverMessage
     * userMessage*/
     companion object {
-        fun createLogMessage(message: UiText, toastMessage: UiText?, uid: String?, type: String): LogMessage {
+        fun createLogMessage(
+            chatMessage: String?,
+            gameMessage: GameMessage?,
+            uid: String?,
+            type: String,
+        ): LogMessage {
 
-            return LogMessage(
-                message = message,
-                toastMessage = toastMessage,
+            return LogMessage().copy(
+                chatMessage = chatMessage,
+                gameMessage = gameMessage,
                 type = type,
                 uid = uid,
                 date = Date()

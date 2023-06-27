@@ -156,7 +156,7 @@ class GameRulesTest {
             gameLog = arrayListOf()
         )
         val logMessage = LogMessage.createLogMessage(
-            message = UiText.DynamicString("test1"),
+            chatMessage = UiText.DynamicString("test1"),
             toastMessage = null,
             type = "game rule",
             uid = null
@@ -198,7 +198,7 @@ class GameRulesTest {
             gameLog = arrayListOf()
         )
         val logMessage = LogMessage.createLogMessage(
-            message = UiText.DynamicString("test1"),
+            chatMessage = UiText.DynamicString("test1"),
             toastMessage = null,
             type = "game rule",
             uid = null
@@ -248,7 +248,7 @@ class GameRulesTest {
             gameLog = arrayListOf()
         )
         val logMessage = LogMessage.createLogMessage(
-            message = UiText.DynamicString("test1"),
+            chatMessage = UiText.DynamicString("test1"),
             toastMessage = null,
             type = "game rule",
             uid = null
@@ -305,7 +305,7 @@ class GameRulesTest {
             gameLog = arrayListOf()
         )
         val logMessage = LogMessage.createLogMessage(
-            message = UiText.DynamicString("test1"),
+            chatMessage = UiText.DynamicString("test1"),
             toastMessage = null,
             type = "game rule",
             uid = null
@@ -363,7 +363,7 @@ class GameRulesTest {
             gameLog = arrayListOf()
         )
         val logMessage = LogMessage.createLogMessage(
-            message = UiText.DynamicString("test1"),
+            chatMessage = UiText.DynamicString("test1"),
             toastMessage = null,
             type = "game rule",
             uid = null
@@ -424,7 +424,7 @@ class GameRulesTest {
             gameLog = arrayListOf()
         )
         val logMessage = LogMessage.createLogMessage(
-            message = UiText.DynamicString("test1"),
+            chatMessage = UiText.DynamicString("test1"),
             toastMessage = null,
             type = "game rule",
             uid = null

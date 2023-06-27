@@ -3,6 +3,7 @@ package com.example.thedonsdarling.domain.util.game.gamerules.CardRules
 import com.example.thedonsdarling.domain.models.GameRoom
 import com.example.thedonsdarling.domain.models.Player
 import com.example.thedonsdarling.domain.CardResult
+import com.example.thedonsdarling.domain.models.GameMessageType
 import com.example.thedonsdarling.domain.models.UiText
 import com.example.thedonsdarling.domain.util.game.gamerules.GameRules
 
@@ -18,7 +19,7 @@ sealed class Darling {
             }
             return CardResult(
                 cardResult = PlayerEliminated,
-                message = UiText.DynamicString(""),
+                message = GameMessageType.Darling,
                 player1 = player,
                 player2 = null,
                 players = null,
@@ -35,7 +36,7 @@ sealed class Darling {
             if (card == 8) {
                 return CardResult(
                     cardResult = PlayerEliminated,
-                    message = UiText.DynamicString(""),
+                    message = GameMessageType.WiseGuyForcedToDiscardDarling,
                     player1 = player1,
                     player2 = player2,
                     players = null,
@@ -44,8 +45,7 @@ sealed class Darling {
             } else {
                 return CardResult(
                     cardResult = PlayerSafe,
-                    message = UiText.DynamicString(""),
-                    toastMessage = null,
+                    message = null,
                     player1 = player1,
                     player2 = player2,
                     players = null,

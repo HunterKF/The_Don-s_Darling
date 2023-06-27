@@ -31,7 +31,7 @@ class TheDon {
 
             return CardResult(
                 cardResult = null,
-                message = UiText.DynamicString(""),
+                message = null,
                 player1 = null,
                 player2 = null,
                 players = gameRoom.players,

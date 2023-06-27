@@ -21,8 +21,7 @@ import androidx.navigation.NavController
 import com.example.thedonsdarling.Screen
 import com.example.thedonsdarling.TAG
 import com.example.thedonsdarling.domain.*
-import com.example.thedonsdarling.domain.models.GameRoom
-import com.example.thedonsdarling.domain.models.Player
+import com.example.thedonsdarling.domain.models.*
 import com.example.thedonsdarling.presentation.game.util.*
 import com.example.thedonsdarling.presentation.messenger.Messenger
 import com.example.thedonsdarling.presentation.settings.Settings
@@ -112,8 +111,14 @@ fun GameContent(game: GameRoom, gameViewModel: GameViewModel, navController: Nav
 
     LaunchedEffect(key1 = game.gameLog) {
         if (game.gameLog.isNotEmpty() && game.gameLog.last().type == "gameLog") {
-            game.gameLog.last().toastMessage?.let {
-                Toast.makeText(context, game.gameLog.last().toastMessage!!.asString(context), Toast.LENGTH_LONG).show()
+            game.gameLog.last().gameMessage?.let { gameMessage ->
+                Toast.makeText(
+                    context, GameMessage.fromMessageReturnToastString(
+                        context,
+                        gameMessage
+                    ),
+                    Toast.LENGTH_LONG
+                ).show()
             }
         }
     }
@@ -135,8 +140,7 @@ fun GameContent(game: GameRoom, gameViewModel: GameViewModel, navController: Nav
             UiEvent.EndRound(
                 alivePlayers = alivePlayers,
                 game = game,
-                playerIsPlaying = playerIsPlaying,
-                context = context
+                playerIsPlaying = playerIsPlaying
             )
         )
 

@@ -99,8 +99,8 @@
     <string name="card_doctor_protection_toast_message">The Doctor protected %1$s from %2$s\'s %3$s.</string>
     <string name="card_wiseguy_message">%1$s played the Wiseguy. %1$s forced %2$s to discard their %3$s.</string>
     <string name="card_wiseguy_message_empty_deck">%1$s played the Wiseguy. %1$s forced %2$s to discard their %3$s. There are no more cards. %2$s was eliminated.</string>
-    <string name="card_wiseguy_toast_message">%1$s played the Wiseguy, forcing %2$s to discard %3$s. %2$s was eliminated</string>
-    <string name="card_wiseguy_toast_message_empty_deck">%1$s played the Wiseguy, forcing %2$s to discard %3$s.</string>
+    <string name="card_wiseguy_toast_message_empty_deck">%1$s played the Wiseguy, forcing %2$s to discard %3$s. %2$s was eliminated</string>
+    <string name="card_wiseguy_toast_message">%1$s played the Wiseguy, forcing %2$s to discard %3$s.</string>
     <string name="card_the_don_message">%1$s swapped cards with %2$s.</string>
     <string name="card_the_don_toast_message">%1$s swapped cards with %2$s</string>
     <string name="card_courtesan_message">%1$s has played the Courtesan.</string>
@@ -116,8 +116,8 @@
     <string name="check_game_not_found">Room code not found, try again.</string>
     <string name="check_game_found">Room code found.</string>
     <string name="check_game_full">Game is full.</string>
-    <string name="start_game_message">The game has started.</string>
-    <string name="start_game_announcement">Game started!</string>
+    <string name="start_game_announcement_message">The game has started.</string>
+    <string name="start_game_announcement_toast">Game started!</string>
     <string name="room_name">Room Name</string>
     <string name="enter_nickname">Nickname</string>
     <string name="play_limit">Play Limit</string>

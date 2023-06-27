@@ -126,7 +126,7 @@ fun GuessCard(gameRoom: GameRoom, gameViewModel: GameViewModel) {
                 CustomTextButton(
                     enabled = guessedCard != 0 && guessedCard != -1,
                     onClick = {
-                        gameViewModel.onGuess(guessedCard, gameRoom = gameRoom, context = context)
+                        gameViewModel.onGuess(guessedCard, gameRoom = gameRoom)
                     },
                     modifier = Modifier
                         .weight(0.5f)
