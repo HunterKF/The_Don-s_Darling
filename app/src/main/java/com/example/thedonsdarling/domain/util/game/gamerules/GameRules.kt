@@ -16,7 +16,6 @@ class GameRules {
             gameRoom.players.forEach {
 
                 if (it.uid == player.uid) {
-
                     it.hand.remove(card)
                     gameRoom.deck.discardDeck = addToDiscardPile(card, gameRoom = gameRoom)
 

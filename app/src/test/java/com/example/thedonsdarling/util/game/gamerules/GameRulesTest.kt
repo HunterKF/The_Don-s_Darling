@@ -17,12 +17,6 @@ class GameRulesTest {
 
     @Before
     fun setUp() {
-        /*gameRoom2Players = testGameRoom.copy(
-            players = listOf(
-                testPlayer1,
-                testPlayer2,
-            )
-        )*/
         gameRoom3Players = testGameRoom.copy(
             players = listOf(
                 testPlayer1,
@@ -156,8 +150,8 @@ class GameRulesTest {
             gameLog = arrayListOf()
         )
         val logMessage = LogMessage.createLogMessage(
-            chatMessage = UiText.DynamicString("test1"),
-            toastMessage = null,
+            chatMessage = "",
+            gameMessage = null,
             type = "game rule",
             uid = null
         )
@@ -198,12 +192,11 @@ class GameRulesTest {
             gameLog = arrayListOf()
         )
         val logMessage = LogMessage.createLogMessage(
-            chatMessage = UiText.DynamicString("test1"),
-            toastMessage = null,
+            chatMessage = "",
+            gameMessage = null,
             type = "game rule",
             uid = null
         )
-
         val result = GameRules.onEnd(gameRoom2Players, logMessage)
 
         Truth.assertThat(result.turn).isEqualTo(2)
@@ -248,8 +241,8 @@ class GameRulesTest {
             gameLog = arrayListOf()
         )
         val logMessage = LogMessage.createLogMessage(
-            chatMessage = UiText.DynamicString("test1"),
-            toastMessage = null,
+            chatMessage = "",
+            gameMessage = null,
             type = "game rule",
             uid = null
         )
@@ -305,8 +298,8 @@ class GameRulesTest {
             gameLog = arrayListOf()
         )
         val logMessage = LogMessage.createLogMessage(
-            chatMessage = UiText.DynamicString("test1"),
-            toastMessage = null,
+            chatMessage = "",
+            gameMessage = null,
             type = "game rule",
             uid = null
         )
@@ -363,8 +356,8 @@ class GameRulesTest {
             gameLog = arrayListOf()
         )
         val logMessage = LogMessage.createLogMessage(
-            chatMessage = UiText.DynamicString("test1"),
-            toastMessage = null,
+            chatMessage = "",
+            gameMessage = null,
             type = "game rule",
             uid = null
         )
@@ -424,12 +417,11 @@ class GameRulesTest {
             gameLog = arrayListOf()
         )
         val logMessage = LogMessage.createLogMessage(
-            chatMessage = UiText.DynamicString("test1"),
-            toastMessage = null,
+            chatMessage = "",
+            gameMessage = null,
             type = "game rule",
             uid = null
         )
-
         val result = GameRules.onEnd(gameRoom2Players, logMessage)
 
         Truth.assertThat(result.turn).isEqualTo(1)

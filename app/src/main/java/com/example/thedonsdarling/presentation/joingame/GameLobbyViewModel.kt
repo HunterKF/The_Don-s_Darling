@@ -10,6 +10,7 @@ import com.example.thedonsdarling.domain.models.JoinGameResult
 import com.example.thedonsdarling.domain.use_cases.UseCases
 import com.example.thedonsdarling.domain.util.user.HandleUser
 import com.example.thedonsdarling.util.UiEvent
+import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -31,7 +32,7 @@ class GameLobbyViewModel @Inject constructor(
     val playerNickname = mutableStateOf("")
     val playerChar = mutableStateOf(0)
 
-    val currentUser = Firebase.auth.currentUser
+    val currentUser: FirebaseUser = Firebase.auth.currentUser as FirebaseUser
 
 
     fun clearData() {
@@ -100,7 +101,7 @@ class GameLobbyViewModel @Inject constructor(
                 val context = event.context
                 var message = context.getString(R.string.unknown_error)
                 viewModelScope.launch {
-                    currentUser?.let {
+                    currentUser.let {
                         val result = useCases.joinGame(
                             roomCode.value, player = HandleUser.createGamePlayer(
                                 avatar = playerChar.value,
@@ -130,12 +131,7 @@ class GameLobbyViewModel @Inject constructor(
                             message,
                             Toast.LENGTH_SHORT
                         ).show()
-                    } ?: Toast.makeText(
-                        context,
-                        message,
-                        Toast.LENGTH_SHORT
-                    ).show()
-
+                    }
                 }
             }
             is UiEvent.LeaveGame -> {

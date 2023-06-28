@@ -194,31 +194,29 @@ fun Messenger(gameRoom: GameRoom, gameViewModel: GameViewModel) {
                                         "winnerMessage" -> {
                                             it.gameMessage?.let { message ->
                                                 GameMessage(
-                                                    message = message.gameMessageType,
+                                                    message = GameMessage.fromMessageReturnMessageString(
+                                                        gameMessage = message
+                                                    ),
                                                     time = date
                                                 )
                                             }
                                         }
                                         "gameLog" -> {
                                             it.gameMessage?.let { gameMessage ->
-                                                GameMessage.fromMessageReturnMessageString(
-                                                    gameMessage = gameMessage
-                                                )
-                                            }?.let { value ->
                                                 GameMessage(
-                                                    message = value,
+                                                    message = GameMessage.fromMessageReturnMessageString(
+                                                        gameMessage = gameMessage
+                                                    ),
                                                     time = date
                                                 )
                                             }
                                         }
                                         "serverMessage" -> {
                                             it.gameMessage?.let { gameMessage ->
-                                                GameMessage.fromMessageReturnMessageString(
-                                                    gameMessage = gameMessage
-                                                )
-                                            }?.let { value ->
                                                 GameMessage(
-                                                    message = value,
+                                                    message = GameMessage.fromMessageReturnMessageString(
+                                                        gameMessage = gameMessage
+                                                    ),
                                                     time = date
                                                 )
                                             }

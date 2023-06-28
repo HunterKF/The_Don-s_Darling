@@ -31,6 +31,7 @@ import com.example.thedonsdarling.domain.models.Player
 import com.example.thedonsdarling.presentation.game.GameViewModel
 import com.example.thedonsdarling.ui.theme.*
 import com.example.thedonsdarling.domain.util.game.gamerules.CardRules.Courtesan
+import com.example.thedonsdarling.util.UiEvent
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
@@ -151,11 +152,13 @@ fun BottomBar(
                 ),
                 onClick = {
 
-                    gameViewModel.onPlay(
-                        card = currentCard,
-                        player = player,
-                        gameRoom = game,
-                        context = context
+                    gameViewModel.onUiEvent(
+                        UiEvent.OnPlay(
+                            card = currentCard,
+                            player = player,
+                            gameRoom = game
+                        )
+
                     )
                     cardTitle = ""
                     cardDescription = ""

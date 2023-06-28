@@ -18,10 +18,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavHostController
 import com.example.thedonsdarling.R
 import com.example.thedonsdarling.domain.models.GameRoom
-import com.example.thedonsdarling.domain.use_cases.StartGame
 import com.example.thedonsdarling.presentation.game.GameViewModel
 import com.example.thedonsdarling.presentation.util.CustomTextButton
 import com.example.thedonsdarling.presentation.util.RoomPlayerList
@@ -31,12 +29,10 @@ import com.example.thedonsdarling.util.UiEvent
 
 @Composable
 fun CreateRoom(
-    navController: NavHostController,
     createRoomViewModel: CreateRoomViewModel,
     gameViewModel: GameViewModel,
     onNavigateBack: () -> Boolean,
     onNavigateToScreen: () -> Unit,
-
     ) {
 
     val state by createRoomViewModel.state.collectAsState()
@@ -51,25 +47,16 @@ fun CreateRoom(
         }
         is CreateRoomState.Loaded -> {
             val loaded = state as CreateRoomState.Loaded
-            LaunchedEffect(key1 = Unit, block = {
-//                HandleUser.addGameToUser(loaded.gameRoom.roomCode, loaded.gameRoom.roomNickname)
-            })
             CreateRoomContent(
                 onNavigateToScreen = { onNavigateToScreen() },
                 onNavigateBack = { onNavigateBack() },
                 createRoomViewModel = createRoomViewModel,
                 gameRoom = loaded.gameRoom,
                 gameViewModel = gameViewModel,
-                navController = {
-                    onNavigateBack()
-
-                }
             )
             BackHandler() {
-                /*TODO - Handle this*/
                 gameViewModel.onUiEvent(UiEvent.DeleteRoom(gameRoom = loaded.gameRoom))
                 onNavigateBack()
-
             }
         }
 
@@ -80,12 +67,11 @@ fun CreateRoom(
 
 @Composable
 private fun CreateRoomContent(
-    navController: () -> Unit,
     createRoomViewModel: CreateRoomViewModel,
     gameRoom: GameRoom,
     gameViewModel: GameViewModel,
     onNavigateToScreen: () -> Unit,
-    onNavigateBack: () -> Boolean,
+    onNavigateBack: () -> Boolean
 ) {
     val context = LocalContext.current
     var ready by remember { mutableStateOf(false) }
@@ -96,6 +82,9 @@ private fun CreateRoomContent(
     }
     val shareIntent = Intent.createChooser(sendIntent, null)
 
+    BackHandler() {
+        onNavigateBack()
+    }
     Surface(
         color = Black
     ) {
@@ -119,12 +108,6 @@ private fun CreateRoomContent(
                         .padding(4.dp),
                         onClick = {
                             createRoomViewModel.onUiEvent(UiEvent.DeleteRoom(gameRoom))
-                            /* GameServer.deleteRoom(game = gameRoom)
-                             HandleUser.deleteUserGameRoomForAll(
-                                 gameRoom.roomCode,
-                                 gameRoom.roomNickname,
-                                 gameRoom.players
-                             )*/
                             onNavigateBack()
 
 
@@ -216,7 +199,6 @@ private fun CreateRoomContent(
                                     ) {
                                         onNavigateToScreen()
                                     })
-                                /*TODO - Fix this...*/
                             }) {
                             Icon(
                                 Icons.Rounded.Check,

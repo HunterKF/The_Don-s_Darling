@@ -14,7 +14,7 @@ sealed class UiEvent {
     data class EndRound(
         val alivePlayers: List<Player>,
         val game: GameRoom,
-        val playerIsPlaying: Boolean
+        val playerIsPlaying: Boolean,
     ) : UiEvent()
 
     object ObserveRoom : UiEvent()
@@ -36,6 +36,11 @@ sealed class UiEvent {
     data class InitialStart(
         val gameRoom: GameRoom,
         val context: Context,
-        val onNavigate: () -> Unit
+        val onNavigate: () -> Unit,
     ) : UiEvent()
+
+    data class OnPlay(val card: Int, val player: Player, val gameRoom: GameRoom) : UiEvent()
+    data class OnSelectPlayer(val selectedPlayer: Player, val gameRoom: GameRoom) : UiEvent()
+
+    data class OnGuess(val card: Int, val gameRoom: GameRoom) : UiEvent()
 }

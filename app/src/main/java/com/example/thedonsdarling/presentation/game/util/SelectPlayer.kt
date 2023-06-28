@@ -27,6 +27,7 @@ import com.example.thedonsdarling.domain.models.Player
 import com.example.thedonsdarling.presentation.game.GameViewModel
 import com.example.thedonsdarling.presentation.util.CustomTextButton
 import com.example.thedonsdarling.ui.theme.*
+import com.example.thedonsdarling.util.UiEvent
 
 @Composable
 fun SelectPlayer(
@@ -170,10 +171,11 @@ fun SelectPlayer(
                     .padding(16.dp)
                     .clip(RoundedCornerShape(15.dp)),
                 onClick = {
-                    gameViewModel.onSelectPlayer(
-                        selectedPlayer = selectedPlayer.value,
-                        gameRoom = gameRoom,
-                        context = context
+                    gameViewModel.onUiEvent(
+                        UiEvent.OnSelectPlayer(
+                            selectedPlayer = selectedPlayer.value,
+                            gameRoom = gameRoom
+                        )
                     )
                 },
                 text = stringResource(R.string.select),

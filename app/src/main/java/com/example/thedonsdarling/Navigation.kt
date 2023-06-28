@@ -39,9 +39,8 @@ fun Navigation(
         }
         composable(Screen.CreateRoom.route) {
             CreateRoom(
-                navController,
-                createRoomViewModel,
-                gameViewModel,
+                createRoomViewModel = createRoomViewModel,
+                gameViewModel = gameViewModel,
                 onNavigateBack = { navController.popBackStack() },
                 onNavigateToScreen = {
                     navController.navigate(Screen.Game.route)

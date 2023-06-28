@@ -28,6 +28,7 @@ import com.example.thedonsdarling.domain.CardAvatar
 import com.example.thedonsdarling.domain.models.GameRoom
 import com.example.thedonsdarling.presentation.game.GameViewModel
 import com.example.thedonsdarling.presentation.util.CustomTextButton
+import com.example.thedonsdarling.util.UiEvent
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -126,7 +127,12 @@ fun GuessCard(gameRoom: GameRoom, gameViewModel: GameViewModel) {
                 CustomTextButton(
                     enabled = guessedCard != 0 && guessedCard != -1,
                     onClick = {
-                        gameViewModel.onGuess(guessedCard, gameRoom = gameRoom)
+                        gameViewModel.onUiEvent(
+                            UiEvent.OnGuess(
+                                card = guessedCard,
+                                gameRoom = gameRoom
+                            )
+                        )
                     },
                     modifier = Modifier
                         .weight(0.5f)
