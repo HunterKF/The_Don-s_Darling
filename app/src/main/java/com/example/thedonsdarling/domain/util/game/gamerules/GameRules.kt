@@ -56,10 +56,13 @@ class GameRules {
             currentTurn += 1
             //4
             if (currentTurn > size) {
-                currentTurn = 1
+                currentTurn = 0
             }
             val alivePlayers = players.filter { it.isAlive }.sortedBy { it.turnOrder }
-
+            println("alivePlayers")
+            println(alivePlayers)
+            println("currentTurn")
+            println(currentTurn)
             for (i in 0 until (players.size)) {
 
                 if (players[i].turnOrder == currentTurn && !players[i].isAlive) {
@@ -68,6 +71,8 @@ class GameRules {
                     println("if: currentTurn = $currentTurn")
                 } else if (players[i].turnOrder == currentTurn && players[i].isAlive) {
                     if (players[i].turn) {
+                        println("turn was true = $currentTurn")
+
                         currentTurn += 1
                         players[i].turn = false
                     } else {
@@ -78,7 +83,10 @@ class GameRules {
                     }
 
                 }
-                if (currentTurn > players.size) {
+                println("currentTurn = $currentTurn")
+                println("player size = ${players.size}")
+
+                if (currentTurn >= players.size) {
                     currentTurn = alivePlayers.first().turnOrder
                     println("last if: currentTurn = $currentTurn")
                     return currentTurn
@@ -88,6 +96,7 @@ class GameRules {
 
 //            Log.d(TAG, "Returning new turn: $currentTurn")
 //            Log.d(TAG, "changeGameTurn is done")
+            println("returning $currentTurn")
 
             return currentTurn
         }
@@ -292,9 +301,14 @@ class GameRules {
         }
 
         fun onEnd(gameRoom: GameRoom, logMessage: LogMessage): GameRoom {
-//            Log.d(TAG, "onEnd is being called")
+            /*This function:
+            * changes player turn
+            * updates game turn
+            * adds cards*/
+
             var updatedGameRoom = gameRoom
             val remainingPlayers = updatedGameRoom.players.filter { it.isAlive }
+            println(remainingPlayers)
             updatedGameRoom.players = endPlayerTurn(gameRoom = gameRoom)
             if (updatedGameRoom.deck.deck.isEmpty()) {
                 updatedGameRoom.deckClear = true
@@ -310,7 +324,8 @@ class GameRules {
             }
             updatedGameRoom.gameLog = updateGameLogs(updatedGameRoom.gameLog, logMessage)
             if (remainingPlayers.size != 1) {
-                updatedGameRoom = launchOnTurn(game = gameRoom)
+
+                updatedGameRoom = launchOnTurn(game = updatedGameRoom)
             }
             return updatedGameRoom
 //            GameServer.updateGame(gameRoom = updatedGameRoom)
@@ -413,16 +428,13 @@ class GameRules {
             return gameRoom
         }
 
-        fun launchOnTurn(
+        private fun launchOnTurn(
             game: GameRoom,
         ): GameRoom {
             /*finds player and calls deals a card*/
-            var currentPlayer = Player()
-            game.players.forEach {
-                if (it.turn) {
-                    currentPlayer = it
-                }
-            }
+            println("THIS IS THE ON TURN")
+            println(game.players)
+            var currentPlayer = game.players.first { it.turn }
             game.players.forEach { player ->
                 if (currentPlayer.uid == player.uid) {
                     if (player.turn && player.hand.size < 2 && player.isAlive && !player.turnInProgress) {

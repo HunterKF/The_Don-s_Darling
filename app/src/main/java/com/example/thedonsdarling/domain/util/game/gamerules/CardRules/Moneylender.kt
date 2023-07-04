@@ -17,6 +17,8 @@ sealed class Moneylender {
             players: List<Player>,
             game: GameRoom
         ): CardResult {
+            println(player1)
+            println(player2)
             val player1Card = player1.hand.first()
             val player2Card = player2.hand.first()
             var updatedGameRoom = game

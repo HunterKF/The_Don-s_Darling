@@ -102,34 +102,39 @@ class GameViewModel @Inject constructor(
                 }
             }
             4 -> {
+                val updatedGameRoom = GameRules.handlePlayedCard(
+                    card = playedCard.value,
+                    player = player,
+                    gameRoom = gameRoom
+                )
                 viewModelScope.launch(Dispatchers.IO) {
                     useCases.setGameInDB(
-                        GameRules.handlePlayedCard(
-                            card = playedCard.value,
-                            player = player,
-                            gameRoom = gameRoom
-                        )
+                        updatedGameRoom
                     )
-                    gameRoom.players.forEach {
-                        if (it.uid == localPlayer.value.uid) {
-                            it.protected = TheDoctor.toggleProtection(it)
+                }
 
-                        }
+                updatedGameRoom.players.forEach {
+                    if (it.uid == localPlayer.value.uid) {
+                        it.protected = TheDoctor.toggleProtection(it)
+
                     }
-                    val logMessage =
-                        LogMessage.createLogMessage(
-                            chatMessage = null,
-                            gameMessage = GameMessage(
-                                gameMessageType = GameMessageType.TheDoctor.messageType,
-                                players = null,
-                                player1 = gameRoom.players.first { it.uid == localPlayer.value.uid },
-                                player2 = null
-                            ),
-                            type = "gameLog",
-                            uid = null
-                        )
+                }
+                val logMessage =
+                    LogMessage.createLogMessage(
+                        chatMessage = null,
+                        gameMessage = GameMessage(
+                            gameMessageType = GameMessageType.TheDoctor.messageType,
+                            players = null,
+                            player1 = updatedGameRoom.players.first { it.uid == localPlayer.value.uid },
+                            player2 = null
+                        ),
+                        type = "gameLog",
+                        uid = null
+                    )
+                viewModelScope.launch(Dispatchers.IO) {
+
                     useCases.setGameInDB(
-                        GameRules.onEnd(gameRoom = gameRoom, logMessage = logMessage)
+                        GameRules.onEnd(gameRoom = updatedGameRoom, logMessage = logMessage)
                     )
                 }
 
@@ -184,8 +189,6 @@ class GameViewModel @Inject constructor(
 
                     )
                 }
-
-//                GameRules.onEnd(gameRoom = gameRoom, logMessage = logMessage)
             }
             8 -> {
 
@@ -237,33 +240,34 @@ class GameViewModel @Inject constructor(
             }
         }
         val card = CardAvatar.setCardAvatar(playedCard.value)
+        println(playedCard.value)
         if (!selectedPlayer.protected) {
             when (playedCard.value) {
                 1 -> {
                     guessCardAlert.value = true
                 }
                 2 -> {
+                    revealCardAlert.value = true
+                    emptyCard.value = selectedPlayer.hand.first()
+                    val logMessage =
+                        LogMessage.createLogMessage(
+                            chatMessage = null,
+                            gameMessage = GameMessage(
+                                gameMessageType = GameMessageType.PrivateEye.messageType,
+                                players = null,
+                                player1 = localPlayer.value,
+                                player2 = selectedPlayer
+                            ),
+                            type = "gameLog",
+                            uid = null
+                        )
+                    val updatedGame = GameRules.onEnd(
+                        gameRoom = gameRoom,
+                        logMessage
+                    )
                     viewModelScope.launch(Dispatchers.IO) {
-                        revealCardAlert.value = true
-                        emptyCard.value = selectedPlayer.hand.first()
-                        val logMessage =
-                            LogMessage.createLogMessage(
-                                chatMessage = null,
-                                gameMessage = GameMessage(
-                                    gameMessageType = GameMessageType.PrivateEye.messageType,
-                                    players = null,
-                                    player1 = localPlayer.value,
-                                    player2 = selectedPlayer
-                                ),
-                                type = "gameLog",
-                                uid = null
-                            )
-
                         useCases.setGameInDB(
-                            GameRules.onEnd(
-                                gameRoom = gameRoom,
-                                logMessage
-                            )
+                            updatedGame
                         )
                     }
 
@@ -287,7 +291,6 @@ class GameViewModel @Inject constructor(
                         }
                         is Moneylender.Player2Wins -> {
                             result.message = GameMessageType.MoneyLenderP2Win
-
 
                             UiText.StringResource(
                                 R.string.card_moneylender_message_lose,
@@ -385,7 +388,7 @@ class GameViewModel @Inject constructor(
                         LogMessage.createLogMessage(
                             chatMessage = null,
                             gameMessage = GameMessage(
-                                gameMessageType = result.message!!.messageType,
+                                gameMessageType = GameMessageType.TheDon.messageType,
                                 players = null,
                                 player1 = localPlayer.value,
                                 player2 = selectedPlayer
@@ -408,7 +411,6 @@ class GameViewModel @Inject constructor(
             }
         } else {
             /*If a player is protected using the doctor, this code is activated.*/
-            val cardName = UiText.StringResource(card.cardName)
             val logMessage = LogMessage.createLogMessage(
                 chatMessage = null,
                 gameMessage = GameMessage(
@@ -561,15 +563,20 @@ class GameViewModel @Inject constructor(
             }
             is UiEvent.EndRound -> {
                 viewModelScope.launch(Dispatchers.IO) {
-                    useCases.setGameInDB(
-                        endRound(
-                            event.alivePlayers,
-                            event.game,
-                            event.playerIsPlaying
-                        )
+                    val game = endRound(
+                        event.alivePlayers,
+                        event.game,
+                        event.playerIsPlaying
                     )
+                    game?.let {
+                        useCases.setGameInDB(
+                            it
+                        )
+                    }
+
                 }
             }
+
             is UiEvent.StartRound -> {
 
                 viewModelScope.launch(Dispatchers.IO) {
@@ -663,7 +670,7 @@ class GameViewModel @Inject constructor(
         alivePlayers: List<Player>,
         game: GameRoom,
         playerIsPlaying: Boolean,
-    ): GameRoom {
+    ): GameRoom? {
         if (alivePlayers.size == 1 && !game.roundOver && !playerIsPlaying) {
             val endGame = GameRules.endRound(gameRoom = game)
             val logMessage = LogMessage.createLogMessage(
@@ -700,9 +707,9 @@ class GameViewModel @Inject constructor(
 
             endGame.gameRoom.gameLog.add(logMessage)
             return endGame.gameRoom
-
+        } else {
+            return null
         }
-        return game
     }
 
     private fun updateLogMessageFromEndGame(

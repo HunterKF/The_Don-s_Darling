@@ -143,12 +143,6 @@ fun GameContent(game: GameRoom, gameViewModel: GameViewModel, navController: Nav
                 playerIsPlaying = playerIsPlaying
             )
         )
-
-        /*GameRules.launchOnTurn(
-            game = game,
-            localPlayer = localPlayer,
-            isHost = gameViewModel.isHost.value
-        )*/
     }
 
     Scaffold {
@@ -208,7 +202,6 @@ fun GameContent(game: GameRoom, gameViewModel: GameViewModel, navController: Nav
                                 )
                                 .background(Black),
                             onClick = {
-//                                GameRules.startNewGame(gameRoom = game)
                                 gameViewModel.settingsOpen.value = true
                             }) {
                             Icon(

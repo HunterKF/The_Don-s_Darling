@@ -11,7 +11,7 @@ data class GameMessage(
     val players: List<Player>?,
     val player1: Player?,
     val player2: Player?,
-    val usedCard: Int? = null
+    val usedCard: Int? = null,
 ) {
     constructor(
     ) : this(
@@ -21,26 +21,45 @@ data class GameMessage(
         player2 = null,
         usedCard = null
     )
+
     companion object {
         fun fromMessageReturnToastString(context: Context, gameMessage: GameMessage): String {
             when (gameMessage.gameMessageType) {
                 "game_round_over_winner" -> {
-                    return context.getString(R.string.round_over_winner_message, gameMessage.player1!!.nickName)
+                    return context.getString(
+                        R.string.round_over_winner_message,
+                        gameMessage.player1!!.nickName
+                    )
                 }
                 "game_round_over_tie_2_players" -> {
-                    return context.getString(R.string.game_tie_message_2_players, gameMessage.player1!!.nickName,  gameMessage.player2!!.nickName)
+                    return context.getString(
+                        R.string.game_tie_message_2_players,
+                        gameMessage.player1!!.nickName,
+                        gameMessage.player2!!.nickName
+                    )
                 }
                 "game_round_over_tie_3_players" -> {
                     val nicknames: List<String> = gameMessage.players!!.map { player ->
                         player.nickName
                     }
-                    return context.getString(R.string.game_tie_message_3_players, nicknames[0], nicknames[1], nicknames[2])
+                    return context.getString(
+                        R.string.game_tie_message_3_players,
+                        nicknames[0],
+                        nicknames[1],
+                        nicknames[2]
+                    )
                 }
                 "game_round_over_tie_4_players" -> {
                     val nicknames: List<String> = gameMessage.players!!.map { player ->
                         player.nickName
                     }
-                    return context.getString(R.string.game_tie_message_4_players, nicknames[0], nicknames[1], nicknames[2], nicknames[3])
+                    return context.getString(
+                        R.string.game_tie_message_4_players,
+                        nicknames[0],
+                        nicknames[1],
+                        nicknames[2],
+                        nicknames[3]
+                    )
                 }
                 "game_start" -> {
                     return context.getString(R.string.start_game_announcement_toast)
@@ -57,77 +76,139 @@ data class GameMessage(
                 "card_police_correct" -> {
                     /*Todo - This is special and won't work this way.*/
                     val card = CardAvatar.getStringResource(gameMessage.usedCard).asString(context)
-                    return context.getString(R.string.card_policemen_toast_message_correct, gameMessage.player1!!.nickName, gameMessage.player2!!.nickName, card)
+                    return context.getString(
+                        R.string.card_policemen_toast_message_correct,
+                        gameMessage.player1!!.nickName,
+                        gameMessage.player2!!.nickName,
+                        card
+                    )
                 }
                 "card_police_incorrect" -> {
                     /*Todo - This is special and won't work this way.*/
-                    val card = CardAvatar.getStringResource(gameMessage.usedCard!!).asString(context)
-                    return context.getString(R.string.card_policemen_toast_message_incorrect, gameMessage.player1!!.nickName, gameMessage.player2!!.nickName, card)
+                    val card =
+                        CardAvatar.getStringResource(gameMessage.usedCard!!).asString(context)
+                    return context.getString(
+                        R.string.card_policemen_toast_message_incorrect,
+                        gameMessage.player1!!.nickName,
+                        gameMessage.player2!!.nickName,
+                        card
+                    )
                 }
                 "card_private_eye" -> {
                     /*Todo - This is special and won't work this way.*/
-                    return context.getString(R.string.card_private_eye_message)
+                    return context.getString(
+                        R.string.card_private_eye_message,
+                        gameMessage.player1!!.nickName,
+                        gameMessage.player2!!.nickName
+                    )
                 }
                 "card_money_lender_p1_wins" -> {
                     /*Todo - This is special and won't work this way.*/
-                    return context.getString(R.string.card_moneylender_toast_message_win, gameMessage.player1!!.nickName, gameMessage.player2!!.nickName)
+                    return context.getString(
+                        R.string.card_moneylender_toast_message_win,
+                        gameMessage.player1!!.nickName,
+                        gameMessage.player2!!.nickName
+                    )
 
                 }
                 "card_money_lender_p2_wins" -> {
                     /*Todo - This is special and won't work this way.*/
-                    return context.getString(R.string.card_moneylender_toast_message_lose, gameMessage.player1!!.nickName, gameMessage.player2!!.nickName)
+                    return context.getString(
+                        R.string.card_moneylender_toast_message_lose,
+                        gameMessage.player1!!.nickName,
+                        gameMessage.player2!!.nickName
+                    )
 
                 }
                 "card_money_lender_draw" -> {
                     /*Todo - This is special and won't work this way.*/
-                    return context.getString(R.string.card_moneylender_toast_message_tie, gameMessage.player1!!.nickName, gameMessage.player2!!.nickName)
+                    return context.getString(
+                        R.string.card_moneylender_toast_message_tie,
+                        gameMessage.player1!!.nickName,
+                        gameMessage.player2!!.nickName
+                    )
 
                 }
                 "card_the_doctor" -> {
                     /*Todo - This is special and won't work this way.*/
-                    return context.getString(R.string.card_doctor_toast_message, gameMessage.player1!!.nickName)
+                    return context.getString(
+                        R.string.card_doctor_toast_message,
+                        gameMessage.player1!!.nickName
+                    )
 
                 }
                 "card_the_doctor_protected" -> {
-                    val card = CardAvatar.getStringResource(gameMessage.usedCard!!).asString(context)
+                    val card =
+                        CardAvatar.getStringResource(gameMessage.usedCard!!).asString(context)
 
-                    return context.getString(R.string.card_doctor_protection_toast_message, gameMessage.player1!!.nickName, gameMessage.player2!!.nickName, card)
+                    return context.getString(
+                        R.string.card_doctor_protection_toast_message,
+                        gameMessage.player1!!.nickName,
+                        gameMessage.player2!!.nickName,
+                        card
+                    )
 
                     /*Todo - This is special and won't work this way.*/
                 }
                 "card_wise_guy_forced_to_discard" -> {
                     /*Todo - This is special and won't work this way.*/
-                    val card = CardAvatar.getStringResource(gameMessage.usedCard!!).asString(context)
+                    val card =
+                        CardAvatar.getStringResource(gameMessage.usedCard!!).asString(context)
 
-                    return context.getString(R.string.card_wiseguy_toast_message, gameMessage.player1!!.nickName, gameMessage.player2!!.nickName, card)
+                    return context.getString(
+                        R.string.card_wiseguy_toast_message,
+                        gameMessage.player1!!.nickName,
+                        gameMessage.player2!!.nickName,
+                        card
+                    )
 
 
                 }
                 "card_wise_guy_forced_to_discard_darling" -> {
                     /*Todo - This is special and won't work this way.*/
 
-                    return context.getString(R.string.card_darling_forced_toast_message, gameMessage.player1!!.nickName, gameMessage.player2!!.nickName)
+                    return context.getString(
+                        R.string.card_darling_forced_toast_message,
+                        gameMessage.player1!!.nickName,
+                        gameMessage.player2!!.nickName
+                    )
                 }
                 "card_wise_guy_forced_to_discard_empty_deck" -> {
                     /*Todo - This is special and won't work this way.*/
-                    val card = CardAvatar.getStringResource(gameMessage.usedCard!!).asString(context)
+                    val card =
+                        CardAvatar.getStringResource(gameMessage.usedCard!!).asString(context)
 
-                    return context.getString(R.string.card_wiseguy_toast_message_empty_deck, gameMessage.player1!!.nickName, gameMessage.player2!!.nickName, card)
+                    return context.getString(
+                        R.string.card_wiseguy_toast_message_empty_deck,
+                        gameMessage.player1!!.nickName,
+                        gameMessage.player2!!.nickName,
+                        card
+                    )
 
                 }
                 "card_the_don" -> {
                     /*Todo - This is special and won't work this way.*/
-                    return context.getString(R.string.card_the_don_toast_message, gameMessage.player1!!.nickName, gameMessage.player2!!.nickName)
+                    return context.getString(
+                        R.string.card_the_don_toast_message,
+                        gameMessage.player1!!.nickName,
+                        gameMessage.player2!!.nickName
+                    )
 
                 }
                 "card_courtesan" -> {
                     /*Todo - This is special and won't work this way.*/
-                    return context.getString(R.string.card_courtesan_message, gameMessage.player1!!.nickName)
+                    return context.getString(
+                        R.string.card_courtesan_message,
+                        gameMessage.player1!!.nickName
+                    )
 
                 }
                 "card_darling" -> {
                     /*Todo - This is special and won't work this way.*/
-                    return context.getString(R.string.card_darling_toast_message, gameMessage.player1!!.nickName)
+                    return context.getString(
+                        R.string.card_darling_toast_message,
+                        gameMessage.player1!!.nickName
+                    )
 
                 }
                 else -> {
@@ -136,25 +217,44 @@ data class GameMessage(
 
             }
         }
+
         fun fromMessageReturnMessageString(context: Context, gameMessage: GameMessage): String {
             when (gameMessage.gameMessageType) {
                 "game_round_over_winner" -> {
-                    return context.getString(R.string.round_over_winner_message,gameMessage.player1!!.nickName)
+                    return context.getString(
+                        R.string.round_over_winner_message,
+                        gameMessage.player1!!.nickName
+                    )
                 }
                 "game_round_over_tie_2_players" -> {
-                    return context.getString(R.string.game_tie_message_2_players, gameMessage.player1!!.nickName,  gameMessage.player2!!.nickName)
+                    return context.getString(
+                        R.string.game_tie_message_2_players,
+                        gameMessage.player1!!.nickName,
+                        gameMessage.player2!!.nickName
+                    )
                 }
                 "game_round_over_tie_3_players" -> {
                     val nicknames: List<String> = gameMessage.players!!.map { player ->
                         player.nickName
                     }
-                    return context.getString(R.string.game_tie_message_3_players, nicknames[0], nicknames[1], nicknames[2])
+                    return context.getString(
+                        R.string.game_tie_message_3_players,
+                        nicknames[0],
+                        nicknames[1],
+                        nicknames[2]
+                    )
                 }
                 "game_round_over_tie_4_players" -> {
                     val nicknames: List<String> = gameMessage.players!!.map { player ->
                         player.nickName
                     }
-                    return context.getString(R.string.game_tie_message_4_players, nicknames[0], nicknames[1], nicknames[2], nicknames[3])
+                    return context.getString(
+                        R.string.game_tie_message_4_players,
+                        nicknames[0],
+                        nicknames[1],
+                        nicknames[2],
+                        nicknames[3]
+                    )
                 }
                 "game_start" -> {
                     return context.getString(R.string.start_game_announcement_message)
@@ -170,13 +270,25 @@ data class GameMessage(
 
                 "card_police_correct" -> {
                     /*Todo - This is special and won't work this way.*/
-                    val card = CardAvatar.getStringResource(gameMessage.player2!!.hand.first()).asString(context)
-                    return context.getString(R.string.card_policemen_message_correct, gameMessage.player1!!.nickName, gameMessage.player2.nickName, card)
+                    val card = CardAvatar.getStringResource(gameMessage.player2!!.hand.first())
+                        .asString(context)
+                    return context.getString(
+                        R.string.card_policemen_message_correct,
+                        gameMessage.player1!!.nickName,
+                        gameMessage.player2.nickName,
+                        card
+                    )
                 }
                 "card_police_incorrect" -> {
                     /*Todo - This is special and won't work this way.*/
-                    val card = CardAvatar.getStringResource(gameMessage.usedCard!!).asString(context)
-                    return context.getString(R.string.card_policemen_message_incorrect, gameMessage.player1!!.nickName, gameMessage.player2!!.nickName, card)
+                    val card =
+                        CardAvatar.getStringResource(gameMessage.usedCard!!).asString(context)
+                    return context.getString(
+                        R.string.card_policemen_message_incorrect,
+                        gameMessage.player1!!.nickName,
+                        gameMessage.player2!!.nickName,
+                        card
+                    )
                 }
                 "card_private_eye" -> {
                     /*Todo - This is special and won't work this way.*/
@@ -184,64 +296,111 @@ data class GameMessage(
                 }
                 "card_money_lender_p1_wins" -> {
                     /*Todo - This is special and won't work this way.*/
-                    return context.getString(R.string.card_moneylender_message_win, gameMessage.player1!!.nickName, gameMessage.player2!!.nickName)
+                    return context.getString(
+                        R.string.card_moneylender_message_win,
+                        gameMessage.player1!!.nickName,
+                        gameMessage.player2!!.nickName
+                    )
 
                 }
                 "card_money_lender_p2_wins" -> {
                     /*Todo - This is special and won't work this way.*/
-                    return context.getString(R.string.card_moneylender_message_lose, gameMessage.player1!!.nickName, gameMessage.player2!!.nickName)
+                    return context.getString(
+                        R.string.card_moneylender_message_lose,
+                        gameMessage.player1!!.nickName,
+                        gameMessage.player2!!.nickName
+                    )
 
                 }
                 "card_money_lender_draw" -> {
                     /*Todo - This is special and won't work this way.*/
-                    return context.getString(R.string.card_moneylender_message_tie, gameMessage.player1!!.nickName, gameMessage.player2!!.nickName)
+                    return context.getString(
+                        R.string.card_moneylender_message_tie,
+                        gameMessage.player1!!.nickName,
+                        gameMessage.player2!!.nickName
+                    )
 
                 }
                 "card_the_doctor" -> {
                     /*Todo - This is special and won't work this way.*/
-                    return context.getString(R.string.card_doctor_message, gameMessage.player1!!.nickName)
+                    return context.getString(
+                        R.string.card_doctor_message,
+                        gameMessage.player1!!.nickName
+                    )
 
                 }
                 "card_the_doctor_protected" -> {
-                    val card = CardAvatar.getStringResource(gameMessage.usedCard!!).asString(context)
+                    val card =
+                        CardAvatar.getStringResource(gameMessage.usedCard!!).asString(context)
 
-                    return context.getString(R.string.card_doctor_protection_message, gameMessage.player1!!.nickName, gameMessage.player2!!.nickName, card)
+                    return context.getString(
+                        R.string.card_doctor_protection_message,
+                        gameMessage.player1!!.nickName,
+                        gameMessage.player2!!.nickName,
+                        card
+                    )
 
                     /*Todo - This is special and won't work this way.*/
                 }
                 "card_wise_guy_forced_to_discard" -> {
                     /*Todo - This is special and won't work this way.*/
-                    val card = CardAvatar.getStringResource(gameMessage.usedCard!!).asString(context)
+                    val card =
+                        CardAvatar.getStringResource(gameMessage.usedCard!!).asString(context)
 
-                    return context.getString(R.string.card_wiseguy_message, gameMessage.player1!!.nickName, gameMessage.player2!!.nickName, card)
+                    return context.getString(
+                        R.string.card_wiseguy_message,
+                        gameMessage.player1!!.nickName,
+                        gameMessage.player2!!.nickName,
+                        card
+                    )
 
 
                 }
                 "card_wise_guy_forced_to_discard_darling" -> {
                     /*Todo - This is special and won't work this way.*/
 
-                    return context.getString(R.string.card_darling_forced_message, gameMessage.player1!!.nickName, gameMessage.player2!!.nickName)
+                    return context.getString(
+                        R.string.card_darling_forced_message,
+                        gameMessage.player1!!.nickName,
+                        gameMessage.player2!!.nickName
+                    )
                 }
                 "card_wise_guy_forced_to_discard_empty_deck" -> {
                     /*Todo - This is special and won't work this way.*/
-                    val card = CardAvatar.getStringResource(gameMessage.usedCard!!).asString(context)
+                    val card =
+                        CardAvatar.getStringResource(gameMessage.usedCard!!).asString(context)
 
-                    return context.getString(R.string.card_wiseguy_message_empty_deck, gameMessage.player1!!.nickName, gameMessage.player2!!.nickName, card)
+                    return context.getString(
+                        R.string.card_wiseguy_message_empty_deck,
+                        gameMessage.player1!!.nickName,
+                        gameMessage.player2!!.nickName,
+                        card
+                    )
 
                 }
                 "card_the_don" -> {
                     /*Todo - This is special and won't work this way.*/
-                    return context.getString(R.string.card_the_don_message, gameMessage.player1!!.nickName, gameMessage.player2!!.nickName)
+                    return context.getString(
+                        R.string.card_the_don_message,
+                        gameMessage.player1!!.nickName,
+                        gameMessage.player2!!.nickName
+                    )
 
                 }
                 "card_courtesan" -> {
                     /*Todo - This is special and won't work this way.*/
-                    return context.getString(R.string.card_courtesan_message, gameMessage.player1!!.nickName)
+                    return context.getString(
+                        R.string.card_courtesan_message,
+                        gameMessage.player1!!.nickName
+                    )
 
                 }
                 "card_darling" -> {
                     /*Todo - This is special and won't work this way.*/
-                    return context.getString(R.string.card_darling_message, gameMessage.player1!!.nickName)
+                    return context.getString(
+                        R.string.card_darling_message,
+                        gameMessage.player1!!.nickName
+                    )
 
                 }
                 else -> {
@@ -255,22 +414,40 @@ data class GameMessage(
         fun fromMessageReturnToastString(gameMessage: GameMessage): String {
             when (gameMessage.gameMessageType) {
                 "game_round_over_winner" -> {
-                    return stringResource(R.string.round_over_winner_message, gameMessage.player1!!.nickName)
+                    return stringResource(
+                        R.string.round_over_winner_message,
+                        gameMessage.player1!!.nickName
+                    )
                 }
                 "game_round_over_tie_2_players" -> {
-                    return stringResource(R.string.game_tie_message_2_players, gameMessage.player1!!.nickName,  gameMessage.player2!!.nickName)
+                    return stringResource(
+                        R.string.game_tie_message_2_players,
+                        gameMessage.player1!!.nickName,
+                        gameMessage.player2!!.nickName
+                    )
                 }
                 "game_round_over_tie_3_players" -> {
                     val nicknames: List<String> = gameMessage.players!!.map { player ->
                         player.nickName
                     }
-                    return stringResource(R.string.game_tie_message_3_players, nicknames[0], nicknames[1], nicknames[2])
+                    return stringResource(
+                        R.string.game_tie_message_3_players,
+                        nicknames[0],
+                        nicknames[1],
+                        nicknames[2]
+                    )
                 }
                 "game_round_over_tie_4_players" -> {
                     val nicknames: List<String> = gameMessage.players!!.map { player ->
                         player.nickName
                     }
-                    return stringResource(R.string.game_tie_message_4_players, nicknames[0], nicknames[1], nicknames[2], nicknames[3])
+                    return stringResource(
+                        R.string.game_tie_message_4_players,
+                        nicknames[0],
+                        nicknames[1],
+                        nicknames[2],
+                        nicknames[3]
+                    )
                 }
                 "game_start" -> {
                     return stringResource(R.string.start_game_announcement_toast)
@@ -286,13 +463,24 @@ data class GameMessage(
 
                 "card_police_correct" -> {
                     /*Todo - This is special and won't work this way.*/
-                    val card = CardAvatar.getStringResource(gameMessage.player2!!.hand.first()).asString()
-                    return stringResource(R.string.card_policemen_toast_message_correct, gameMessage.player1!!.nickName, gameMessage.player2.nickName, card)
+                    val card =
+                        CardAvatar.getStringResource(gameMessage.player2!!.hand.first()).asString()
+                    return stringResource(
+                        R.string.card_policemen_toast_message_correct,
+                        gameMessage.player1!!.nickName,
+                        gameMessage.player2.nickName,
+                        card
+                    )
                 }
                 "card_police_incorrect" -> {
                     /*Todo - This is special and won't work this way.*/
                     val card = CardAvatar.getStringResource(gameMessage.usedCard!!).asString()
-                    return stringResource(R.string.card_policemen_toast_message_incorrect, gameMessage.player1!!.nickName, gameMessage.player2!!.nickName, card)
+                    return stringResource(
+                        R.string.card_policemen_toast_message_incorrect,
+                        gameMessage.player1!!.nickName,
+                        gameMessage.player2!!.nickName,
+                        card
+                    )
                 }
                 "card_private_eye" -> {
                     /*Todo - This is special and won't work this way.*/
@@ -300,28 +488,48 @@ data class GameMessage(
                 }
                 "card_money_lender_p1_wins" -> {
                     /*Todo - This is special and won't work this way.*/
-                    return stringResource(R.string.card_moneylender_toast_message_win, gameMessage.player1!!.nickName, gameMessage.player2!!.nickName)
+                    return stringResource(
+                        R.string.card_moneylender_toast_message_win,
+                        gameMessage.player1!!.nickName,
+                        gameMessage.player2!!.nickName
+                    )
 
                 }
                 "card_money_lender_p2_wins" -> {
                     /*Todo - This is special and won't work this way.*/
-                    return stringResource(R.string.card_moneylender_toast_message_lose, gameMessage.player1!!.nickName, gameMessage.player2!!.nickName)
+                    return stringResource(
+                        R.string.card_moneylender_toast_message_lose,
+                        gameMessage.player1!!.nickName,
+                        gameMessage.player2!!.nickName
+                    )
 
                 }
                 "card_money_lender_draw" -> {
                     /*Todo - This is special and won't work this way.*/
-                    return stringResource(R.string.card_moneylender_toast_message_tie, gameMessage.player1!!.nickName, gameMessage.player2!!.nickName)
+                    return stringResource(
+                        R.string.card_moneylender_toast_message_tie,
+                        gameMessage.player1!!.nickName,
+                        gameMessage.player2!!.nickName
+                    )
 
                 }
                 "card_the_doctor" -> {
                     /*Todo - This is special and won't work this way.*/
-                    return stringResource(R.string.card_doctor_toast_message, gameMessage.player1!!.nickName)
+                    return stringResource(
+                        R.string.card_doctor_toast_message,
+                        gameMessage.player1!!.nickName
+                    )
 
                 }
                 "card_the_doctor_protected" -> {
                     val card = CardAvatar.getStringResource(gameMessage.usedCard!!).asString()
 
-                    return stringResource(R.string.card_doctor_protection_toast_message, gameMessage.player1!!.nickName, gameMessage.player2!!.nickName, card)
+                    return stringResource(
+                        R.string.card_doctor_protection_toast_message,
+                        gameMessage.player1!!.nickName,
+                        gameMessage.player2!!.nickName,
+                        card
+                    )
 
                     /*Todo - This is special and won't work this way.*/
                 }
@@ -329,35 +537,59 @@ data class GameMessage(
                     /*Todo - This is special and won't work this way.*/
                     val card = CardAvatar.getStringResource(gameMessage.usedCard!!).asString()
 
-                    return stringResource(R.string.card_wiseguy_toast_message, gameMessage.player1!!.nickName, gameMessage.player2!!.nickName, card)
+                    return stringResource(
+                        R.string.card_wiseguy_toast_message,
+                        gameMessage.player1!!.nickName,
+                        gameMessage.player2!!.nickName,
+                        card
+                    )
 
 
                 }
                 "card_wise_guy_forced_to_discard_darling" -> {
                     /*Todo - This is special and won't work this way.*/
 
-                    return stringResource(R.string.card_darling_forced_toast_message, gameMessage.player1!!.nickName, gameMessage.player2!!.nickName)
+                    return stringResource(
+                        R.string.card_darling_forced_toast_message,
+                        gameMessage.player1!!.nickName,
+                        gameMessage.player2!!.nickName
+                    )
                 }
                 "card_wise_guy_forced_to_discard_empty_deck" -> {
                     /*Todo - This is special and won't work this way.*/
                     val card = CardAvatar.getStringResource(gameMessage.usedCard!!).asString()
 
-                    return stringResource(R.string.card_wiseguy_toast_message_empty_deck, gameMessage.player1!!.nickName, gameMessage.player2!!.nickName, card)
+                    return stringResource(
+                        R.string.card_wiseguy_toast_message_empty_deck,
+                        gameMessage.player1!!.nickName,
+                        gameMessage.player2!!.nickName,
+                        card
+                    )
 
                 }
                 "card_the_don" -> {
                     /*Todo - This is special and won't work this way.*/
-                    return stringResource(R.string.card_the_don_toast_message, gameMessage.player1!!.nickName, gameMessage.player2!!.nickName)
+                    return stringResource(
+                        R.string.card_the_don_toast_message,
+                        gameMessage.player1!!.nickName,
+                        gameMessage.player2!!.nickName
+                    )
 
                 }
                 "card_courtesan" -> {
                     /*Todo - This is special and won't work this way.*/
-                    return stringResource(R.string.card_courtesan_message, gameMessage.player1!!.nickName)
+                    return stringResource(
+                        R.string.card_courtesan_message,
+                        gameMessage.player1!!.nickName
+                    )
 
                 }
                 "card_darling" -> {
                     /*Todo - This is special and won't work this way.*/
-                    return stringResource(R.string.card_darling_toast_message, gameMessage.player1!!.nickName)
+                    return stringResource(
+                        R.string.card_darling_toast_message,
+                        gameMessage.player1!!.nickName
+                    )
 
                 }
                 else -> {
@@ -366,26 +598,45 @@ data class GameMessage(
 
             }
         }
+
         @Composable
         fun fromMessageReturnMessageString(gameMessage: GameMessage): String {
             when (gameMessage.gameMessageType) {
                 "game_round_over_winner" -> {
-                    return stringResource(R.string.round_over_winner_message, gameMessage.player1!!.nickName)
+                    return stringResource(
+                        R.string.round_over_winner_message,
+                        gameMessage.player1!!.nickName
+                    )
                 }
                 "game_round_over_tie_2_players" -> {
-                    return stringResource(R.string.game_tie_message_2_players, gameMessage.player1!!.nickName,  gameMessage.player2!!.nickName)
+                    return stringResource(
+                        R.string.game_tie_message_2_players,
+                        gameMessage.player1!!.nickName,
+                        gameMessage.player2!!.nickName
+                    )
                 }
                 "game_round_over_tie_3_players" -> {
                     val nicknames: List<String> = gameMessage.players!!.map { player ->
                         player.nickName
                     }
-                    return stringResource(R.string.game_tie_message_3_players, nicknames[0], nicknames[1], nicknames[2])
+                    return stringResource(
+                        R.string.game_tie_message_3_players,
+                        nicknames[0],
+                        nicknames[1],
+                        nicknames[2]
+                    )
                 }
                 "game_round_over_tie_4_players" -> {
                     val nicknames: List<String> = gameMessage.players!!.map { player ->
                         player.nickName
                     }
-                    return stringResource(R.string.game_tie_message_4_players, nicknames[0], nicknames[1], nicknames[2], nicknames[3])
+                    return stringResource(
+                        R.string.game_tie_message_4_players,
+                        nicknames[0],
+                        nicknames[1],
+                        nicknames[2],
+                        nicknames[3]
+                    )
                 }
                 "game_start" -> {
                     return stringResource(R.string.start_game_announcement_message)
@@ -401,13 +652,24 @@ data class GameMessage(
 
                 "card_police_correct" -> {
                     /*Todo - This is special and won't work this way.*/
-                    val card = CardAvatar.getStringResource(gameMessage.player2!!.hand.first()).asString()
-                    return stringResource(R.string.card_policemen_message_correct, gameMessage.player1!!.nickName, gameMessage.player2.nickName, card)
+                    val card =
+                        CardAvatar.getStringResource(gameMessage.player2!!.hand.first()).asString()
+                    return stringResource(
+                        R.string.card_policemen_message_correct,
+                        gameMessage.player1!!.nickName,
+                        gameMessage.player2.nickName,
+                        card
+                    )
                 }
                 "card_police_incorrect" -> {
                     /*Todo - This is special and won't work this way.*/
                     val card = CardAvatar.getStringResource(gameMessage.usedCard!!).asString()
-                    return stringResource(R.string.card_policemen_message_incorrect, gameMessage.player1!!.nickName, gameMessage.player2!!.nickName, card)
+                    return stringResource(
+                        R.string.card_policemen_message_incorrect,
+                        gameMessage.player1!!.nickName,
+                        gameMessage.player2!!.nickName,
+                        card
+                    )
                 }
                 "card_private_eye" -> {
                     /*Todo - This is special and won't work this way.*/
@@ -415,28 +677,48 @@ data class GameMessage(
                 }
                 "card_money_lender_p1_wins" -> {
                     /*Todo - This is special and won't work this way.*/
-                    return stringResource(R.string.card_moneylender_message_win, gameMessage.player1!!.nickName, gameMessage.player2!!.nickName)
+                    return stringResource(
+                        R.string.card_moneylender_message_win,
+                        gameMessage.player1!!.nickName,
+                        gameMessage.player2!!.nickName
+                    )
 
                 }
                 "card_money_lender_p2_wins" -> {
                     /*Todo - This is special and won't work this way.*/
-                    return stringResource(R.string.card_moneylender_message_lose, gameMessage.player1!!.nickName, gameMessage.player2!!.nickName)
+                    return stringResource(
+                        R.string.card_moneylender_message_lose,
+                        gameMessage.player1!!.nickName,
+                        gameMessage.player2!!.nickName
+                    )
 
                 }
                 "card_money_lender_draw" -> {
                     /*Todo - This is special and won't work this way.*/
-                    return stringResource(R.string.card_moneylender_message_tie, gameMessage.player1!!.nickName, gameMessage.player2!!.nickName)
+                    return stringResource(
+                        R.string.card_moneylender_message_tie,
+                        gameMessage.player1!!.nickName,
+                        gameMessage.player2!!.nickName
+                    )
 
                 }
                 "card_the_doctor" -> {
                     /*Todo - This is special and won't work this way.*/
-                    return stringResource(R.string.card_doctor_message, gameMessage.player1!!.nickName)
+                    return stringResource(
+                        R.string.card_doctor_message,
+                        gameMessage.player1!!.nickName
+                    )
 
                 }
                 "card_the_doctor_protected" -> {
                     val card = CardAvatar.getStringResource(gameMessage.usedCard!!).asString()
 
-                    return stringResource(R.string.card_doctor_protection_message, gameMessage.player1!!.nickName, gameMessage.player2!!.nickName, card)
+                    return stringResource(
+                        R.string.card_doctor_protection_message,
+                        gameMessage.player1!!.nickName,
+                        gameMessage.player2!!.nickName,
+                        card
+                    )
 
                     /*Todo - This is special and won't work this way.*/
                 }
@@ -444,35 +726,59 @@ data class GameMessage(
                     /*Todo - This is special and won't work this way.*/
                     val card = CardAvatar.getStringResource(gameMessage.usedCard!!).asString()
 
-                    return stringResource(R.string.card_wiseguy_message, gameMessage.player1!!.nickName, gameMessage.player2!!.nickName, card)
+                    return stringResource(
+                        R.string.card_wiseguy_message,
+                        gameMessage.player1!!.nickName,
+                        gameMessage.player2!!.nickName,
+                        card
+                    )
 
 
                 }
                 "card_wise_guy_forced_to_discard_darling" -> {
                     /*Todo - This is special and won't work this way.*/
 
-                    return stringResource(R.string.card_darling_forced_message, gameMessage.player1!!.nickName, gameMessage.player2!!.nickName)
+                    return stringResource(
+                        R.string.card_darling_forced_message,
+                        gameMessage.player1!!.nickName,
+                        gameMessage.player2!!.nickName
+                    )
                 }
                 "card_wise_guy_forced_to_discard_empty_deck" -> {
                     /*Todo - This is special and won't work this way.*/
                     val card = CardAvatar.getStringResource(gameMessage.usedCard!!).asString()
 
-                    return stringResource(R.string.card_wiseguy_message_empty_deck, gameMessage.player1!!.nickName, gameMessage.player2!!.nickName, card)
+                    return stringResource(
+                        R.string.card_wiseguy_message_empty_deck,
+                        gameMessage.player1!!.nickName,
+                        gameMessage.player2!!.nickName,
+                        card
+                    )
 
                 }
                 "card_the_don" -> {
                     /*Todo - This is special and won't work this way.*/
-                    return stringResource(R.string.card_the_don_message, gameMessage.player1!!.nickName, gameMessage.player2!!.nickName)
+                    return stringResource(
+                        R.string.card_the_don_message,
+                        gameMessage.player1!!.nickName,
+                        gameMessage.player2!!.nickName
+                    )
 
                 }
                 "card_courtesan" -> {
                     /*Todo - This is special and won't work this way.*/
-                    return stringResource(R.string.card_courtesan_message, gameMessage.player1!!.nickName)
+                    return stringResource(
+                        R.string.card_courtesan_message,
+                        gameMessage.player1!!.nickName
+                    )
 
                 }
                 "card_darling" -> {
                     /*Todo - This is special and won't work this way.*/
-                    return stringResource(R.string.card_darling_message, gameMessage.player1!!.nickName)
+                    return stringResource(
+                        R.string.card_darling_message,
+                        gameMessage.player1!!.nickName
+                    )
 
                 }
                 else -> {
