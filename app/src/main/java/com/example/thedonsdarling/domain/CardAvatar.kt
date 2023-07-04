@@ -2,6 +2,7 @@ package com.example.thedonsdarling.domain
 
 import androidx.annotation.DrawableRes
 import com.example.thedonsdarling.R
+import com.example.thedonsdarling.domain.models.UiText
 
 sealed class CardAvatar(
     val cardName: Int,
@@ -68,7 +69,7 @@ sealed class CardAvatar(
     object Courtesan : CardAvatar(
         cardName = R.string.card_name_courtesan,
         number = 7,
-        ruleDescription =  R.string.rule_courtesan,
+        ruleDescription = R.string.rule_courtesan,
         avatar = R.drawable.icon_courtesan,
         R.string.short_rule_courtesan,
         1
@@ -97,8 +98,25 @@ sealed class CardAvatar(
                 else -> Policeman
             }
         }
+        fun getStringResource(code: Int?): UiText.StringResource {
+            return when (code) {
+                1 -> UiText.StringResource(R.string.card_name_policeman)
+                2 -> UiText.StringResource(R.string.card_name_private_eye)
+                3 -> UiText.StringResource(R.string.card_name_moneylender)
+                4 -> UiText.StringResource(R.string.card_name_doctor)
+                5 -> UiText.StringResource(R.string.card_name_wiseguy)
+                6 -> UiText.StringResource(R.string.card_name_the_don)
+                7 -> UiText.StringResource(R.string.card_name_courtesan)
+                8 -> UiText.StringResource(R.string.card_name_darling)
+                else -> UiText.StringResource(R.string.card_name_policeman)
+            }
+        }
     }
+
+
+
 }
+
 val cardDefaults = listOf<CardAvatar>(
     CardAvatar.Policeman,
     CardAvatar.PrivateEye,

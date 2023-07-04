@@ -16,7 +16,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.thedonsdarling.domain.Avatar
 import com.example.thedonsdarling.domain.CardAvatar
-import com.example.thedonsdarling.domain.Player
+import com.example.thedonsdarling.domain.models.Player
 
 @Composable
 fun RemainingPlayers(

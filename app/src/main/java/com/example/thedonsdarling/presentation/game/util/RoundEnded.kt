@@ -13,16 +13,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.thedonsdarling.R
-import com.example.thedonsdarling.domain.GameRoom
-import com.example.thedonsdarling.domain.Player
+import com.example.thedonsdarling.domain.models.GameMessage
+import com.example.thedonsdarling.domain.models.GameRoom
+import com.example.thedonsdarling.domain.models.Player
 import com.example.thedonsdarling.presentation.game.GameViewModel
 import com.example.thedonsdarling.presentation.util.CustomTextButton
 import com.example.thedonsdarling.presentation.util.Scoreboard
-import com.example.thedonsdarling.util.game.GameServer
+import com.example.thedonsdarling.util.UiEvent
 
 @Composable
 fun RoundEndedAlert(gameViewModel: GameViewModel, gameRoom: GameRoom) {
@@ -36,6 +38,7 @@ fun RoundEndedAlert(gameViewModel: GameViewModel, gameRoom: GameRoom) {
     var showRemainingPlayers by remember {
         mutableStateOf(false)
     }
+    val context = LocalContext.current
     Box(
         modifier = Modifier
             .fillMaxWidth(1f)
@@ -57,7 +60,9 @@ fun RoundEndedAlert(gameViewModel: GameViewModel, gameRoom: GameRoom) {
             Divider()
             Spacer(modifier = Modifier.height(22.dp))
             Text(
-                text = winnerMessage.message,
+                text = GameMessage.fromMessageReturnMessageString(
+                    winnerMessage.gameMessage!!
+                ),
                 style = MaterialTheme.typography.h6,
                 textAlign = TextAlign.Center
             )
@@ -100,9 +105,8 @@ fun RoundEndedAlert(gameViewModel: GameViewModel, gameRoom: GameRoom) {
                         CustomTextButton(
                             enabled = true,
                             onClick = {
-                                GameServer.startNewRound(gameRoom)
-                                gameViewModel.endRoundAlert.value = false
-                                gameViewModel.resultAlert.value = false
+                                gameViewModel.onUiEvent(UiEvent.StartRound(gameRoom))
+//                                GameServer.startNewRound(gameRoom)
                             },
                             text = stringResource(R.string.start_next_round),
                             backgroundColor = MaterialTheme.colors.primary,
@@ -112,9 +116,11 @@ fun RoundEndedAlert(gameViewModel: GameViewModel, gameRoom: GameRoom) {
                         CustomTextButton(
                             enabled = true,
                             onClick = {
-                                GameServer.startNewGame(gameRoom)
+                                gameViewModel.onUiEvent(UiEvent.StartNewGame(gameRoom))
+
+                               /* GameServer.startNewGame(gameRoom)
                                 gameViewModel.endRoundAlert.value = false
-                                gameViewModel.resultAlert.value = false
+                                gameViewModel.resultAlert.value = false*/
                             },
                             text = stringResource(R.string.start_new_game),
                             backgroundColor = MaterialTheme.colors.primary,
@@ -125,9 +131,10 @@ fun RoundEndedAlert(gameViewModel: GameViewModel, gameRoom: GameRoom) {
                         CustomTextButton(
                             enabled = true,
                             onClick = {
-                                GameServer.deleteRoom(gameRoom)
+                                gameViewModel.onUiEvent(UiEvent.DeleteRoom(gameRoom))
+                                /*GameServer.deleteRoom(gameRoom)
                                 gameViewModel.endRoundAlert.value = false
-                                gameViewModel.resultAlert.value = false
+                                gameViewModel.resultAlert.value = false*/
                             },
                             text = stringResource(R.string.end_and_delete_game),
                             backgroundColor = MaterialTheme.colors.primary,

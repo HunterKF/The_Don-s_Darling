@@ -1,6 +1,6 @@
 package com.example.thedonsdarling.util.game.gamerules.CardRules
 
-import com.example.thedonsdarling.domain.GameRoom
+import com.example.thedonsdarling.domain.models.GameRoom
 import com.example.thedonsdarling.domain.util.game.gamerules.CardRules.Wiseguy
 import com.example.thedonsdarling.util.game.gamerules.testGameRoom
 import com.example.thedonsdarling.util.game.gamerules.testPlayer1
@@ -12,20 +12,28 @@ import org.junit.Test
 
 class WiseguyTest {
 
-    private lateinit var gameRoom: GameRoom
-
-    @Before
-    fun setUp() {
-        gameRoom = testGameRoom.copy(
-            players = listOf(
-                testPlayer1,
-                testPlayer2
-            )
-        )
-    }
 
     @Test
     fun `Play wiseguy, Player 1 (1) force Player 2 (7) discard, return ForcedToDiscard`() {
+        val gameRoom = GameRoom().copy(
+            turn = 1,
+            roomCode = "ABCD",
+            roomNickname = "QRST",
+            playLimit = 5,
+            players = listOf(
+                testPlayer1.copy(),
+                testPlayer2.copy()
+            ),
+            start = true,
+            host = "apple_uid",
+            roundOver = false,
+            gameOver = false,
+            showLogs = true,
+            deleteRoom = false,
+            deckClear = false,
+            gameLog = arrayListOf()
+        )
+
         val player1 = gameRoom.players.filter { it.uid == testPlayer1.uid }.first()
         player1.hand = arrayListOf(1)
         val player2 = gameRoom.players.filter { it.uid == testPlayer2.uid }.first()
@@ -43,9 +51,24 @@ class WiseguyTest {
 
     @Test
     fun `Play wiseguy, Player 1 (1) force Player 2 (8) discard, return ForcedToDiscardDarling`() {
-       gameRoom = gameRoom.copy(
-           host = "THIS IS FROM THE FIRST TEST"
-       )
+        val gameRoom = GameRoom().copy(
+            turn = 1,
+            roomCode = "ABCD",
+            roomNickname = "QRST",
+            playLimit = 5,
+            players = listOf(
+                testPlayer1.copy(),
+                testPlayer2.copy()
+            ),
+            start = true,
+            host = "apple_uid",
+            roundOver = false,
+            gameOver = false,
+            showLogs = true,
+            deleteRoom = false,
+            deckClear = false,
+            gameLog = arrayListOf()
+        )
 
         val player1 = gameRoom.players.filter { it.uid == testPlayer1.uid }.first()
         player1.hand = arrayListOf(1)
@@ -63,6 +86,25 @@ class WiseguyTest {
 
     @Test
     fun `Play wiseguy, Player 1 (1) force Player 2 (5) discard, return ForcedToDiscardAndEmptyDeck`() {
+        val gameRoom = GameRoom().copy(
+            turn = 1,
+            roomCode = "ABCD",
+            roomNickname = "QRST",
+            playLimit = 5,
+            players = listOf(
+                testPlayer1.copy(),
+                testPlayer2.copy()
+            ),
+            start = true,
+            host = "apple_uid",
+            roundOver = false,
+            gameOver = false,
+            showLogs = true,
+            deleteRoom = false,
+            deckClear = false,
+            gameLog = arrayListOf()
+        )
+
         val player1 = gameRoom.players.filter { it.uid == testPlayer1.uid }.first()
         player1.hand = arrayListOf(1)
         val player2 = gameRoom.players.filter { it.uid == testPlayer2.uid }.first()
@@ -81,6 +123,25 @@ class WiseguyTest {
 
     @Test
     fun `Play wiseguy, Player 1 (1) force Player 2 (7) discard, return ForcedToDiscardAndEmptyDeck`() {
+        val gameRoom = GameRoom().copy(
+            turn = 1,
+            roomCode = "ABCD",
+            roomNickname = "QRST",
+            playLimit = 5,
+            players = listOf(
+                testPlayer1.copy(),
+                testPlayer2.copy()
+            ),
+            start = true,
+            host = "apple_uid",
+            roundOver = false,
+            gameOver = false,
+            showLogs = true,
+            deleteRoom = false,
+            deckClear = false,
+            gameLog = arrayListOf()
+        )
+
         val player1 = gameRoom.players.filter { it.uid == testPlayer1.uid }.first()
         player1.hand = arrayListOf(1)
         val player2 = gameRoom.players.filter { it.uid == testPlayer2.uid }.first()
@@ -99,6 +160,24 @@ class WiseguyTest {
 
     @Test
     fun `Play wiseguy, deck empty, Player 1 (1) force Player 2 (8) discard, return ForcedToDiscardDarling`() {
+        val gameRoom = GameRoom().copy(
+            turn = 1,
+            roomCode = "ABCD",
+            roomNickname = "QRST",
+            playLimit = 5,
+            players = listOf(
+                testPlayer1.copy(),
+                testPlayer2.copy()
+            ),
+            start = true,
+            host = "apple_uid",
+            roundOver = false,
+            gameOver = false,
+            showLogs = true,
+            deleteRoom = false,
+            deckClear = false,
+            gameLog = arrayListOf()
+        )
         val player1 = gameRoom.players.filter { it.uid == testPlayer1.uid }.first()
         player1.hand = arrayListOf(1)
         val player2 = gameRoom.players.filter { it.uid == testPlayer2.uid }.first()

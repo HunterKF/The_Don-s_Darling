@@ -1,7 +1,7 @@
 package com.example.thedonsdarling.util.game.gamerules
 
-import com.example.thedonsdarling.domain.GameRoom
-import com.example.thedonsdarling.domain.Player
+import com.example.thedonsdarling.domain.models.GameRoom
+import com.example.thedonsdarling.domain.models.Player
 
 val testPlayer1 = Player().copy(
     avatar = 1,
@@ -10,8 +10,8 @@ val testPlayer1 = Player().copy(
     ready = true,
     protected = false,
     turn = true,
-    turnInProgress = true,
-    turnOrder = 1,
+    turnInProgress = false,
+    turnOrder = 0,
     hand = arrayListOf(),
     isHost = true,
     isAlive = true,
@@ -28,7 +28,7 @@ val testPlayer2 = Player().copy(
     protected = false,
     turn = false,
     turnInProgress = false,
-    turnOrder = 2,
+    turnOrder = 1,
     hand = arrayListOf(),
     isHost = false,
     isAlive = true,
@@ -45,7 +45,7 @@ val testPlayer3 = Player().copy(
     protected = false,
     turn = false,
     turnInProgress = false,
-    turnOrder = 3,
+    turnOrder = 2,
     hand = arrayListOf(),
     isHost = false,
     isAlive = true,
@@ -62,7 +62,7 @@ val testPlayer4 = Player().copy(
     protected = false,
     turn = false,
     turnInProgress = false,
-    turnOrder = 4,
+    turnOrder = 3,
     hand = arrayListOf(),
     isHost = false,
     isAlive = true,

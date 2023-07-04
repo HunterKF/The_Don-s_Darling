@@ -116,8 +116,8 @@
     <string name="check_game_not_found">Room code not found, try again.</string>
     <string name="check_game_found">Room code found.</string>
     <string name="check_game_full">Game is full.</string>
-    <string name="start_game_message">The game has started.</string>
-    <string name="start_game_announcement">Game started!</string>
+    <string name="start_game_announcement_message">The game has started.</string>
+    <string name="start_game_announcement_toast">Game started!</string>
     <string name="room_name">Room Name</string>
     <string name="enter_nickname">Nickname</string>
     <string name="play_limit">Play Limit</string>
@@ -142,4 +142,11 @@
     <string name="report_player_email_message">User %1$s (%2$s) is being reported. (Please write down what happened.)</string>
     <string name="report_player_email_title">Reporting player: %1$s</string>
     <string name="settings_title">Settings</string>
+    <string name="enter_room_name">Enter room name.</string>
+    <string name="game_tie_message_2_players">Appears to have been a tie. %1$s and %2$s have won!</string>
+    <string name="unknown_error">"An unknown error occurred. "</string>
+    <string name="successfully_joined_game">Successfully joined game!</string>
+    <string name="game_tie_message_3_players">Appears to have been a tie. %1$s, %2$s and %3$s have won!</string>
+    <string name="game_tie_message_4_players">Appears to have been a tie. %1$s, %2$s, %3$s and %4$s have won!</string>
+    <string name="new_round_message">A new round is starting.</string>
 </resources>

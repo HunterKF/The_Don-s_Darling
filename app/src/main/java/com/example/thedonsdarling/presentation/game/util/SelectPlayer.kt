@@ -1,6 +1,5 @@
 package com.example.thedonsdarling.presentation.game.util
 
-import android.util.Log
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.Image
@@ -22,13 +21,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import com.example.thedonsdarling.R
-import com.example.thedonsdarling.TAG
 import com.example.thedonsdarling.domain.Avatar
-import com.example.thedonsdarling.domain.GameRoom
-import com.example.thedonsdarling.domain.Player
+import com.example.thedonsdarling.domain.models.GameRoom
+import com.example.thedonsdarling.domain.models.Player
 import com.example.thedonsdarling.presentation.game.GameViewModel
 import com.example.thedonsdarling.presentation.util.CustomTextButton
 import com.example.thedonsdarling.ui.theme.*
+import com.example.thedonsdarling.util.UiEvent
 
 @Composable
 fun SelectPlayer(
@@ -68,7 +67,7 @@ fun SelectPlayer(
 
                 gameRoom.players.forEach {
 
-                    if (it.uid != gameViewModel.currentUser!!.uid) {
+                    if (it.uid != gameViewModel.currentUserUid) {
                         val avatar = Avatar.setAvatar(it.avatar)
                         val color by animateColorAsState(targetValue = if (it == selectedPlayer.value) WarmRed
                         else MaterialTheme.colors.primary)
@@ -172,9 +171,11 @@ fun SelectPlayer(
                     .padding(16.dp)
                     .clip(RoundedCornerShape(15.dp)),
                 onClick = {
-                    gameViewModel.onSelectPlayer(
-                        selectedPlayer = selectedPlayer.value,
-                        gameRoom = gameRoom
+                    gameViewModel.onUiEvent(
+                        UiEvent.OnSelectPlayer(
+                            selectedPlayer = selectedPlayer.value,
+                            gameRoom = gameRoom
+                        )
                     )
                 },
                 text = stringResource(R.string.select),

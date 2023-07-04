@@ -1,7 +1,6 @@
 package com.example.thedonsdarling.presentation.joingame
 
 import android.widget.Toast
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -39,15 +38,11 @@ import com.example.thedonsdarling.presentation.createplayer.AvatarImage
 import com.example.thedonsdarling.presentation.util.CustomTextButton
 import com.example.thedonsdarling.ui.theme.Black
 import com.example.thedonsdarling.ui.theme.WarmRed
-import com.example.thedonsdarling.data.gameserver.ConnectionRules
-import com.example.thedonsdarling.domain.util.user.HandleUser
+import com.example.thedonsdarling.util.UiEvent
 
 @Composable
 fun JoinGameScreen(navController: NavHostController, gameLobbyViewModel: GameLobbyViewModel) {
 
-    val roomFound = remember {
-        mutableStateOf(false)
-    }
     val context = LocalContext.current
     val focusManager = LocalFocusManager.current
 
@@ -143,14 +138,14 @@ fun JoinGameScreen(navController: NavHostController, gameLobbyViewModel: GameLob
                     trailingIcon = {
                         IconButton(onClick = {
                             if (gameLobbyViewModel.roomCode.value == "") {
-                                Toast.makeText(context, R.string.enter_room_code, Toast.LENGTH_SHORT)
+                                Toast.makeText(
+                                    context,
+                                    R.string.enter_room_code,
+                                    Toast.LENGTH_SHORT
+                                )
                                     .show()
                             } else {
-                                roomFound.value =
-                                    ConnectionRules.checkGame(roomCode = gameLobbyViewModel.roomCode.value,
-                                        roomFound = roomFound,
-                                        context = context
-                                    )
+                                gameLobbyViewModel.onUiEvent(UiEvent.CheckRoom(context))
                             }
                         }) {
                             Icon(
@@ -211,8 +206,6 @@ fun JoinGameScreen(navController: NavHostController, gameLobbyViewModel: GameLob
                 )
             }
             Spacer(Modifier.height(8.dp))
-
-
 
 
             val topIcons = listOf(
@@ -287,14 +280,10 @@ fun JoinGameScreen(navController: NavHostController, gameLobbyViewModel: GameLob
                 enabled = gameLobbyViewModel.playerNickname.value != "" && gameLobbyViewModel.playerChar.value != 0 && gameLobbyViewModel.roomCode.value != "",
                 text = stringResource(id = R.string.join_game),
                 onClick = {
-                    ConnectionRules.joinGame(
-                        roomCode = gameLobbyViewModel.roomCode.value,
-                        player = HandleUser.createGamePlayer(avatar = gameLobbyViewModel.playerChar.value,
-                            nickname = gameLobbyViewModel.playerNickname.value, isHost = false),
-                        context = context
-                    ) {
+                    gameLobbyViewModel.onUiEvent(UiEvent.JoinGame(context = context, navigate = {
                         navController.navigate(Screen.GameLobby.route)
-                    }
+                    }))
+
                 }
             )
         }

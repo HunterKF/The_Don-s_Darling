@@ -18,25 +18,22 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavHostController
 import com.example.thedonsdarling.R
-import com.example.thedonsdarling.Screen
-import com.example.thedonsdarling.domain.GameRoom
+import com.example.thedonsdarling.domain.models.GameRoom
 import com.example.thedonsdarling.presentation.game.GameViewModel
 import com.example.thedonsdarling.presentation.util.CustomTextButton
 import com.example.thedonsdarling.presentation.util.RoomPlayerList
 import com.example.thedonsdarling.ui.theme.Black
 import com.example.thedonsdarling.domain.util.Tools
-import com.example.thedonsdarling.util.game.GameServer
-import com.example.thedonsdarling.data.gameserver.StartGame
-import com.example.thedonsdarling.domain.util.user.HandleUser
+import com.example.thedonsdarling.util.UiEvent
 
 @Composable
 fun CreateRoom(
-    navController: NavHostController,
     createRoomViewModel: CreateRoomViewModel,
     gameViewModel: GameViewModel,
-) {
+    onNavigateBack: () -> Boolean,
+    onNavigateToScreen: () -> Unit,
+    ) {
 
     val state by createRoomViewModel.state.collectAsState()
 
@@ -50,23 +47,16 @@ fun CreateRoom(
         }
         is CreateRoomState.Loaded -> {
             val loaded = state as CreateRoomState.Loaded
-            LaunchedEffect(key1 = Unit, block = {
-//                HandleUser.addGameToUser(loaded.gameRoom.roomCode, loaded.gameRoom.roomNickname)
-            })
             CreateRoomContent(
-                navController = navController,
+                onNavigateToScreen = { onNavigateToScreen() },
+                onNavigateBack = { onNavigateBack() },
                 createRoomViewModel = createRoomViewModel,
                 gameRoom = loaded.gameRoom,
-                gameViewModel = gameViewModel
+                gameViewModel = gameViewModel,
             )
             BackHandler() {
-                GameServer.deleteRoom(loaded.gameRoom)
-                HandleUser.deleteUserGameRoomForAll(
-                    loaded.gameRoom.roomCode,
-                    loaded.gameRoom.roomNickname,
-                    loaded.gameRoom.players
-                )
-                navController.popBackStack()
+                gameViewModel.onUiEvent(UiEvent.DeleteRoom(gameRoom = loaded.gameRoom))
+                onNavigateBack()
             }
         }
 
@@ -77,10 +67,11 @@ fun CreateRoom(
 
 @Composable
 private fun CreateRoomContent(
-    navController: NavHostController,
     createRoomViewModel: CreateRoomViewModel,
     gameRoom: GameRoom,
     gameViewModel: GameViewModel,
+    onNavigateToScreen: () -> Unit,
+    onNavigateBack: () -> Boolean
 ) {
     val context = LocalContext.current
     var ready by remember { mutableStateOf(false) }
@@ -91,6 +82,9 @@ private fun CreateRoomContent(
     }
     val shareIntent = Intent.createChooser(sendIntent, null)
 
+    BackHandler() {
+        onNavigateBack()
+    }
     Surface(
         color = Black
     ) {
@@ -98,11 +92,13 @@ private fun CreateRoomContent(
 
         ) {
 
-            Column(Modifier
-                .fillMaxSize()
-                .padding(vertical = 48.dp, horizontal = 16.dp),
+            Column(
+                Modifier
+                    .fillMaxSize()
+                    .padding(vertical = 48.dp, horizontal = 16.dp),
                 verticalArrangement = Arrangement.SpaceBetween,
-                horizontalAlignment = Alignment.CenterHorizontally) {
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -111,13 +107,9 @@ private fun CreateRoomContent(
                         .align(Alignment.TopStart)
                         .padding(4.dp),
                         onClick = {
-                            navController.popBackStack()
-                            GameServer.deleteRoom(game = gameRoom)
-                            HandleUser.deleteUserGameRoomForAll(
-                                gameRoom.roomCode,
-                                gameRoom.roomNickname,
-                                gameRoom.players
-                            )
+                            createRoomViewModel.onUiEvent(UiEvent.DeleteRoom(gameRoom))
+                            onNavigateBack()
+
 
                         }) {
                         Icon(
@@ -128,10 +120,13 @@ private fun CreateRoomContent(
                     Row(
                         modifier = Modifier.align(Alignment.Center),
                         horizontalArrangement = Arrangement.Center,
-                        verticalAlignment = Alignment.CenterVertically) {
-                        Text(gameRoom.roomCode,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            gameRoom.roomCode,
                             style = MaterialTheme.typography.h6,
-                            color = Color.White)
+                            color = Color.White
+                        )
                         IconButton(onClick = {
                             context.startActivity(shareIntent)
                         }) {
@@ -153,16 +148,18 @@ private fun CreateRoomContent(
                 Spacer(modifier = Modifier.height(24.dp))
 
 
-                Column(Modifier
-                    .padding(16.dp)
-                    .clip(RoundedCornerShape(25.dp))
-                    .weight(1f)
-                    .fillMaxWidth()
-                    .background(MaterialTheme.colors.onPrimary)) {
+                Column(
+                    Modifier
+                        .padding(16.dp)
+                        .clip(RoundedCornerShape(25.dp))
+                        .weight(1f)
+                        .fillMaxWidth()
+                        .background(MaterialTheme.colors.onPrimary)
+                ) {
                     LazyColumn(
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        itemsIndexed( gameRoom.players) {  index, player ->
+                        itemsIndexed(gameRoom.players) { index, player ->
                             RoomPlayerList(
                                 player = player,
                                 index = index,
@@ -195,16 +192,19 @@ private fun CreateRoomContent(
                             ),
                             onClick = {
                                 gameViewModel.assignRoomCode(createRoomViewModel.roomCode.value)
-                                StartGame.startGame(
-                                    gameRoom = gameRoom,
-                                    context = context
-                                ) {
-                                    navController.navigate(Screen.Game.route)
-                                }
+                                gameViewModel.onUiEvent(
+                                    UiEvent.InitialStart(
+                                        gameRoom,
+                                        context = context
+                                    ) {
+                                        onNavigateToScreen()
+                                    })
                             }) {
-                            Icon(Icons.Rounded.Check,
+                            Icon(
+                                Icons.Rounded.Check,
                                 stringResource(R.string.confirm_ready),
-                                tint = Color.Black)
+                                tint = Color.Black
+                            )
                         }
                         Button(
                             modifier = Modifier
@@ -216,9 +216,11 @@ private fun CreateRoomContent(
                                 disabledContentColor = Color.Black
                             ),
                             onClick = { ready = false }) {
-                            Icon(Icons.Rounded.Close,
+                            Icon(
+                                Icons.Rounded.Close,
                                 stringResource(R.string.cancel_ready),
-                                tint = Color.Black)
+                                tint = Color.Black
+                            )
                         }
                     }
                 }

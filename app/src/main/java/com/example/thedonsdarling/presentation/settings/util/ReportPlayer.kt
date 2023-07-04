@@ -25,11 +25,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.thedonsdarling.R
 import com.example.thedonsdarling.domain.Avatar
-import com.example.thedonsdarling.domain.GameRoom
-import com.example.thedonsdarling.domain.Player
-import com.example.thedonsdarling.presentation.game.GameViewModel
+import com.example.thedonsdarling.domain.models.Player
 import com.example.thedonsdarling.presentation.util.OutlinedButton
-import com.example.thedonsdarling.ui.theme.Steel
 
 @Composable
 fun ReportPlayer(

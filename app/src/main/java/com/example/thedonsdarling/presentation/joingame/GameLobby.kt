@@ -1,7 +1,6 @@
 package com.example.thedonsdarling.presentation.createroom
 
 import android.content.Intent
-import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
@@ -22,15 +21,13 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.thedonsdarling.R
 import com.example.thedonsdarling.Screen
-import com.example.thedonsdarling.TAG
-import com.example.thedonsdarling.domain.GameRoom
+import com.example.thedonsdarling.domain.models.GameRoom
 import com.example.thedonsdarling.presentation.game.GameViewModel
 import com.example.thedonsdarling.presentation.joingame.GameLobbyState
 import com.example.thedonsdarling.presentation.joingame.GameLobbyViewModel
 import com.example.thedonsdarling.presentation.util.RoomPlayerList
 import com.example.thedonsdarling.ui.theme.Black
-import com.example.thedonsdarling.data.gameserver.ConnectionRules
-import com.example.thedonsdarling.domain.util.user.HandleUser
+import com.example.thedonsdarling.util.UiEvent
 
 @Composable
 fun GameLobby(
@@ -61,19 +58,22 @@ fun GameLobby(
                 GameLobbyContent(
                     navController = navController,
                     gameLobbyViewModel = gameLobbyViewModel,
-                    gameRoom = loaded.gameRoom)
+                    gameRoom = loaded.gameRoom
+                )
                 BackHandler() {
-                    ConnectionRules.leaveGame(
+                    gameLobbyViewModel.onUiEvent(UiEvent.LeaveGame(loaded.gameRoom))
+                    /*ConnectionRules.leaveGame(
                         gameLobbyViewModel.roomCode.value,
                         HandleUser.createGamePlayer(
                             gameLobbyViewModel.playerChar.value,
-                            gameLobbyViewModel.playerNickname.value, isHost = false),
+                            gameLobbyViewModel.playerNickname.value, isHost = false
+                        ),
                     )
                     HandleUser.deleteUserGameRoomForAll(
                         loaded.gameRoom.roomCode,
                         loaded.gameRoom.roomNickname,
                         loaded.gameRoom.players
-                    )
+                    )*/
                     navController.navigate(Screen.Home.route)
                 }
             }
@@ -116,7 +116,8 @@ private fun GameLobbyContent(
                         .align(Alignment.TopStart)
                         .padding(4.dp),
                         onClick = {
-                            ConnectionRules.leaveGame(gameRoom.roomCode,
+                            gameLobbyViewModel.onUiEvent(UiEvent.LeaveGame(gameRoom))
+                            /*ConnectionRules.leaveGame(gameRoom.roomCode,
                                 HandleUser.createGamePlayer(avatar = 0,
                                     nickname = "",
                                     isHost = false))
@@ -124,7 +125,7 @@ private fun GameLobbyContent(
                                 gameRoom.roomCode,
                                 gameRoom.roomNickname,
                                 gameRoom.players
-                            )
+                            )*/
                             navController.navigate(Screen.Home.route)
                         }) {
                         Icon(

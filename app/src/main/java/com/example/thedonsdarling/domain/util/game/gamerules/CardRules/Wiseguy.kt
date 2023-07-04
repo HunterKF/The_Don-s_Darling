@@ -1,8 +1,9 @@
 package com.example.thedonsdarling.domain.util.game.gamerules.CardRules
 
-import com.example.thedonsdarling.domain.GameRoom
-import com.example.thedonsdarling.domain.Player
+import com.example.thedonsdarling.domain.models.GameRoom
+import com.example.thedonsdarling.domain.models.Player
 import com.example.thedonsdarling.domain.CardResult
+import com.example.thedonsdarling.domain.models.UiText
 import com.example.thedonsdarling.domain.util.game.gamerules.GameRules
 
 sealed class Wiseguy {
@@ -55,7 +56,7 @@ sealed class Wiseguy {
 
             return CardResult(
                 cardResult = wiseGuyMessage,
-                message = "",
+                message = null,
                 player1 = null,
                 player2 = null,
                 players = null,

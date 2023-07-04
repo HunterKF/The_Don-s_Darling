@@ -28,28 +28,31 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Popup
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.thedonsdarling.R
 import com.example.thedonsdarling.domain.Avatar
-import com.example.thedonsdarling.domain.GameRoom
-import com.example.thedonsdarling.domain.Player
+import com.example.thedonsdarling.domain.models.GameRoom
+import com.example.thedonsdarling.domain.models.Player
 import com.example.thedonsdarling.presentation.game.GameViewModel
 import com.example.thedonsdarling.presentation.game.util.WindowCenterOffsetPositionProvider
 import com.example.thedonsdarling.presentation.settings.util.EndGameAlert
 import com.example.thedonsdarling.presentation.settings.util.ReportPlayer
 import com.example.thedonsdarling.presentation.util.OutlinedButton
 import com.example.thedonsdarling.ui.theme.*
-import com.example.thedonsdarling.util.game.GameServer
-import com.example.thedonsdarling.data.gameserver.ConnectionRules
 import com.example.thedonsdarling.domain.util.user.HandleUser
+import com.example.thedonsdarling.util.UiEvent
 
 @Composable
-fun Settings(game: GameRoom, gameViewModel: GameViewModel, onExit: () -> Unit) {
+fun Settings(
+    game: GameRoom,
+    gameViewModel: GameViewModel,
+    settingsViewModel: SettingsViewModel = hiltViewModel(),
+    onExit: () -> Unit,
+) {
     var endGameAlert by remember {
         mutableStateOf(false)
     }
-    var reportPlayerAlert by remember {
-        mutableStateOf(false)
-    }
+
     var selectedIndex by remember {
         mutableStateOf(-1)
     }
@@ -107,7 +110,8 @@ fun Settings(game: GameRoom, gameViewModel: GameViewModel, onExit: () -> Unit) {
                         modifier = Modifier.weight(1f)
                     )
                     OutlinedButton(icon = Icons.Rounded.Refresh) {
-                        GameServer.startNewRound(gameRoom = game)
+                        gameViewModel.onUiEvent(UiEvent.StartRound(game))
+//                        GameServer.startNewRound(gameRoom = game)
                     }
                 }
                 Spacer(modifier = Modifier.height(16.dp))
@@ -203,7 +207,9 @@ fun Settings(game: GameRoom, gameViewModel: GameViewModel, onExit: () -> Unit) {
                                             text = "Report?",
                                             color = Color.White
                                         )
-                                        IconButton(onClick = { reportPlayerAlert = true }) {
+                                        IconButton(onClick = {
+                                            settingsViewModel.reportPlayerAlert.value = true
+                                        }) {
                                             Icon(
                                                 Icons.Rounded.Check,
                                                 contentDescription = null,
@@ -232,8 +238,8 @@ fun Settings(game: GameRoom, gameViewModel: GameViewModel, onExit: () -> Unit) {
                     style = MaterialTheme.typography.h6,
                     modifier = Modifier.weight(1f)
                 )
-                val checkedState =
-                    remember { mutableStateOf(gameViewModel.localPlayer.value.guide) }
+                val checkedState = gameViewModel.showGuides
+
                 Switch(
                     checked = checkedState.value,
                     colors = SwitchDefaults.colors(
@@ -244,6 +250,7 @@ fun Settings(game: GameRoom, gameViewModel: GameViewModel, onExit: () -> Unit) {
                     ),
                     onCheckedChange = {
                         checkedState.value = it
+                        settingsViewModel.onSettingsEvent(SettingsEvent.ToggleGuide(it))
                         HandleUser.toggleCardGuideSetting(
                             player = gameViewModel.localPlayer.value,
                             gameRoom = game
@@ -266,15 +273,7 @@ fun Settings(game: GameRoom, gameViewModel: GameViewModel, onExit: () -> Unit) {
                         modifier = Modifier.weight(1f)
                     )
                     OutlinedButton(drawable = R.drawable.exit) {
-                        ConnectionRules.leaveGame(
-                            roomCode = game.roomCode,
-                            player = gameViewModel.localPlayer.value
-                        )
-                        HandleUser.deleteUserGameRoomForLocal(
-                            roomCode = game.roomCode,
-                            roomNickname = game.roomNickname,
-                            player = gameViewModel.localPlayer.value
-                        )
+                        gameViewModel.onUiEvent(UiEvent.ExitGame(game))
                         onExit()
                     }
                 }
@@ -288,22 +287,24 @@ fun Settings(game: GameRoom, gameViewModel: GameViewModel, onExit: () -> Unit) {
                 EndGameAlert(
                     onCancel = { endGameAlert = false },
                     onClick = {
-                        HandleUser.deleteUserGameRoomForAll(
+                        gameViewModel.onUiEvent(UiEvent.DeleteRoom(game))
+                        /*HandleUser.deleteUserGameRoomForAll(
                             roomCode = game.roomCode,
                             roomNickname = game.roomNickname,
                             players = game.players
                         )
-                        GameServer.deleteRoom(game)
+                        GameServer.deleteRoom(game)*/
                     }
                 )
             }
         }
-        if (reportPlayerAlert) {
+        if (settingsViewModel.reportPlayerAlert.value) {
             Popup(popupPositionProvider = WindowCenterOffsetPositionProvider(),
-                onDismissRequest = { reportPlayerAlert = false }) {
+                onDismissRequest = { settingsViewModel.reportPlayerAlert.value = false }) {
                 ReportPlayer(
-                    player = reportPlayer.value) {
-                    reportPlayerAlert = false
+                    player = reportPlayer.value
+                ) {
+                    settingsViewModel.reportPlayerAlert.value = false
                 }
             }
         }

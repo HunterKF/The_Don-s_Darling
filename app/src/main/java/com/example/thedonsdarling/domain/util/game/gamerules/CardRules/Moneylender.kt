@@ -1,8 +1,9 @@
 package com.example.thedonsdarling.domain.util.game.gamerules.CardRules
 
-import com.example.thedonsdarling.domain.GameRoom
-import com.example.thedonsdarling.domain.Player
+import com.example.thedonsdarling.domain.models.GameRoom
+import com.example.thedonsdarling.domain.models.Player
 import com.example.thedonsdarling.domain.CardResult
+import com.example.thedonsdarling.domain.models.UiText
 import com.example.thedonsdarling.domain.util.game.gamerules.GameRules
 
 sealed class Moneylender {
@@ -16,6 +17,8 @@ sealed class Moneylender {
             players: List<Player>,
             game: GameRoom
         ): CardResult {
+            println(player1)
+            println(player2)
             val player1Card = player1.hand.first()
             val player2Card = player2.hand.first()
             var updatedGameRoom = game
@@ -42,7 +45,7 @@ sealed class Moneylender {
             }
             return CardResult(
                 cardResult = comparisonResult,
-                message = "",
+                message = null,
                 player1 = player1,
                 player2 = player2,
                 players = players,

@@ -2,7 +2,6 @@ package com.example.thedonsdarling.presentation.game
 
 import android.util.Log
 import android.widget.Toast
-import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
@@ -18,11 +17,11 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Popup
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.thedonsdarling.Screen
 import com.example.thedonsdarling.TAG
 import com.example.thedonsdarling.domain.*
+import com.example.thedonsdarling.domain.models.*
 import com.example.thedonsdarling.presentation.game.util.*
 import com.example.thedonsdarling.presentation.messenger.Messenger
 import com.example.thedonsdarling.presentation.settings.Settings
@@ -30,18 +29,20 @@ import com.example.thedonsdarling.ui.theme.Black
 import com.example.thedonsdarling.ui.theme.OffWhite
 import com.example.thedonsdarling.domain.util.Tools
 import com.example.thedonsdarling.domain.util.user.HandleUser
+import com.example.thedonsdarling.util.UiEvent
 import kotlinx.coroutines.launch
 
 @Composable
 fun Game(
     navController: NavController,
-    gameViewModel: GameViewModel
+    gameViewModel: GameViewModel,
 ) {
 
     val state by gameViewModel.state.collectAsState()
     LaunchedEffect(key1 = Unit, block = {
         Log.d(TAG, "Launched effect in game is being called.")
-        gameViewModel.observeRoom()
+        gameViewModel.onUiEvent(UiEvent.ObserveRoom)
+//        gameViewModel.observeRoom()
     })
 
     when (state) {
@@ -99,15 +100,25 @@ fun GameContent(game: GameRoom, gameViewModel: GameViewModel, navController: Nav
     /*This constantly updates the player so you always have the player's current hand*/
     var localPlayer by remember {
         mutableStateOf(
-            HandleUser.getCurrentUser(game.players,
-            currentUser = HandleUser.returnUser()!!.uid))
+            gameViewModel.currentUserUid?.let { uid ->
+                HandleUser.getCurrentUser(
+                    game.players,
+                    currentUser = uid
+                )
+            })
     }
 
 
     LaunchedEffect(key1 = game.gameLog) {
-        if (game.gameLog.last().type == "gameLog") {
-            game.gameLog.last().toastMessage?.let {
-                Toast.makeText(context, game.gameLog.last().toastMessage, Toast.LENGTH_LONG).show()
+        if (game.gameLog.isNotEmpty() && game.gameLog.last().type == "gameLog") {
+            game.gameLog.last().gameMessage?.let { gameMessage ->
+                Toast.makeText(
+                    context, GameMessage.fromMessageReturnToastString(
+                        context,
+                        gameMessage
+                    ),
+                    Toast.LENGTH_LONG
+                ).show()
             }
         }
     }
@@ -125,13 +136,13 @@ fun GameContent(game: GameRoom, gameViewModel: GameViewModel, navController: Nav
             it.isAlive
         }
 
-        gameViewModel.endRound(alivePlayers = alivePlayers, game = game, playerIsPlaying = playerIsPlaying)
-
-        /*GameRules.launchOnTurn(
-            game = game,
-            localPlayer = localPlayer,
-            isHost = gameViewModel.isHost.value
-        )*/
+        gameViewModel.onUiEvent(
+            UiEvent.EndRound(
+                alivePlayers = alivePlayers,
+                game = game,
+                playerIsPlaying = playerIsPlaying
+            )
+        )
     }
 
     Scaffold {
@@ -140,11 +151,13 @@ fun GameContent(game: GameRoom, gameViewModel: GameViewModel, navController: Nav
             scrimColor = MaterialTheme.colors.primary.copy(0.5f),
             drawerBackgroundColor = Black,
             drawerContent = {
-                Column(Modifier
-                    .fillMaxHeight()
-                    .padding(16.dp),
+                Column(
+                    Modifier
+                        .fillMaxHeight()
+                        .padding(16.dp),
                     horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.SpaceEvenly) {
+                    verticalArrangement = Arrangement.SpaceEvenly
+                ) {
                     val modifier = Modifier
                         .fillMaxWidth()
                         .padding(8.dp)
@@ -164,9 +177,11 @@ fun GameContent(game: GameRoom, gameViewModel: GameViewModel, navController: Nav
                         IconButton(
                             modifier = Modifier
                                 .clip(RoundedCornerShape(10.dp))
-                                .border(1.dp,
+                                .border(
+                                    1.dp,
                                     MaterialTheme.colors.onPrimary,
-                                    RoundedCornerShape(10.dp))
+                                    RoundedCornerShape(10.dp)
+                                )
                                 .background(Black),
                             onClick = {
                                 navController.navigate(Screen.Home.route)
@@ -180,12 +195,13 @@ fun GameContent(game: GameRoom, gameViewModel: GameViewModel, navController: Nav
                         IconButton(
                             modifier = Modifier
                                 .clip(RoundedCornerShape(10.dp))
-                                .border(1.dp,
+                                .border(
+                                    1.dp,
                                     MaterialTheme.colors.onPrimary,
-                                    RoundedCornerShape(10.dp))
+                                    RoundedCornerShape(10.dp)
+                                )
                                 .background(Black),
                             onClick = {
-//                                GameRules.startNewGame(gameRoom = game)
                                 gameViewModel.settingsOpen.value = true
                             }) {
                             Icon(
@@ -199,42 +215,54 @@ fun GameContent(game: GameRoom, gameViewModel: GameViewModel, navController: Nav
                 }
             }) {
 
-            Column(Modifier
-                .fillMaxSize()
-                .background(Black)
+            Column(
+                Modifier
+                    .fillMaxSize()
+                    .background(Black)
             ) {
                 Box(
                     modifier = Modifier
                         .weight(1f)
                         .fillMaxSize()
-                        .clip(RoundedCornerShape(topStart = 0.dp,
-                            topEnd = 0.dp,
-                            bottomStart = 25.dp,
-                            bottomEnd = 25.dp))
+                        .clip(
+                            RoundedCornerShape(
+                                topStart = 0.dp,
+                                topEnd = 0.dp,
+                                bottomStart = 25.dp,
+                                bottomEnd = 25.dp
+                            )
+                        )
                 ) {
-                    PlayingTable(game = game, gameViewModel, navController,
+                    PlayingTable(
+                        game = game, gameViewModel, navController,
                         modifier = Modifier
                             .background(OffWhite)
-                            .fillMaxSize())
+                            .fillMaxSize()
+                    )
                 }
                 if (gameViewModel.selectPlayerAlert.value) {
                     Popup(popupPositionProvider = WindowCenterOffsetPositionProvider()) {
-                        SelectPlayer(gameRoom = game,
-                            gameViewModel = gameViewModel)
+                        SelectPlayer(
+                            gameRoom = game,
+                            gameViewModel = gameViewModel
+                        )
                     }
                 }
                 if (gameViewModel.revealCardAlert.value) {
                     Popup(popupPositionProvider = WindowCenterOffsetPositionProvider(),
                         onDismissRequest = { gameViewModel.revealCardAlert.value = false }) {
                         RevealCard(
-                            gameViewModel = gameViewModel)
+                            gameViewModel = gameViewModel
+                        )
                     }
                 }
                 if (gameViewModel.guessCardAlert.value) {
                     Popup(popupPositionProvider = WindowCenterOffsetPositionProvider()) {
 
-                        GuessCard(gameRoom = game,
-                            gameViewModel = gameViewModel)
+                        GuessCard(
+                            gameRoom = game,
+                            gameViewModel = gameViewModel
+                        )
                     }
 
                 }
@@ -253,7 +281,7 @@ fun GameContent(game: GameRoom, gameViewModel: GameViewModel, navController: Nav
 
                 BottomBar(
                     modifier = Modifier.height(100.dp),
-                    player = localPlayer,
+                    player = localPlayer ?: Player(),
                     game = game,
                     gameViewModel = gameViewModel
                 ) { scope.launch { drawerState.open() } }

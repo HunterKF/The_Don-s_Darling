@@ -26,11 +26,12 @@ import com.example.thedonsdarling.R
 import com.example.thedonsdarling.TAG
 import com.example.thedonsdarling.domain.Avatar
 import com.example.thedonsdarling.domain.CardAvatar
-import com.example.thedonsdarling.domain.GameRoom
-import com.example.thedonsdarling.domain.Player
+import com.example.thedonsdarling.domain.models.GameRoom
+import com.example.thedonsdarling.domain.models.Player
 import com.example.thedonsdarling.presentation.game.GameViewModel
 import com.example.thedonsdarling.ui.theme.*
 import com.example.thedonsdarling.domain.util.game.gamerules.CardRules.Courtesan
+import com.example.thedonsdarling.util.UiEvent
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
@@ -151,10 +152,13 @@ fun BottomBar(
                 ),
                 onClick = {
 
-                    gameViewModel.onPlay(
-                        card = currentCard,
-                        player = player,
-                        gameRoom = game
+                    gameViewModel.onUiEvent(
+                        UiEvent.OnPlay(
+                            card = currentCard,
+                            player = player,
+                            gameRoom = game
+                        )
+
                     )
                     cardTitle = ""
                     cardDescription = ""
@@ -225,7 +229,7 @@ fun BottomBar(
         }
         val offsetX = remember { Animatable(0f) }
 
-        if (cardTitle != "" && player.guide) {
+        if (cardTitle != "" && gameViewModel.showGuides.value) {
             Box(
                 modifier = Modifier
                     .offset(y = (-200).dp)

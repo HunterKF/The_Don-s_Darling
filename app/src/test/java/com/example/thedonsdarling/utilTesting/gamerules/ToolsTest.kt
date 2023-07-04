@@ -1,6 +1,6 @@
 package com.example.thedonsdarling.utilTesting.gamerules
 
-import com.example.thedonsdarling.domain.Player
+import com.example.thedonsdarling.domain.models.Player
 import com.example.thedonsdarling.domain.util.Tools
 import com.google.common.truth.Truth.assertThat
 import org.junit.Before

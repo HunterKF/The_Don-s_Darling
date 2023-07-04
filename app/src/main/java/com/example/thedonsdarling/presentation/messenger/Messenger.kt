@@ -28,8 +28,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.thedonsdarling.R
-import com.example.thedonsdarling.domain.GameRoom
-import com.example.thedonsdarling.domain.LogMessage
+import com.example.thedonsdarling.domain.models.GameMessage
+import com.example.thedonsdarling.domain.models.GameRoom
+import com.example.thedonsdarling.domain.models.LogMessage
+import com.example.thedonsdarling.domain.models.UiText
 import com.example.thedonsdarling.presentation.game.GameViewModel
 import com.example.thedonsdarling.presentation.messenger.util.GameMessage
 import com.example.thedonsdarling.presentation.messenger.util.PlayerMessage
@@ -39,22 +41,27 @@ import com.example.thedonsdarling.ui.theme.Black
 import com.example.thedonsdarling.ui.theme.Navy
 import com.example.thedonsdarling.ui.theme.OffWhite
 import com.example.thedonsdarling.ui.theme.Steel
-import com.example.thedonsdarling.util.game.GameServer
+import com.example.thedonsdarling.util.UiEvent
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 
 @Composable
 fun Messenger(gameRoom: GameRoom, gameViewModel: GameViewModel) {
-    val message = remember {
+    val chatMessage = remember {
         mutableStateOf("")
     }
     val listState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
     LaunchedEffect(key1 = gameRoom.gameLog, block = {
-        coroutineScope.launch {
-            listState.animateScrollToItem(gameRoom.gameLog.size - 1)
+        if (gameRoom.gameLog.isNotEmpty()) {
+            coroutineScope.launch {
+                listState.animateScrollToItem(gameRoom.gameLog.size - 1)
+            }
         }
-        gameViewModel.currentUser?.let { GameServer.updateUnreadStatusForLocal(gameRoom, it.uid) }
+        gameViewModel.currentUserUid?.let {
+            gameViewModel.onUiEvent(UiEvent.UpdateUnreadStatus(gameRoom))
+            /*GameServer.updateUnreadStatusForLocal(gameRoom, it.uid) */
+        }
     })
     Surface(
         modifier = Modifier.fillMaxSize(),
@@ -66,10 +73,15 @@ fun Messenger(gameRoom: GameRoom, gameViewModel: GameViewModel) {
                     .padding(2.dp)
                     .fillMaxWidth()
                     .weight(1f)
-                    .clip(RoundedCornerShape(topStart = 0.dp,
-                        topEnd = 0.dp,
-                        bottomEnd = 15.dp,
-                        bottomStart = 15.dp))) {
+                    .clip(
+                        RoundedCornerShape(
+                            topStart = 0.dp,
+                            topEnd = 0.dp,
+                            bottomEnd = 15.dp,
+                            bottomStart = 15.dp
+                        )
+                    )
+            ) {
                 Scaffold(
                     topBar = {
                         var showScoreboard by remember {
@@ -88,12 +100,15 @@ fun Messenger(gameRoom: GameRoom, gameViewModel: GameViewModel) {
                                 verticalAlignment = Alignment.CenterVertically,
                                 horizontalArrangement = Arrangement.SpaceBetween
                             ) {
-                                IconButton(onClick = {
-                                    gameViewModel.chatOpen.value = false
-                                    GameServer.updateUnreadStatusForLocal(gameRoom,
-                                        gameViewModel.currentUser!!.uid)
-                                },
-                                    modifier = Modifier) {
+                                IconButton(
+                                    onClick = {
+                                        gameViewModel.chatOpen.value = false
+                                        gameViewModel.onUiEvent(UiEvent.UpdateUnreadStatus(gameRoom))
+                                        /*GameServer.updateUnreadStatusForLocal(gameRoom,
+                                            gameViewModel.currentUser!!.uid)*/
+                                    },
+                                    modifier = Modifier
+                                ) {
                                     Icon(
                                         Icons.Rounded.ArrowBack,
                                         null,
@@ -111,8 +126,10 @@ fun Messenger(gameRoom: GameRoom, gameViewModel: GameViewModel) {
                                         color = MaterialTheme.colors.onPrimary
                                     )
                                 }
-                                IconButton(onClick = { showScoreboard = !showScoreboard },
-                                    modifier = Modifier) {
+                                IconButton(
+                                    onClick = { showScoreboard = !showScoreboard },
+                                    modifier = Modifier
+                                ) {
                                     Icon(
                                         Icons.Rounded.Menu,
                                         null,
@@ -152,28 +169,57 @@ fun Messenger(gameRoom: GameRoom, gameViewModel: GameViewModel) {
                                                 modifier = Modifier.fillMaxWidth()
                                             ) {
                                                 if (player.uid == gameViewModel.localPlayer.value.uid) {
-                                                    UserMessage(
-                                                        message = it.message,
-                                                        time = date,
-                                                    )
+                                                    it.chatMessage?.let { message ->
+                                                        UserMessage(
+                                                            message = UiText.DynamicString(message)
+                                                                .asString(),
+                                                            time = date,
+                                                        )
+                                                    }
                                                 } else {
-                                                    PlayerMessage(message = it.message,
-                                                        avatar = player.avatar,
-                                                        nickName = player.nickName,
-                                                        time = date
-                                                    )
+                                                    it.chatMessage?.let { message ->
+                                                        PlayerMessage(
+                                                            message = UiText.DynamicString(message)
+                                                                .asString(),
+                                                            avatar = player.avatar,
+                                                            nickName = player.nickName,
+                                                            time = date
+                                                        )
+                                                    }
+
                                                 }
                                             }
 
                                         }
                                         "winnerMessage" -> {
-                                            GameMessage(message = it.message, time = date)
+                                            it.gameMessage?.let { message ->
+                                                GameMessage(
+                                                    message = GameMessage.fromMessageReturnMessageString(
+                                                        gameMessage = message
+                                                    ),
+                                                    time = date
+                                                )
+                                            }
                                         }
                                         "gameLog" -> {
-                                            GameMessage(message = it.message, time = date)
+                                            it.gameMessage?.let { gameMessage ->
+                                                GameMessage(
+                                                    message = GameMessage.fromMessageReturnMessageString(
+                                                        gameMessage = gameMessage
+                                                    ),
+                                                    time = date
+                                                )
+                                            }
                                         }
                                         "serverMessage" -> {
-                                            GameMessage(message = it.message, time = date)
+                                            it.gameMessage?.let { gameMessage ->
+                                                GameMessage(
+                                                    message = GameMessage.fromMessageReturnMessageString(
+                                                        gameMessage = gameMessage
+                                                    ),
+                                                    time = date
+                                                )
+                                            }
                                         }
                                     }
 
@@ -190,9 +236,9 @@ fun Messenger(gameRoom: GameRoom, gameViewModel: GameViewModel) {
                     .padding(16.dp)
                     .clip(RoundedCornerShape(50.dp))
                     .fillMaxWidth(),
-                value = message.value,
+                value = chatMessage.value,
                 onValueChange = { newValue ->
-                    message.value = newValue
+                    chatMessage.value = newValue
                 },
                 colors = TextFieldDefaults.textFieldColors(
                     backgroundColor = Navy,
@@ -214,15 +260,26 @@ fun Messenger(gameRoom: GameRoom, gameViewModel: GameViewModel) {
                 },
                 trailingIcon = {
                     IconButton(onClick = {
-                        GameServer.sendMessage(gameRoom = gameRoom,
+                        gameViewModel.onUiEvent(
+                            UiEvent.SendMessage(
+                                gameRoom, LogMessage.createLogMessage(
+                                    chatMessage = chatMessage.value,
+                                    uid = gameViewModel.localPlayer.value.uid,
+                                    type = "userMessage",
+                                    gameMessage = null
+                                )
+                            )
+                        )
+                        /*GameServer.sendMessage(
+                            gameRoom = gameRoom,
                             LogMessage.createLogMessage(
                                 message = message.value,
                                 toastMessage = null,
                                 uid = gameViewModel.localPlayer.value.uid,
                                 type = "userMessage"
                             )
-                        )
-                        message.value = ""
+                        )*/
+                        chatMessage.value = ""
                     }) {
                         Icon(
                             Icons.Outlined.Send,
@@ -237,15 +294,26 @@ fun Messenger(gameRoom: GameRoom, gameViewModel: GameViewModel) {
                 ),
                 keyboardActions = KeyboardActions(
                     onSend = {
-                        GameServer.sendMessage(gameRoom = gameRoom,
+                        gameViewModel.onUiEvent(
+                            UiEvent.SendMessage(
+                                gameRoom, LogMessage.createLogMessage(
+                                    chatMessage = chatMessage.value,
+                                    uid = gameViewModel.localPlayer.value.uid,
+                                    type = "userMessage",
+                                    gameMessage = null
+                                )
+                            )
+                        )
+                        /*GameServer.sendMessage(
+                            gameRoom = gameRoom,
                             LogMessage.createLogMessage(
                                 message = message.value,
                                 toastMessage = null,
                                 uid = gameViewModel.localPlayer.value.uid,
                                 type = "userMessage"
                             )
-                        )
-                        message.value = ""
+                        )*/
+                        chatMessage.value = ""
                     }
                 )
             )
@@ -255,7 +323,8 @@ fun Messenger(gameRoom: GameRoom, gameViewModel: GameViewModel) {
     }
     BackHandler {
         gameViewModel.chatOpen.value = false
-        GameServer.updateUnreadStatusForLocal(gameRoom, gameViewModel.currentUser!!.uid)
+        gameViewModel.onUiEvent(UiEvent.UpdateUnreadStatus(gameRoom))
+//        GameServer.updateUnreadStatusForLocal(gameRoom, gameViewModel.currentUser!!.uid)
     }
 
 }

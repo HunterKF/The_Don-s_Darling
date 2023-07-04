@@ -18,15 +18,17 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.example.thedonsdarling.R
 import com.example.thedonsdarling.TAG
 import com.example.thedonsdarling.domain.CardAvatar
-import com.example.thedonsdarling.domain.GameRoom
+import com.example.thedonsdarling.domain.models.GameRoom
 import com.example.thedonsdarling.presentation.game.GameViewModel
 import com.example.thedonsdarling.presentation.util.CustomTextButton
+import com.example.thedonsdarling.util.UiEvent
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -35,6 +37,7 @@ fun GuessCard(gameRoom: GameRoom, gameViewModel: GameViewModel) {
     var guessedCard by remember {
         mutableStateOf(0)
     }
+    val context = LocalContext.current
     Box(
         modifier = Modifier
             .fillMaxWidth(1f)
@@ -124,7 +127,12 @@ fun GuessCard(gameRoom: GameRoom, gameViewModel: GameViewModel) {
                 CustomTextButton(
                     enabled = guessedCard != 0 && guessedCard != -1,
                     onClick = {
-                        gameViewModel.onGuess(guessedCard, gameRoom = gameRoom)
+                        gameViewModel.onUiEvent(
+                            UiEvent.OnGuess(
+                                card = guessedCard,
+                                gameRoom = gameRoom
+                            )
+                        )
                     },
                     modifier = Modifier
                         .weight(0.5f)

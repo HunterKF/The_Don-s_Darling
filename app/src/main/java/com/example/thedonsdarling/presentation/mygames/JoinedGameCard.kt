@@ -11,12 +11,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.example.thedonsdarling.domain.JoinedGame
+import com.example.thedonsdarling.domain.models.JoinedGame
 import com.example.thedonsdarling.ui.theme.Navy
 
 
 @Composable
-fun JoinedGameCard(game: JoinedGame, color: Color = Navy, modifier: Modifier = Modifier,onClick: () -> Unit) {
+fun JoinedGameCard(game: JoinedGame, color: Color = Navy, modifier: Modifier = Modifier, onClick: () -> Unit) {
     Box(
         modifier = modifier
             .clip(RoundedCornerShape(15.dp))
